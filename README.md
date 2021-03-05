@@ -1,4 +1,4 @@
-# Welcome to CodeWithSaar
+# Welcome to Code w/ Saar
 
 ## Projects
 
