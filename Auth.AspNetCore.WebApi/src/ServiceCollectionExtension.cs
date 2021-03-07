@@ -53,8 +53,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     ValidateAudience = true,
                     ValidAudience = jwtAuthOptions.Audience,
                     NameClaimType = jwtAuthOptions.NameClaimType,
-                    RoleClaimType = jwtAuthOptions.RoleClaimType,
                 };
+                if (!string.Equals(jwtAuthOptions.RoleClaimType, "role", StringComparison.OrdinalIgnoreCase))
+                {
+                    opt.TokenValidationParameters.RoleClaimType = jwtAuthOptions.RoleClaimType;
+                }
             });
 
             return services;
