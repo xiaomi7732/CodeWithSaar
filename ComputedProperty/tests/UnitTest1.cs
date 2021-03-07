@@ -8,8 +8,12 @@ namespace ComputedProperty.Tests
         [Fact]
         public void GoodExamples()
         {
-            Person adam = new Person() { FirstName = "Adam", LastName = "Smith" };
-            Assert.Equal("Adam Smith", adam.FullName);
+            Person smith = new Person() { FirstName = "Adam", LastName = "Smith" };
+            Assert.Equal("Adam Smith", smith.FullName);
+
+            smith.FirstName = "Josh";
+            // Change first name, full name will be updated too.
+            Assert.Equal("Josh Smith", smith.FullName);
         }
 
         [Fact]
