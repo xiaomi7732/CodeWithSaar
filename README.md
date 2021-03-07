@@ -6,4 +6,4 @@
 
 ## Advanced
 
-[JWT Auth for AspNetCore WebAPI](./Auth.AspNetCore.WebApi)
+[JWT Auth for AspNetCore WebAPI](./Auth.AspNetCore.WebApi/Readme.md)
