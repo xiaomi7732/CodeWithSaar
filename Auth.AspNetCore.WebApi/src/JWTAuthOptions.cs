@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -11,8 +12,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public string Issuer { get; set; } = "JWTAuthIssuer";
         public string Audience { get; set; } = "JWTAuthAudience";
 
-        public string RoleClaimType { get; set; } = "role";
-        public string NameClaimType { get; set; } = "userName";
+        public string RoleClaimType { get; set; } = ClaimTypes.Role;
+        public string NameClaimType { get; set; } = ClaimTypes.Name;
 
         public TimeSpan TokenLifeSpan { get; set; } = TimeSpan.FromHours(4);
 

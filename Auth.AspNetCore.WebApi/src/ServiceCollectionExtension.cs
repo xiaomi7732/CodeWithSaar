@@ -10,8 +10,14 @@ using JWTAuth.AspNetCore.WebAPI;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Extension methods to help registering JWT auth related services.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
+        /// <summary>
+        /// Add JWT authentication related services.
+        /// </summary>
         public static IServiceCollection AddJWTAuth(this IServiceCollection services, Action<JWTAuthOptions> configure = null)
         {
             IServiceProvider provider = services.BuildServiceProvider();
@@ -47,8 +53,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     ValidateAudience = true,
                     ValidAudience = jwtAuthOptions.Audience,
                     NameClaimType = jwtAuthOptions.NameClaimType,
-                    RoleClaimType = jwtAuthOptions.RoleClaimType,
                 };
+                if (!string.Equals(jwtAuthOptions.RoleClaimType, "role", StringComparison.OrdinalIgnoreCase))
+                {
+                    opt.TokenValidationParameters.RoleClaimType = jwtAuthOptions.RoleClaimType;
+                }
             });
 
             return services;

@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace JWTAuth.AspNetCore.WebAPI
 {
-    public interface IUserService
+    public interface IUserValidationService
     {
         /// <summary>
         /// Verify the login info in the request body and return valid user info.

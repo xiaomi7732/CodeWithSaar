@@ -13,6 +13,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace JWTAuth.AspNetCore.WebAPI
 {
+    /// <summary>
+    /// Middle ware to intercept token request.
+    /// </summary>
     public class TokenMiddleware
     {
         private readonly RequestDelegate _next;
@@ -22,25 +25,24 @@ namespace JWTAuth.AspNetCore.WebAPI
             this._next = next ?? throw new System.ArgumentNullException(nameof(next));
         }
 
-        public async Task Invoke(HttpContext httpContext, IUserService userService, IOptions<JWTAuthOptions> options)
+        public async Task Invoke(HttpContext httpContext, IUserValidationService validationService, IOptions<JWTAuthOptions> options)
         {
-            if (userService is null)
+            if (validationService is null)
             {
-                throw new InvalidOperationException("No IUserService registered.");
+                throw new InvalidOperationException("No IUserValidationService registered.");
             }
 
             JWTAuthOptions jwtAuthOptions = options?.Value ?? new JWTAuthOptions();
             PathString requestPath = httpContext.Request.Path;
             if (IsTokenPath(httpContext, jwtAuthOptions.TokenPath))
             {
-
                 using (StreamReader sr = new StreamReader(httpContext.Request.Body))
                 {
                     string jsonContent = await sr.ReadToEndAsync().ConfigureAwait(false);
 
                     try
                     {
-                        UserInfo validUser = await userService.IsValidUserAsync(jsonContent).ConfigureAwait(false);
+                        UserInfo validUser = await validationService.IsValidUserAsync(jsonContent).ConfigureAwait(false);
                         if (validUser is null)
                         {
                             httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -56,6 +58,10 @@ namespace JWTAuth.AspNetCore.WebAPI
                         await httpContext.Response.WriteAsync("Parsing Login info failed. Is it in valid json format?").ConfigureAwait(false);
                     }
                 }
+            }
+            else
+            {
+                await _next.Invoke(httpContext);
             }
         }
 

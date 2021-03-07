@@ -1,6 +1,6 @@
 # JWTAuth.AspNetCore.WebAPI
 
-Authentication implementation without identity server should still be simple in ASP.NET Core WebAPI. We support simple ways to do a basic authentication.
+Authentication implementation without identity server should still be simple in ASP.NET Core WebAPI. With this library, it is simple way to implement a JWT authentication.
 
 ## Get Started
 
@@ -10,47 +10,43 @@ Authentication implementation without identity server should still be simple in 
     dotnet new webapi
     ```
 
-1. Build a class to take login info, for example, if you want the login request body look like this:
-
-    ```json
-    {
-        "userName": "user",
-        "password": "123"
-    }
-    ```
-
-    Create a class like [this](example/Login.cs):
-
-    ```csharp
-    public class Login
-    {
-        public string UserName { get; set; }
-        public string Password { get; set; }
-    }
-    ```
-
-1. Create a UserService to verify user info like it in [UserService.cs](example/UserService.cs)
+1. Create a UserService, inherits `UserServiceBase<DefaultUserLogin>`, to verify user info like it in [UserService.cs](example/UserService.cs)
 
     ```csharp
     // User service to handle the Login created before 
-    internal class UserService : UserServiceBase<Login>
+    internal class UserService : UserServiceBase<DefaultUserLogin>
     {
-        protected override Task<UserInfo> IsValidUserAsync(Login login)
+        protected override Task<UserInfo> IsValidUserAsync(DefaultUserLogin login)
         {
             // This is just an example with hard-coded values.
             // Check with database or other service to making sure the user info is valid.
-            if (string.Equals(login.UserName, "user", StringComparison.OrdinalIgnoreCase)
-                && string.Equals(login.Password, "123", StringComparison.OrdinalIgnoreCase))
+            if (!_inMemoryUserDB.TryGetValue(login.Username, out string passwordInDatabase))
             {
-                return Task.FromResult(new UserInfo()
-                {
-                    Name = "saars",
-                    // Also query the database or other service to get the proper role info.
-                    // This is optional if you don't want to support role based access control.
-                    Roles = new[] { "User", "Admin" },
-                });
+                // No username
+                return null;
             }
-            return Task.FromResult((UserInfo)default);
+
+            if (!string.Equals(login.Password, passwordInDatabase, StringComparison.Ordinal))
+            {
+                // Password doesn't match
+                return null;
+            }
+
+            // Create UserInfo
+            return Task.FromResult(new UserInfo()
+            {
+                Name = login.Username,
+            });
+        }
+
+        protected override Task SetRolesAsync(DefaultUserLogin _, UserInfo verifiedUserInfo)
+        {
+            // This is optional if you don't want to support role based access control, return Task.CompletedTask in that case.
+            // Query the database or other service to get the proper role info.
+            verifiedUserInfo.Roles = _userRoleMapping
+                .Where(mapping => string.Equals(mapping.userName, verifiedUserInfo.Name, StringComparison.OrdinalIgnoreCase))
+                .Select(mapping => mapping.role);
+            return Task.CompletedTask;
         }
     }
     ```
@@ -62,7 +58,7 @@ Authentication implementation without identity server should still be simple in 
     {
         ...
         // Register the user service created
-        services.AddSingleton<IUserService, UserService>();
+        services.AddSingleton<IUserValidationService, UserService>();
         // Add service to support JWT authentication
         services.AddJWTAuth();
     }
@@ -77,6 +73,60 @@ Authentication implementation without identity server should still be simple in 
     }
     ```
 
-That is it. When run it in Postman:
+1. Add `Authorize` attribute to route that needs protection like [WeatherForecastController.cs](./example/Controllers/WeatherForecastController.cs):
 
-![Run JWTAuth in Postman](./img/AuthInPostman.png)
+```csharp
+using Microsoft.AspNetCore.Authorization;
+...
+[Authorize(Roles = "User")]    // Requires access token with a role of 'User' on it.
+public class WeatherForecastController : ControllerBase
+...
+```
+
+## Run the example
+
+* To get an access token:
+
+  When run it in Postman by issue a `POST` to the `token/` route:
+
+  Use **HTTP Method: POST** with a body:
+
+  ```json
+  {
+    "username": "saar",
+    "password": "123"
+  }
+  ```
+
+  ![Run JWTAuth in Postman](./img/AuthInPostman.png)
+
+* To access the protected resource, for example:
+
+  * Copy the token above.
+
+  * Use **HTTP Method: GET** on route: `/weatherforecast`, put the token copied to the `Bearer` authentication header:
+
+  ![Get protected resource in Postman](./img/GetWeatherForecast.png)
+
+## Customization
+
+* Use a different endpoint for token:
+
+    By default, the token is exposed on `/token`. It can be customized in [appsettings.json](./example/appsettings.json):
+
+    ```jsonc
+    {
+      ...
+      "JWTAuth": {
+        "TokenPath": "/api/token"
+      }
+    }
+    ```
+
+    You can also customize those when adding JWTAuth in service:
+
+    ```csharp
+    services.AddJWTAuth(opt => opt.TokenPath="/api/token");
+    ```
+
+    Actually, there are various options that could be configured in the same way. Refer to [JWTAuthOptions.cs](./src/JWTAuthOptions.cs) for all of them.
