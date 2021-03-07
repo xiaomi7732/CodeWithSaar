@@ -7,7 +7,10 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IApplicationBuilder UseJWTAuth(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<TokenMiddleware>();
+            return builder
+                    .UseMiddleware<TokenMiddleware>()
+                    .UseAuthentication()
+                    .UseAuthorization();
         }
     }
 }
