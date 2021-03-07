@@ -27,7 +27,7 @@ namespace QuickStart.WebAPI
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "QuickStart.WebAPI", Version = "v1" });
             });
             
-            services.AddSingleton<IUserService, UserService>();
+            services.AddSingleton<IUserValidationService, UserService>();
             services.AddJWTAuth();
         }
 
