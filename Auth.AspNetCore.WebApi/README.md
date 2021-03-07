@@ -83,24 +83,50 @@ public class WeatherForecastController : ControllerBase
 ...
 ```
 
-1. To get an access token:
+## Run the example
 
-When run it in Postman by issue a `POST` to the `token/` route:
+* To get an access token:
 
-Use **HTTP Method: POST** with a body:
+  When run it in Postman by issue a `POST` to the `token/` route:
 
-```json
-{
+  Use **HTTP Method: POST** with a body:
+
+  ```json
+  {
     "username": "saar",
     "password": "123"
-}
-```
+  }
+  ```
 
-![Run JWTAuth in Postman](./img/AuthInPostman.png)
+  ![Run JWTAuth in Postman](./img/AuthInPostman.png)
 
-1. To access the protected resource, for example:
+* To access the protected resource, for example:
 
-* Copy the token above.
+  * Copy the token above.
 
-* Use **HTTP Method: GET** on route: `/weatherforecast`, put the token copied to the `Bearer` authentication header:
+  * Use **HTTP Method: GET** on route: `/weatherforecast`, put the token copied to the `Bearer` authentication header:
 
+  ![Get protected resource in Postman](./img/GetWeatherForecast.png)
+
+## Customization
+
+* Use a different endpoint for token:
+
+    By default, the token is exposed on `/token`. It can be customized in [appsettings.json](./example/appsettings.json):
+
+    ```jsonc
+    {
+      ...
+      "JWTAuth": {
+        "TokenPath": "/api/token"
+      }
+    }
+    ```
+
+    You can also customize those when adding JWTAuth in service:
+
+    ```csharp
+    services.AddJWTAuth(opt => opt.TokenPath="/api/token");
+    ```
+
+    Actually, there are various options that could be configured in the same way. Refer to [JWTAuthOptions.cs](./src/JWTAuthOptions.cs) for all of them.
