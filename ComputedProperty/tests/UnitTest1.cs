@@ -15,12 +15,13 @@ namespace ComputedProperty.Tests
         [Fact]
         public void Id2ShouldBeAvoid()
         {
-            Product p =new Product();
-            Guid prodId=p.Id1;
-            Assert.Equal(prodId, p.Id1);
+            Product p = new Product();
+            
+            Guid productIdOne = p.Id1;
+            Assert.Equal(productIdOne, p.Id1);
 
-            prodId = p.Id2;
-            Assert.Equal(prodId, p.Id2); // Normally, we would expect this to pass.
+            Guid productIdTwo = p.Id2;
+            Assert.Equal(productIdTwo, p.Id2); // Normally, we would expect this to pass.
         }
     }
 }

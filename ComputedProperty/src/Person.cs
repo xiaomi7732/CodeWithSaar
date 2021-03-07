@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ComputedProperty
+﻿namespace ComputedProperty
 {
     public class Person
     {
