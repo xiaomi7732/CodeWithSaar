@@ -1,5 +1,9 @@
 # Welcome to Code w/ Saar
 
-## Projects
+## Fundamentals
+
+[Computed Properties](./ComputedProperty)
+
+## Advanced
 
 [JWT Auth for AspNetCore WebAPI](./Auth.AspNetCore.WebApi)
