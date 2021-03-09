@@ -13,8 +13,9 @@
     <Description>
       This is a package to support simple JWT authentication / authorization. Check out the projet site for usage.
     </Description>
-    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>icon.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/xiaomi7732/CodeSaar/tree/main/Auth.AspNetCore.WebApi</PackageProjectUrl>
   </PropertyGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.3" />
@@ -32,8 +33,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="../../LICENSE.txt" Pack="true" PackagePath="LICENSE.txt" />
-    <None Include="../../icon.png" Pack="true" PackagePath="icon.png" />
+    <None Include="../../LICENSE" Pack="true" PackagePath="" />
+    <None Include="../../icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
