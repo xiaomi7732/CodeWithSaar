@@ -61,7 +61,12 @@ namespace JWTAuth.AspNetCore.WebAPI
 
                         string accessToken = BuildAccessToken(jwtAuthOptions, validUser);
                         httpContext.Response.StatusCode = StatusCodes.Status200OK;
-                        string responseBody = JsonSerializer.Serialize(new TokenResponseBody() { Token = accessToken });
+                        string responseBody = JsonSerializer.Serialize(
+                            new TokenResponseBody() { Token = accessToken },
+                            new JsonSerializerOptions()
+                            {
+                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                            });
                         await httpContext.Response.WriteAsync(responseBody).ConfigureAwait(false);
                     }
                     catch (InvalidCastException)
