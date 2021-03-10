@@ -10,6 +10,6 @@ namespace JWTAuth.AspNetCore.WebAPI
         /// </summary>
         /// <param name="requestStringContent">Http request body.</param>
         /// <returns>The UserInfo when the user is valid.</returns>
-        Task<UserInfo> IsValidUserAsync(string requestStringContent);
+        Task<UserInfo> ValidateUserAsync(string requestStringContent);
     }
 }

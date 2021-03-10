@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -25,7 +26,11 @@ namespace JWTAuth.AspNetCore.WebAPI
             this._next = next ?? throw new System.ArgumentNullException(nameof(next));
         }
 
-        public async Task Invoke(HttpContext httpContext, IUserValidationService validationService, IOptions<JWTAuthOptions> options)
+        public async Task Invoke(
+            HttpContext httpContext,
+            IUserValidationService validationService,
+            IServiceProvider serviceProvider,
+            IOptions<JWTAuthOptions> options)
         {
             if (validationService is null)
             {
@@ -42,12 +47,18 @@ namespace JWTAuth.AspNetCore.WebAPI
 
                     try
                     {
-                        UserInfo validUser = await validationService.IsValidUserAsync(jsonContent).ConfigureAwait(false);
+                        UserInfo validUser = await validationService.ValidateUserAsync(jsonContent).ConfigureAwait(false);
                         if (validUser is null)
                         {
                             httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
                             return;
                         }
+                        IRoleValidationService roleValidationService = serviceProvider.GetService<IRoleValidationService>();
+                        if (roleValidationService != null)
+                        {
+                            await roleValidationService.ValidateRolesAsync(validUser).ConfigureAwait(false);
+                        }
+
                         string accessToken = BuildAccessToken(jwtAuthOptions, validUser);
                         httpContext.Response.StatusCode = StatusCodes.Status200OK;
                         string responseBody = JsonSerializer.Serialize(new TokenResponseBody() { Token = accessToken });
@@ -87,6 +98,13 @@ namespace JWTAuth.AspNetCore.WebAPI
             foreach (string role in user.Roles.NullAsEmpty())
             {
                 yield return new Claim(options.RoleClaimType, role);
+            }
+            if (user.AdditionalClaims.NullAsEmpty().Any())
+            {
+                foreach (var additionalClaim in user.AdditionalClaims)
+                {
+                    yield return additionalClaim;
+                }
             }
         }
 
