@@ -16,37 +16,31 @@ Authentication implementation without identity server should still be simple in 
     // User service to handle the Login created before 
     internal class UserService : UserServiceBase<DefaultUserLogin>
     {
-        protected override Task<UserInfo> IsValidUserAsync(DefaultUserLogin login)
+        protected override async Task<UserInfo> IsValidUserAsync(DefaultUserLogin login)
         {
             // This is just an example with hard-coded values.
             // Check with database or other service to making sure the user info is valid.
-            if (!_inMemoryUserDB.TryGetValue(login.Username, out string passwordInDatabase))
+            byte[] passwordHash = await GetHashedPasswordFromDBOrSomewhereElseAsync(login.Username).ConfigureAwait(false);
+            if (passwordHash == null)
             {
-                // No username
+                // Username doesn't match
                 return null;
             }
 
-            if (!string.Equals(login.Password, passwordInDatabase, StringComparison.Ordinal))
+            byte[] loginPasswordHash = GetPasswordHash(login.Password);
+            if (!passwordHash.SequenceEqual(loginPasswordHash))
             {
                 // Password doesn't match
                 return null;
             }
 
             // Create UserInfo
-            return Task.FromResult(new UserInfo()
-            {
-                Name = login.Username,
-            });
+            return new UserInfo(login.Username);
         }
 
-        protected override Task SetRolesAsync(DefaultUserLogin _, UserInfo verifiedUserInfo)
+        public override async Task ValidateRolesAsync(UserInfo userInfo)
         {
-            // This is optional if you don't want to support role based access control, return Task.CompletedTask in that case.
-            // Query the database or other service to get the proper role info.
-            verifiedUserInfo.Roles = _userRoleMapping
-                .Where(mapping => string.Equals(mapping.userName, verifiedUserInfo.Name, StringComparison.OrdinalIgnoreCase))
-                .Select(mapping => mapping.role);
-            return Task.CompletedTask;
+            userInfo.Roles = await GetRolesFromDBOrSomewhereElseAsync(userInfo.Name).ConfigureAwait(false);
         }
     }
     ```

@@ -9,6 +9,11 @@ namespace JWTAuth.AspNetCore.WebAPI
     /// </summary>
     public class UserInfo
     {
+        public UserInfo(string userName = null)
+        {
+            Name = userName;
+        }
+
         public string Name { get; set; }
         public IEnumerable<string> Roles { get; set; }
 
