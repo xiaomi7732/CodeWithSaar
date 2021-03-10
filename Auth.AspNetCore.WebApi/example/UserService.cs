@@ -45,12 +45,12 @@ namespace QuickStart.WebAPI
             });
         }
 
-        protected override Task SetRolesAsync(DefaultUserLogin _, UserInfo verifiedUserInfo)
+        public override Task ValidateRolesAsync(UserInfo userInfo)
         {
             // Query the database or other service to get the proper role info.
             // This is optional if you don't want to support role based access control, return Task.CompletedTask in that case.
-            verifiedUserInfo.Roles = _userRoleMapping
-                .Where(mapping => string.Equals(mapping.userName, verifiedUserInfo.Name, StringComparison.OrdinalIgnoreCase))
+            userInfo.Roles = _userRoleMapping
+                .Where(mapping => string.Equals(mapping.userName, userInfo.Name, StringComparison.OrdinalIgnoreCase))
                 .Select(mapping => mapping.role);
             return Task.CompletedTask;
         }
