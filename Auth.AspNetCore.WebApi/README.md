@@ -124,3 +124,30 @@ public class WeatherForecastController : ControllerBase
     ```
 
     Actually, there are various options that could be configured in the same way. Refer to [JWTAuthOptions.cs](./src/JWTAuthOptions.cs) for all of them.
+
+* Use a different user credential (other than username/password)
+
+  `DefaultUserLogin` is provided in the convenience for login requests that uses a username and a password. It could be customized:
+
+  * Create a model class:
+
+  ```csharp
+  public class MyUserLogin
+  {
+      public string SharedKey {get; set;}
+  }
+  ```
+
+  * Update the `UserService` class above to take `MyUserLogin`:
+
+  ```csharp
+  internal class UserService : UserServiceBase<MyUserLogin>
+  ```
+
+  * Making sure the client is POST with a proper body for authentication:
+
+  ```json
+  {
+    "sharedKey": "what-ever-your-secret-is-that-will-pass-user-validation...",
+  }
+  ```
