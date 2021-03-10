@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -9,21 +8,15 @@ namespace JWTAuth.AspNetCore.WebAPI
     /// A user service extension point.
     /// </summary>
     /// <typeparam name="T">Type for user login that deserialized from the login request.</typeparam>
-    public abstract class UserServiceBase<T> : IUserValidationService
+    public abstract class UserServiceBase<T> : IUserValidationService, IRoleValidationService
     {
-        public Task<IEnumerable<string>> GetUserRoles(UserInfo user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<UserInfo> IsValidUserAsync(string requestStringContent)
+        public async Task<UserInfo> ValidateUserAsync(string requestStringContent)
         {
             try
             {
                 T login = await DeserializeUserLoginAsync(requestStringContent).ConfigureAwait(false);
-                UserInfo verifiedUser = await IsValidUserAsync(login).ConfigureAwait(false);
-                await SetRolesAsync(login, verifiedUser).ConfigureAwait(false);
 
+                UserInfo verifiedUser = await IsValidUserAsync(login).ConfigureAwait(false);
                 return verifiedUser;
             }
             catch (System.Text.Json.JsonException)
@@ -32,19 +25,19 @@ namespace JWTAuth.AspNetCore.WebAPI
             }
         }
 
-
-        protected virtual Task<T> DeserializeUserLoginAsync(string jsonText)
-            => Task.FromResult(JsonSerializer.Deserialize<T>(jsonText, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }));
+        /// <summary>
+        /// Updates the user info with role information.
+        /// </summary>
+        /// <param name="validUser">A valid UserInfo instance.</param>
+        public abstract Task ValidateRolesAsync(UserInfo validUser);
 
         /// <summary>
         /// Verify if the user is valid.
         /// </summary>
-        /// <returns>Retruns UserInfo when it is. Otherwise, return null.</returns>
+        /// <returns>Retruns a new UserInfo when it is. Otherwise, return null.</returns>
         protected abstract Task<UserInfo> IsValidUserAsync(T login);
-        
-        /// <summary>
-        /// Set roles info onto the verifiedUserInfo.
-        /// </summary>
-        protected abstract Task SetRolesAsync(T login, UserInfo verifiedUserInfo);
+
+        protected virtual Task<T> DeserializeUserLoginAsync(string jsonText)
+            => Task.FromResult(JsonSerializer.Deserialize<T>(jsonText, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }));
     }
 }

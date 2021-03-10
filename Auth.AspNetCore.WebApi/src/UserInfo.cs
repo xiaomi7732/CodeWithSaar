@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 
 namespace JWTAuth.AspNetCore.WebAPI
 {
@@ -7,7 +9,17 @@ namespace JWTAuth.AspNetCore.WebAPI
     /// </summary>
     public class UserInfo
     {
+        public UserInfo(string userName = null)
+        {
+            Name = userName;
+        }
+
         public string Name { get; set; }
         public IEnumerable<string> Roles { get; set; }
+
+        public IEnumerable<Claim> AdditionalClaims { get; } = Enumerable.Empty<Claim>();
+
+        public void AppendAdditionalClaims(params Claim[] claims)
+            => AdditionalClaims.Union(claims);
     }
 }
