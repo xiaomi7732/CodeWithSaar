@@ -51,8 +51,10 @@ Authentication implementation without identity server should still be simple in 
     public void ConfigureServices(IServiceCollection services)
     {
         ...
-        // Register the user service created
+        // Add service to support User authentication / authorization.
         services.AddSingleton<IUserValidationService, UserService>();
+        // Add service to support Role authentication / authorization.
+        services.AddSingleton<IRoleValidationService, UserService>();
         // Add service to support JWT authentication
         services.AddJWTAuth();
     }
