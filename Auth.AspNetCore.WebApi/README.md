@@ -51,8 +51,10 @@ Authentication implementation without identity server should still be simple in 
     public void ConfigureServices(IServiceCollection services)
     {
         ...
-        // Register the user service created
+        // Add service to support User authentication / authorization.
         services.AddSingleton<IUserValidationService, UserService>();
+        // Add service to support Role authentication / authorization.
+        services.AddSingleton<IRoleValidationService, UserService>();
         // Add service to support JWT authentication
         services.AddJWTAuth();
     }
@@ -124,6 +126,8 @@ public class WeatherForecastController : ControllerBase
     ```
 
     Actually, there are various options that could be configured in the same way. Refer to [JWTAuthOptions.cs](./src/JWTAuthOptions.cs) for all of them.
+
+    _Tips: Always setup `IssuerSigningSecret` in Production system to have a stable signing key. It is critical when you scale out your service._
 
 * Use a different user credential (other than username/password)
 

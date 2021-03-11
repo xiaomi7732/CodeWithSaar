@@ -3,7 +3,7 @@ using JWTAuth.AspNetCore.WebAPI;
 
 namespace AuthExample.ConsumeNuGet
 {
-    internal class UserService : UserServiceBase<DefaultUserLogin>, IUserValidationService
+    internal class UserService : UserServiceBase<DefaultUserLogin>
     {
         protected override Task<UserInfo> IsValidUserAsync(DefaultUserLogin login)
         {
@@ -17,8 +17,11 @@ namespace AuthExample.ConsumeNuGet
             return Task.FromResult((UserInfo)null);
         }
 
-        protected override Task SetRolesAsync(DefaultUserLogin login, UserInfo verifiedUserInfo)
+        public override Task ValidateRolesAsync(UserInfo validUser)
         {
+            validUser.Roles = new []{
+                "User"
+            };
             return Task.CompletedTask;
         }
     }
