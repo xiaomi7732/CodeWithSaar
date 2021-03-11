@@ -125,6 +125,8 @@ public class WeatherForecastController : ControllerBase
 
     Actually, there are various options that could be configured in the same way. Refer to [JWTAuthOptions.cs](./src/JWTAuthOptions.cs) for all of them.
 
+    _Tips: Always setup `IssuerSigningSecret` in Production system to have a stable signing key. It is critical when you scale out your service._
+
 * Use a different user credential (other than username/password)
 
   `DefaultUserLogin` is provided in the convenience for login requests that uses a username and a password. It could be customized:
