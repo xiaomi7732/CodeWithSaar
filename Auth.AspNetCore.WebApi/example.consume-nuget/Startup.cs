@@ -25,8 +25,12 @@ namespace AuthExample.ConsumeNuGet
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AuthExample.ConsumeNuGet", Version = "v1" });
             });
+            // To support User authorization
             services.AddSingleton<IUserValidationService, UserService>();
-            services.AddJWTAuth(opt => opt.Audience="TestAudience");
+            // To support Role authorization
+            services.AddSingleton<IRoleValidationService, UserService>();
+            // Adding services to suppport JWT authentication.
+            services.AddJWTAuth();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

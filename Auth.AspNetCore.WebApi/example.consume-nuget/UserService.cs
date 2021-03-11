@@ -19,6 +19,9 @@ namespace AuthExample.ConsumeNuGet
 
         public override Task ValidateRolesAsync(UserInfo validUser)
         {
+            validUser.Roles = new []{
+                "User"
+            };
             return Task.CompletedTask;
         }
     }
