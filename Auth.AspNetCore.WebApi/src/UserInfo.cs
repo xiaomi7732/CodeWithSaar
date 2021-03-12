@@ -17,9 +17,9 @@ namespace JWTAuth.AspNetCore.WebAPI
         public string Name { get; set; }
         public IEnumerable<string> Roles { get; set; }
 
-        public IEnumerable<Claim> AdditionalClaims { get; } = Enumerable.Empty<Claim>();
+        public IEnumerable<Claim> AdditionalClaims { get; private set; } = Enumerable.Empty<Claim>();
 
         public void AppendAdditionalClaims(params Claim[] claims)
-            => AdditionalClaims.Union(claims);
+            => AdditionalClaims = AdditionalClaims.Union(claims);
     }
 }
