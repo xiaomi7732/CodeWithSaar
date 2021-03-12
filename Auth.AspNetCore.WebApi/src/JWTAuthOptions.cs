@@ -1,5 +1,7 @@
 using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -18,5 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public TimeSpan TokenLifeSpan { get; set; } = TimeSpan.FromHours(4);
 
         public PathString TokenPath { get; set; } = "/token";
+
+        public Func<MessageReceivedContext, Task> OnJWTAuthenticationMessageReceived { get; set; }
     }
 }

@@ -58,6 +58,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     opt.TokenValidationParameters.RoleClaimType = jwtAuthOptions.RoleClaimType;
                 }
+
+                if (jwtAuthOptions.OnJWTAuthenticationMessageReceived != null)
+                {
+                    opt.Events = new JwtBearerEvents()
+                    {
+                        OnMessageReceived = jwtAuthOptions.OnJWTAuthenticationMessageReceived,
+                    };
+                }
             });
 
             return services;
