@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using JWTAuth.AspNetCore.WebAPI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,7 +33,25 @@ namespace QuickStart.WebAPI
             // Add service to support Role authentication / authorization.
             services.AddSingleton<IRoleValidationService, UserService>();
             // Add services to support JWT authentication / authorization.
-            services.AddJWTAuth();
+            services.AddJWTAuth(opt =>
+            {
+                // To support SignalR authentication
+                opt.OnJWTAuthenticationMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+
+                    // If the request is for our hub...
+                    var path = context.HttpContext.Request.Path;
+                    if (!string.IsNullOrEmpty(accessToken) &&
+                        // Assuming the folling hub route:
+                        (path.StartsWithSegments("/chathub")))
+                    {
+                        // Read the token out of the query string
+                        context.Token = accessToken;
+                    }
+                    return Task.CompletedTask;
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
