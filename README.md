@@ -8,4 +8,4 @@ This is the codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.
 
 ## Advanced
 
-[JWT Auth for AspNetCore WebAPI](./Auth.AspNetCore.WebApi/README.md)
+[JWT Auth for AspNetCore WebAPI](./Auth.AspNetCore.WebApi/README.md) | [NuGet package](https://www.nuget.org/packages/CodeWithSaar.JWTAuthentication.WebAPI)
