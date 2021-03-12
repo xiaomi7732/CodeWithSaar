@@ -5,6 +5,6 @@ namespace JWTAuth.AspNetCore.WebAPI
 {
     public interface IRoleValidationService
     {
-        Task ValidateRolesAsync(UserInfo validUser);
+        Task<bool> ValidateRolesAsync(UserInfo validUser);
     }
 }

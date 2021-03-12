@@ -28,57 +28,82 @@ namespace JWTAuth.AspNetCore.WebAPI
 
         public async Task Invoke(
             HttpContext httpContext,
-            IUserValidationService validationService,
+            IUserValidationService userValidationService,
             IServiceProvider serviceProvider,
             IOptions<JWTAuthOptions> options)
         {
-            if (validationService is null)
+            if (httpContext is null)
+            {
+                throw new ArgumentNullException(nameof(httpContext));
+            }
+
+            if (userValidationService is null)
             {
                 throw new InvalidOperationException("No IUserValidationService registered.");
             }
 
+            if (serviceProvider is null)
+            {
+                throw new ArgumentNullException(nameof(serviceProvider));
+            }
+
             JWTAuthOptions jwtAuthOptions = options?.Value ?? new JWTAuthOptions();
             PathString requestPath = httpContext.Request.Path;
-            if (IsTokenPath(httpContext, jwtAuthOptions.TokenPath))
-            {
-                using (StreamReader sr = new StreamReader(httpContext.Request.Body))
-                {
-                    string jsonContent = await sr.ReadToEndAsync().ConfigureAwait(false);
-
-                    try
-                    {
-                        UserInfo validUser = await validationService.ValidateUserAsync(jsonContent).ConfigureAwait(false);
-                        if (validUser is null)
-                        {
-                            httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                            return;
-                        }
-                        IRoleValidationService roleValidationService = serviceProvider.GetService<IRoleValidationService>();
-                        if (roleValidationService != null)
-                        {
-                            await roleValidationService.ValidateRolesAsync(validUser).ConfigureAwait(false);
-                        }
-
-                        string accessToken = BuildAccessToken(jwtAuthOptions, validUser);
-                        httpContext.Response.StatusCode = StatusCodes.Status200OK;
-                        string responseBody = JsonSerializer.Serialize(
-                            new TokenResponseBody() { Token = accessToken },
-                            new JsonSerializerOptions()
-                            {
-                                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                            });
-                        await httpContext.Response.WriteAsync(responseBody).ConfigureAwait(false);
-                    }
-                    catch (InvalidCastException)
-                    {
-                        await httpContext.Response.WriteAsync("Parsing Login info failed. Is it in valid json format?").ConfigureAwait(false);
-                    }
-                }
-            }
-            else
+            if (!IsTokenPath(httpContext, jwtAuthOptions.TokenPath))
             {
                 await _next.Invoke(httpContext);
+                return;
             }
+
+            using StreamReader sr = new StreamReader(httpContext.Request.Body);
+            string jsonContent = await sr.ReadToEndAsync().ConfigureAwait(false);
+
+            try
+            {
+                UserInfo validUser = await userValidationService.ValidateUserAsync(jsonContent).ConfigureAwait(false);
+                if (validUser is null)
+                {
+                    WriteUnauthorized(httpContext);
+                    return; // Do NOT pass user validation.
+                }
+
+                if (!await ValidateRoleInfo(validUser, serviceProvider))
+                {
+                    WriteUnauthorized(httpContext);
+                    return; // Do NOT pass role validation.
+                }
+
+                string accessToken = BuildAccessToken(jwtAuthOptions, validUser);
+                httpContext.Response.StatusCode = StatusCodes.Status200OK;
+                string responseBody = JsonSerializer.Serialize(
+                    new TokenResponseBody() { Token = accessToken },
+                    new JsonSerializerOptions()
+                    {
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    });
+                await httpContext.Response.WriteAsync(responseBody).ConfigureAwait(false);
+            }
+            catch (InvalidCastException)
+            {
+                await httpContext.Response.WriteAsync("Parsing Login info failed. Is it in valid json format?").ConfigureAwait(false);
+                return;
+            }
+        }
+
+        private void WriteUnauthorized(HttpContext httpContext)
+        {
+            httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        }
+
+        private Task<bool> ValidateRoleInfo(UserInfo validUser, IServiceProvider serviceProvider)
+        {
+            IRoleValidationService roleValidationService = serviceProvider.GetService<IRoleValidationService>();
+            if (roleValidationService == null)
+            {
+                // No role validation service exist, treat role validation as a success.
+                Task.FromResult(true);
+            }
+            return roleValidationService.ValidateRolesAsync(validUser);
         }
 
         private string BuildAccessToken(JWTAuthOptions jwtAuthOptions, UserInfo userInfo)

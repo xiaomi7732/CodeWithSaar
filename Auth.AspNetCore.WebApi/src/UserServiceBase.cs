@@ -9,6 +9,7 @@ namespace JWTAuth.AspNetCore.WebAPI
     /// </summary>
     /// <typeparam name="T">Type for user login that deserialized from the login request.</typeparam>
     public abstract class UserServiceBase<T> : IUserValidationService, IRoleValidationService
+        where T : class
     {
         public async Task<UserInfo> ValidateUserAsync(string requestStringContent)
         {
@@ -26,10 +27,15 @@ namespace JWTAuth.AspNetCore.WebAPI
         }
 
         /// <summary>
-        /// Updates the user info with role information.
+        /// Check the roles based on the user info. Updates the user info with role information.
         /// </summary>
         /// <param name="validUser">A valid UserInfo instance.</param>
-        public abstract Task ValidateRolesAsync(UserInfo validUser);
+        /// <returns>True when role validation succeeded. Otherwise, false.</returns>
+        public virtual Task<bool> ValidateRolesAsync(UserInfo validUser)
+        {
+            // No role info and verify successful.
+            return Task.FromResult(true);
+        }
 
         /// <summary>
         /// Verify if the user is valid.

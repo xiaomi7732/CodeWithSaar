@@ -43,12 +43,14 @@ namespace QuickStart.WebAPI
             }
 
             // Create UserInfo
-            return new UserInfo(login.Username);
+            return new UserInfo(login.Username, login);
         }
 
-        public override async Task ValidateRolesAsync(UserInfo userInfo)
+        public override async Task<bool> ValidateRolesAsync(UserInfo userInfo)
         {
             userInfo.Roles = await GetRolesFromDBOrSomewhereElseAsync(userInfo.Name).ConfigureAwait(false);
+            // Business logic in example: A user have to have at least one role.
+            return userInfo.Roles != null && userInfo.Roles.Any();
         }
 
         /// <summary>
