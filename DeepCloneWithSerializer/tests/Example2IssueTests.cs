@@ -9,7 +9,7 @@ namespace DeepCloneWithSerializerTests
         public void RevealIssue()
         {
             Assert.Equal(0.8, Configuration.Default.CPUTrigger.Rate);
-            
+
             // Start with a default configuration
             Configuration config = Configuration.Default;
             // Needs to update the rate under some condition;
@@ -20,11 +20,11 @@ namespace DeepCloneWithSerializerTests
             Assert.False(Configuration.Default.CPUTrigger.Rate == 0.8);
         }
 
-                [Fact]
+        [Fact]
         public void ResolveIssue()
         {
             Assert.Equal(0.8, Configuration.GoodDefault.CPUTrigger.Rate);
-            
+
             // Start with a default configuration
             Configuration config = Configuration.GoodDefault;
             // Needs to update the rate under some condition;
