@@ -5,6 +5,7 @@ This is the codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.
 ## Fundamentals
 
 [Computed Properties](./ComputedProperty)
+[Deep Clone with Serializer](./DeepCloneWithSerializer/README.md)
 
 ## Advanced
 
