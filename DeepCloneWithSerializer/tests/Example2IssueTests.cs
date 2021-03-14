@@ -23,6 +23,9 @@ namespace DeepCloneWithSerializerTests
         [Fact]
         public void ResolveIssue()
         {
+            // Set CPU rate back if changed.
+            Configuration.Default.CPUTrigger.Rate = 0.8;
+            // Verify the reset is done.
             Assert.Equal(0.8, Configuration.GoodDefault.CPUTrigger.Rate);
 
             // Start with a default configuration
