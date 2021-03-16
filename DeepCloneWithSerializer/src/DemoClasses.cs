@@ -1,22 +1,22 @@
 ﻿// Usually: One class one file.
-using System;
+// Refer to MS Doc: https://docs.microsoft.com/en-us/dotnet/api/system.object.memberwiseclone?view=net-5.0
 using System.Text.Json;
 
 namespace DeepCloneWithSerializer
 {
     public class IdInfo
     {
-        public Guid IdNumber { get; set; }
+        public int IdNumber { get; set; }
     }
 
-    public class Product
+    public class Person
     {
         public IdInfo Id { get; set; }
 
-        public Product ShallowClone()
-            => (Product)this.MemberwiseClone();
+        public Person ShallowClone()
+            => (Person)this.MemberwiseClone();
 
-        public Product DeepClone()
-            => JsonSerializer.Deserialize<Product>(JsonSerializer.Serialize(this, this.GetType()));
+        public Person DeepClone()
+            => JsonSerializer.Deserialize<Person>(JsonSerializer.Serialize(this, this.GetType()));
     }
 }
