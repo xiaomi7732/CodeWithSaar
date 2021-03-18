@@ -6,9 +6,9 @@ This is a simple warper around named-pipe for **local**, **two-way**, **inter-pr
 
 * **src/DuplexNamedPipeService** contains the implementations.
 * **src/Example.Server** spins up a named pipe server;
-  * [Program.cs](./src/Example.Server/Program.cs)
+  * [Program.cs](./examples/Example.Server/Program.cs)
 * **src/Example.Client** spins up a named pipe client;
-  * [Program.cs](./src/Example.Client/Program.cs)
+  * [Program.cs](./examples/Example.Client/Program.cs)
 There are string transmitting from either side; there are serialized object transfer too.
 
 ## To run the example
@@ -36,6 +36,20 @@ The client will connect to the server and unlock the flow.
 
 * Have a clear, designed architecture to avoid Server-Client confusion;
   * One process will either be a server or a client, won't be both.
+
+## Folder Structure
+
+* [src/DuplexNamedPipeService](./src/DuplexNamedPipeService)
+  * Primary service implemenation.
+
+* [examples/Example.Client](./examples/Example.Client)
+  * Example for how to use it as a client.
+
+* [examples/Example.Server](./examples/Example.Server)
+  * Example for how to use it as a server.
+
+* [examples/DataContracts](./examples/DataContracts)
+  * Data object that used in the example for trasmitting.
 
 ## Architecture
 
