@@ -11,7 +11,41 @@ This is a simple warper around named-pipe for **local**, **two-way**, **inter-pr
   * [Program.cs](./examples/Example.Client/Program.cs)
 There are string transmitting from either side; there are serialized object transfer too.
 
-## To run the example
+## Getting Started
+
+Refer to [Program.cs](examples/GetStartedConsole/Program.cs) for the complete code:
+
+* Start a server:
+
+  ```csharp
+  // Create the server service
+  INamedPipeServerService namedPipeServer = new DuplexNamedPipeService();
+  // Wait for connection
+  await namedPipeServer.WaitForConnectionAsync(pipeName, cancellationToken: default).ConfigureAwait(false);
+  ```
+
+* Start a client:
+
+  ```csharp
+  // Create a client service
+  INamedPipeClientService namedPipeClient = new DuplexNamedPipeService();
+  // Try to connect to the server using the pipeName
+  await namedPipeClient.ConnectAsync(pipeName, cancellationToken: default).ConfigureAwait(false);
+  ```
+
+* Sending a message:
+
+  ```csharp
+  await namedPipeServer.SendMessageAsync("Hello from server!").ConfigureAwait(false);
+  ```
+
+* Receiving a message:
+
+  ```csharp
+  string messageReceived =await namedPipeClient.ReadMessageAsync().ConfigureAwait(false);
+  ```
+
+## To run the examples in multiple processes
 
 Start the server in a console:
 
