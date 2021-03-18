@@ -17,13 +17,20 @@ namespace CodeWithSaar.IPC
         private readonly ILogger _logger;
         private NamedPipeRole _currentMode = NamedPipeRole.NotSpecified;
 
-        public DuplexNamedPipeService(IOptions<NamedPipeOptions> namedPipeOptions, ILogger<DuplexNamedPipeService> logger)
+        public DuplexNamedPipeService(NamedPipeOptions namedPipeOptions = null, ILogger<DuplexNamedPipeService> logger = null)
         {
-            _options = namedPipeOptions?.Value ?? throw new ArgumentNullException(nameof(namedPipeOptions));
+            _options = namedPipeOptions ?? new NamedPipeOptions();
             _logger = logger;
         }
 
-        public async Task WaitForConnectionAsync(CancellationToken cancellationToken)
+        public DuplexNamedPipeService(IOptions<NamedPipeOptions> namedPipeOptions, ILogger<DuplexNamedPipeService> logger = null)
+            : this(namedPipeOptions?.Value, logger)
+        {
+        }
+
+        public string PipeName { get; private set; }
+
+        public async Task WaitForConnectionAsync(string pipeName, CancellationToken cancellationToken)
         {
             try
             {
@@ -43,8 +50,9 @@ namespace CodeWithSaar.IPC
                         break;
                 }
 
+                PipeName = pipeName;
                 _currentMode = NamedPipeRole.Server;
-                NamedPipeServerStream serverStream = new NamedPipeServerStream(_options.PipeName, PipeDirection.InOut, maxNumberOfServerInstances: 1, transmissionMode: PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                NamedPipeServerStream serverStream = new NamedPipeServerStream(pipeName, PipeDirection.InOut, maxNumberOfServerInstances: 1, transmissionMode: PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
                 _pipeStream = serverStream;
                 await serverStream.WaitForConnectionAsync(cancellationToken).ConfigureAwait(false);
             }
@@ -55,7 +63,7 @@ namespace CodeWithSaar.IPC
         }
 
 
-        public async Task ConnectAsync(CancellationToken cancellationToken)
+        public async Task ConnectAsync(string pipeName, CancellationToken cancellationToken)
         {
             try
             {
@@ -76,7 +84,9 @@ namespace CodeWithSaar.IPC
                 }
 
                 _currentMode = NamedPipeRole.Client;
-                NamedPipeClientStream clientStream = new NamedPipeClientStream(serverName: ".", _options.PipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
+                PipeName = pipeName;
+
+                NamedPipeClientStream clientStream = new NamedPipeClientStream(serverName: ".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
                 _pipeStream = clientStream;
 
                 await clientStream.ConnectAsync(cancellationToken).ConfigureAwait(false);

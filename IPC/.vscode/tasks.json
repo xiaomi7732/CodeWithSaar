@@ -24,6 +24,26 @@
             }
         },
         {
+            "label": "build get-started example",
+            "command": "dotnet",
+            "type": "shell",
+            "args": [
+                "build",
+                // Ask dotnet build to generate full paths for file names.
+                "/property:GenerateFullPaths=true",
+                // Do not generate summary otherwise it leads to duplicate errors in Problems panel
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile",
+            "options": {
+                "cwd": "${workspaceFolder}/examples/GetStartedConsole"
+            }
+        },
+        {
             "label": "build server example",
             "command": "dotnet",
             "type": "shell",
@@ -40,7 +60,7 @@
             },
             "problemMatcher": "$msCompile",
             "options": {
-                "cwd": "${workspaceFolder}/src/Example.Server"
+                "cwd": "${workspaceFolder}/examples/Example.Server"
             }
         },
         {
@@ -60,7 +80,7 @@
             },
             "problemMatcher": "$msCompile",
             "options": {
-                "cwd": "${workspaceFolder}/src/Example.Client"
+                "cwd": "${workspaceFolder}/examples/Example.Client"
             }
         },
         {
@@ -80,7 +100,7 @@
             },
             "problemMatcher": "$msCompile",
             "options": {
-                "cwd": "${workspaceFolder}/src/Example.Client"
+                "cwd": "${workspaceFolder}/examples/Example.Client"
             }
         }
     ]

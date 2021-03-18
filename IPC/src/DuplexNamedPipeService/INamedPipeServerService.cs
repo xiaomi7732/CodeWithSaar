@@ -6,6 +6,6 @@ namespace CodeWithSaar.IPC
 {
     public interface INamedPipeServerService : INamedPipeOperations, IDisposable
     {
-        Task WaitForConnectionAsync(CancellationToken cancellationToken);
+        Task WaitForConnectionAsync(string pipeName, CancellationToken cancellationToken);
     }
 }
