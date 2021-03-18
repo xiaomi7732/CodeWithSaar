@@ -11,18 +11,20 @@ namespace CodeWithSaar.Example.Server
     {
         static async Task Main(string[] args)
         {
+            // This is preagreed pipename between the server and the client;
+            const string PipeName = "hello_namedpipe_service";
             NamedPipeOptions namedPipeOptions = new NamedPipeOptions()
             {
-                PipeName = "hello_namedpipe_service",
                 ConnectionTimeout = TimeSpan.FromSeconds(30),
             };
+
             IOptions<NamedPipeOptions> options = Options.Create<NamedPipeOptions>(namedPipeOptions);
             ILogger<DuplexNamedPipeService> logger = LoggerFactory.Create(config => { }).CreateLogger<DuplexNamedPipeService>();
             using (INamedPipeServerService namedPipeServer = new DuplexNamedPipeService(options, logger))
             {
                 // Send messages back and forth
                 Console.WriteLine("[SERVER] Waiting for connection.");
-                await namedPipeServer.WaitForConnectionAsync(default).ConfigureAwait(false);
+                await namedPipeServer.WaitForConnectionAsync(PipeName, cancellationToken: default).ConfigureAwait(false);
                 Console.WriteLine("[SERVER] Connected.");
 
                 Console.WriteLine("[SERVER] Sending greeting...");
