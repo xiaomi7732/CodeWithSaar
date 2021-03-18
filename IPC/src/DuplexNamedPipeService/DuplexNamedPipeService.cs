@@ -14,17 +14,19 @@ namespace CodeWithSaar.IPC
         private SemaphoreSlim _threadSafeLock = new SemaphoreSlim(1, 1);
         private PipeStream _pipeStream;
         private readonly NamedPipeOptions _options;
+        private readonly ISerializationProvider _serializer;
         private readonly ILogger _logger;
         private NamedPipeRole _currentMode = NamedPipeRole.NotSpecified;
 
-        public DuplexNamedPipeService(NamedPipeOptions namedPipeOptions = null, ILogger<DuplexNamedPipeService> logger = null)
+        public DuplexNamedPipeService(NamedPipeOptions namedPipeOptions = null, ISerializationProvider serializer = null, ILogger<DuplexNamedPipeService> logger = null)
         {
             _options = namedPipeOptions ?? new NamedPipeOptions();
+            _serializer = serializer ?? new DefaultSerializationProvider();
             _logger = logger;
         }
 
-        public DuplexNamedPipeService(IOptions<NamedPipeOptions> namedPipeOptions, ILogger<DuplexNamedPipeService> logger = null)
-            : this(namedPipeOptions?.Value, logger)
+        public DuplexNamedPipeService(IOptions<NamedPipeOptions> namedPipeOptions, ISerializationProvider serializer = null, ILogger<DuplexNamedPipeService> logger = null)
+            : this(namedPipeOptions?.Value, serializer, logger)
         {
         }
 
@@ -116,6 +118,25 @@ namespace CodeWithSaar.IPC
             {
                 await writer.WriteLineAsync(message).ConfigureAwait(false);
             }
+        }
+
+        public Task SendAsync<T>(T payload)
+        {
+            if (_serializer.TrySerialize(payload, out string serialized))
+            {
+                return SendMessageAsync(serialized);
+            }
+            throw new NotSupportedException("Unsupported payload for sending over named pipeline.");
+        }
+
+        public async Task<T> ReadAsync<T>()
+        {
+            string serialized = await ReadMessageAsync().ConfigureAwait(false);
+            if (_serializer.TryDeserialze<T>(serialized, out T target))
+            {
+                return target;
+            }
+            throw new NotSupportedException("Failed to fetch the object over the named pipeline.");
         }
 
         private void VerifyModeIsSpecified()

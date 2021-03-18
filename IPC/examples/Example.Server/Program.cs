@@ -20,7 +20,7 @@ namespace CodeWithSaar.Example.Server
 
             IOptions<NamedPipeOptions> options = Options.Create<NamedPipeOptions>(namedPipeOptions);
             ILogger<DuplexNamedPipeService> logger = LoggerFactory.Create(config => { }).CreateLogger<DuplexNamedPipeService>();
-            using (INamedPipeServerService namedPipeServer = new DuplexNamedPipeService(options, logger))
+            using (INamedPipeServerService namedPipeServer = new DuplexNamedPipeService(options, serializer: default, logger))
             {
                 // Send messages back and forth
                 Console.WriteLine("[SERVER] Waiting for connection.");
