@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\DuplexNamedPipeService\DuplexNamedPipeService.csproj" />
+    <ProjectReference Include="..\..\src\DuplexNamedPipeService\DuplexNamedPipeService.csproj" />
     <ProjectReference Include="..\DataContracts\DataContracts.csproj" />
   </ItemGroup>
 

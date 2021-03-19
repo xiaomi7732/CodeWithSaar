@@ -9,21 +9,25 @@ using Microsoft.Extensions.Options;
 
 namespace CodeWithSaar.IPC
 {
-    public sealed class DuplexNamedPipeService : INamedPipeServerService, INamedPipeClientService, IDisposable
+    internal class DuplexNamedPipeService : INamedPipeServerService, INamedPipeClientService, IDisposable
     {
         private SemaphoreSlim _threadSafeLock = new SemaphoreSlim(1, 1);
         private PipeStream _pipeStream;
         private readonly NamedPipeOptions _options;
+        private readonly ISerializationProvider _serializer;
         private readonly ILogger _logger;
         private NamedPipeRole _currentMode = NamedPipeRole.NotSpecified;
 
-        public DuplexNamedPipeService(IOptions<NamedPipeOptions> namedPipeOptions, ILogger<DuplexNamedPipeService> logger)
+        public string PipeName { get; private set; }
+
+        internal DuplexNamedPipeService(IOptions<NamedPipeOptions> namedPipeOptions, ISerializationProvider serializer = null, ILogger<DuplexNamedPipeService> logger = null)
         {
-            _options = namedPipeOptions?.Value ?? throw new ArgumentNullException(nameof(namedPipeOptions));
+            _options = namedPipeOptions?.Value ?? new NamedPipeOptions();
+            _serializer = serializer ?? new DefaultSerializationProvider();
             _logger = logger;
         }
 
-        public async Task WaitForConnectionAsync(CancellationToken cancellationToken)
+        public async Task WaitForConnectionAsync(string pipeName, CancellationToken cancellationToken)
         {
             try
             {
@@ -43,8 +47,9 @@ namespace CodeWithSaar.IPC
                         break;
                 }
 
+                PipeName = pipeName;
                 _currentMode = NamedPipeRole.Server;
-                NamedPipeServerStream serverStream = new NamedPipeServerStream(_options.PipeName, PipeDirection.InOut, maxNumberOfServerInstances: 1, transmissionMode: PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                NamedPipeServerStream serverStream = new NamedPipeServerStream(pipeName, PipeDirection.InOut, maxNumberOfServerInstances: 1, transmissionMode: PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
                 _pipeStream = serverStream;
                 await serverStream.WaitForConnectionAsync(cancellationToken).ConfigureAwait(false);
             }
@@ -55,7 +60,7 @@ namespace CodeWithSaar.IPC
         }
 
 
-        public async Task ConnectAsync(CancellationToken cancellationToken)
+        public async Task ConnectAsync(string pipeName, CancellationToken cancellationToken)
         {
             try
             {
@@ -76,7 +81,9 @@ namespace CodeWithSaar.IPC
                 }
 
                 _currentMode = NamedPipeRole.Client;
-                NamedPipeClientStream clientStream = new NamedPipeClientStream(serverName: ".", _options.PipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
+                PipeName = pipeName;
+
+                NamedPipeClientStream clientStream = new NamedPipeClientStream(serverName: ".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
                 _pipeStream = clientStream;
 
                 await clientStream.ConnectAsync(cancellationToken).ConfigureAwait(false);
@@ -106,6 +113,25 @@ namespace CodeWithSaar.IPC
             {
                 await writer.WriteLineAsync(message).ConfigureAwait(false);
             }
+        }
+
+        public Task SendAsync<T>(T payload)
+        {
+            if (_serializer.TrySerialize(payload, out string serialized))
+            {
+                return SendMessageAsync(serialized);
+            }
+            throw new NotSupportedException("Unsupported payload for sending over named pipeline.");
+        }
+
+        public async Task<T> ReadAsync<T>()
+        {
+            string serialized = await ReadMessageAsync().ConfigureAwait(false);
+            if (_serializer.TryDeserialize<T>(serialized, out T target))
+            {
+                return target;
+            }
+            throw new NotSupportedException("Failed to fetch the object over the named pipeline.");
         }
 
         private void VerifyModeIsSpecified()
