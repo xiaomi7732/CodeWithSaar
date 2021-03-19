@@ -6,10 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- TODO: The current code requires NUGET package 1.0.0-beta2 or above to work -->
-    <!-- <PackageReference Include="CodeWithSaar.IPC" Version="1.0.0-beta1" /> -->
-    <ProjectReference Include="..\..\..\src\DuplexNamedPipeService\DuplexNamedPipeService.csproj" />
-    <!-- ~ -->
+    <PackageReference Include="CodeWithSaar.IPC" Version="1.0.0-beta2" />
+    <!-- Use this reference for local debugging: -->
+    <!-- <ProjectReference Include="..\..\..\src\DuplexNamedPipeService\DuplexNamedPipeService.csproj" /> -->
   </ItemGroup>
 
   <ItemGroup>
