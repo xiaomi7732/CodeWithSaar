@@ -13,38 +13,45 @@ namespace UseWithDI
         static async Task Main(string[] args)
         {
             // Start DI container
-            IServiceCollection serviceCollection = new ServiceCollection();
-            IDictionary<string, string> initConfigure = new Dictionary<string, string>()
-            {
-                ["NamedPipe:ConnectionTimeout"] = "00:05:00"
-            };
 
-            IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(initConfigure).Build();
-
-            serviceCollection.AddSingleton<IConfiguration>(configuration);
-            serviceCollection.AddLogging(builder =>
-            {
-                builder.AddConsole();
-            });
+            IServiceCollection serviceCollection = PrepareServiceCollection();
 
 
             // Usually, only one of the following will be called.
-            // Adding NamedPipe server
-            serviceCollection.AddNamedPipeServer();
-            // Adding NamedPipe client
+            // Add NamedPipe server to the service collection, configure timeout by code
+            serviceCollection.AddNamedPipeServer(opt => opt.ConnectionTimeout = TimeSpan.FromMinutes(2));
+            // Adding NamedPipe client, using the default configure from IConfiguration
             serviceCollection.AddNamedPipeClient();
 
-            // Get the container ready
+            // Get service colleciton is ready for use. Build the ServiceProvider.
             IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
 
             string pipeName = Guid.NewGuid().ToString("D");
-
 
             // Inject named pipe services;
             await Task.WhenAll(
                 RunServerAsync(serviceProvider.GetRequiredService<INamedPipeServerService>(), pipeName),
                 RunClientAsync(serviceProvider.GetRequiredService<INamedPipeClientService>(), pipeName)
             );
+        }
+
+        private static IServiceCollection PrepareServiceCollection()
+        {
+            // Prepare configuration. Use only in memory dictionary for siplicity. Could from json files or others too.
+            IServiceCollection serviceCollection = new ServiceCollection();
+            IDictionary<string, string> initConfigure = new Dictionary<string, string>()
+            {
+                ["NamedPipe:ConnectionTimeout"] = "00:05:00"
+            };
+            IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(initConfigure).Build();
+            serviceCollection.AddSingleton<IConfiguration>(configuration);
+
+            // Enable console logging
+            serviceCollection.AddLogging(builder =>
+            {
+                builder.AddConsole();
+            });
+            return serviceCollection;
         }
 
         private static async Task RunServerAsync(INamedPipeServerService serverService, string pipeName)
