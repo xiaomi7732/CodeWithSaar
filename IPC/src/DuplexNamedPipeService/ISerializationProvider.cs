@@ -4,6 +4,6 @@ namespace CodeWithSaar.IPC
     {
         bool TrySerialize<T>(T payload, out string serialized);
 
-        bool TryDeserialze<T>(string serialized, out T payload);
+        bool TryDeserialize<T>(string serialized, out T payload);
     }
 }

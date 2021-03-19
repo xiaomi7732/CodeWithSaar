@@ -132,7 +132,7 @@ namespace CodeWithSaar.IPC
         public async Task<T> ReadAsync<T>()
         {
             string serialized = await ReadMessageAsync().ConfigureAwait(false);
-            if (_serializer.TryDeserialze<T>(serialized, out T target))
+            if (_serializer.TryDeserialize<T>(serialized, out T target))
             {
                 return target;
             }

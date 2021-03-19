@@ -1,17 +1,24 @@
 using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CodeWithSaar.IPC
 {
     internal class DefaultSerializationProvider : ISerializationProvider
     {
-        private static JsonSerializerOptions _options = new JsonSerializerOptions(JsonSerializerDefaults.General)
+        private static JsonSerializerOptions _options = new JsonSerializerOptions(JsonSerializerDefaults.Web)
         {
             WriteIndented = false,
             PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters = {
+                new JsonStringEnumConverter(),
+                new TextJsonStringConverter(),
+            },
+            
         };
 
-        public bool TryDeserialze<T>(string serialized, out T payload)
+        public bool TryDeserialize<T>(string serialized, out T payload)
         {
             payload = default;
             if (string.IsNullOrEmpty(serialized))
@@ -40,7 +47,7 @@ namespace CodeWithSaar.IPC
 
             try
             {
-                serialized = JsonSerializer.Serialize<T>(payload);
+                serialized = JsonSerializer.Serialize<T>(payload, _options);
                 return true;
             }
             catch (Exception ex) when (ex is JsonException || ex is ArgumentException || ex is NotSupportedException)
