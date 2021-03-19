@@ -41,17 +41,24 @@ namespace CodeWithSaar.IPC
                     case NamedPipeRole.Client:
                         throw new InvalidOperationException("Can't wait for connection on a client.");
                     case NamedPipeRole.Server:
-                        throw new InvalidOperationException("Can't setup a server for a second time.");
-                    case NamedPipeRole.NotSpecified:
-                    default:
+                        if (_pipeStream.IsConnected)
+                        {
+                            throw new InvalidOperationException("A connection is already established.");
+                        }
+                        // Wait for message again.
                         break;
+                    case NamedPipeRole.NotSpecified:
+                        // Establish connection for the first time.
+                        PipeName = pipeName;
+                        _currentMode = NamedPipeRole.Server;
+                        NamedPipeServerStream serverStream = new NamedPipeServerStream(pipeName, PipeDirection.InOut, maxNumberOfServerInstances: 1, transmissionMode: PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+                        _pipeStream = serverStream;
+                        break;
+                    default:
+                        throw new NotSupportedException(FormattableString.Invariant($"Unsupported mode: {_currentMode}"));
                 }
 
-                PipeName = pipeName;
-                _currentMode = NamedPipeRole.Server;
-                NamedPipeServerStream serverStream = new NamedPipeServerStream(pipeName, PipeDirection.InOut, maxNumberOfServerInstances: 1, transmissionMode: PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
-                _pipeStream = serverStream;
-                await serverStream.WaitForConnectionAsync(cancellationToken).ConfigureAwait(false);
+                await ((NamedPipeServerStream)_pipeStream).WaitForConnectionAsync(cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -72,21 +79,26 @@ namespace CodeWithSaar.IPC
                 switch (_currentMode)
                 {
                     case NamedPipeRole.Client:
-                        throw new InvalidOperationException("A connection is already established.");
+                        if (_pipeStream.IsConnected)
+                        {
+                            throw new InvalidOperationException("A connection is already established.");
+                        }
+                        break;
                     case NamedPipeRole.Server:
                         throw new InvalidOperationException("Can't connect to another server from a server.");
                     case NamedPipeRole.NotSpecified:
-                    default:
+                        // New connection
+                        _currentMode = NamedPipeRole.Client;
+                        PipeName = pipeName;
+                        NamedPipeClientStream clientStream = new NamedPipeClientStream(serverName: ".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
+                        _pipeStream = clientStream;
                         break;
+                    default:
+                        throw new NotSupportedException(FormattableString.Invariant($"Unsupported mode: {_currentMode}"));
                 }
 
-                _currentMode = NamedPipeRole.Client;
-                PipeName = pipeName;
+                await ((NamedPipeClientStream)_pipeStream).ConnectAsync(cancellationToken).ConfigureAwait(false);
 
-                NamedPipeClientStream clientStream = new NamedPipeClientStream(serverName: ".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
-                _pipeStream = clientStream;
-
-                await clientStream.ConnectAsync(cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -149,7 +161,16 @@ namespace CodeWithSaar.IPC
 
             _pipeStream?.Dispose();
             _pipeStream = null;
+        }
 
+        public void Disconnect()
+        {
+            VerifyModeIsSpecified();
+
+            if (_currentMode == NamedPipeRole.Server && _pipeStream.IsConnected && _pipeStream is NamedPipeServerStream serverStream)
+            {
+                serverStream.Disconnect();
+            }
         }
     }
 }
