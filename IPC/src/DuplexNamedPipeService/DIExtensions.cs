@@ -1,5 +1,6 @@
 using System;
 using CodeWithSaar.IPC;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -35,7 +36,19 @@ namespace Microsoft.Extensions.DependencyInjection
             option = option ?? (opt => { });
             services.AddLogging();
             services.AddOptions();
-            services.AddOptions<NamedPipeOptions>().Configure(option);
+
+            IOptions<NamedPipeOptions> test = services.BuildServiceProvider().GetService<IOptions<NamedPipeOptions>>();
+
+            services.AddOptions<NamedPipeOptions>().Configure<IConfiguration>((o, c) =>
+            {
+                // Bind section from configuration.
+                c.GetSection(NamedPipeOptions.SectionName).Bind(o);
+                // Overwrite the value if any.
+                option(o);
+            });
+
+            IOptions<NamedPipeOptions> test2 = services.BuildServiceProvider().GetService<IOptions<NamedPipeOptions>>();
+
             services.TryAddTransient<ISerializationProvider, DefaultSerializationProvider>();
         }
     }

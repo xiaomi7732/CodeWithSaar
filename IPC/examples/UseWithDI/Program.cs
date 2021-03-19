@@ -16,7 +16,7 @@ namespace UseWithDI
             IServiceCollection serviceCollection = new ServiceCollection();
             IDictionary<string, string> initConfigure = new Dictionary<string, string>()
             {
-                ["NamedPipe__ConnectionTimeout"] = "00:05:00"
+                ["NamedPipe:ConnectionTimeout"] = "00:05:00"
             };
 
             IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(initConfigure).Build();
@@ -58,7 +58,7 @@ namespace UseWithDI
         private static async Task RunClientAsync(INamedPipeClientService clientService, string pipeName)
         {
             await clientService.ConnectAsync(pipeName, cancellationToken: default).ConfigureAwait(false);
-            string received =await clientService.ReadMessageAsync();
+            string received = await clientService.ReadMessageAsync();
             Console.WriteLine("[Client] Received: {0}", received);
             await clientService.SendMessageAsync("Hi, I am client.");
         }
