@@ -15,35 +15,42 @@ There are string transmitting from either side; there are serialized object tran
 
 Refer to [Program.cs](examples/GetStartedConsole/Program.cs) for the complete code:
 
-* Start a server:
+* Start services with factories:
 
-  ```csharp
-  // Create the server service
-  INamedPipeServerService namedPipeServer = new DuplexNamedPipeService();
-  // Wait for connection
-  await namedPipeServer.WaitForConnectionAsync(pipeName, cancellationToken: default).ConfigureAwait(false);
-  ```
+  * Start a server:
 
-* Start a client:
+    ```csharp
+    // Create the server service
+    INamedPipeServerService namedPipeServer = NamedPipeServerFactory.Instance.CreateNamedPipeService();
 
-  ```csharp
-  // Create a client service
-  INamedPipeClientService namedPipeClient = new DuplexNamedPipeService();
-  // Try to connect to the server using the pipeName
-  await namedPipeClient.ConnectAsync(pipeName, cancellationToken: default).ConfigureAwait(false);
-  ```
+    // Wait for connection
+    await namedPipeServer.WaitForConnectionAsync(pipeName, cancellationToken: default).ConfigureAwait(false);
+    ```
 
-* Sending a message:
+  * Start a client:
 
-  ```csharp
-  await namedPipeServer.SendMessageAsync("Hello from server!").ConfigureAwait(false);
-  ```
+    ```csharp
+    // Create a client service
+    INamedPipeClientService namedPipeClient = NamedPipeClientFactory.Instance.CreateNamedPipeService();
+    // Try to connect to the server using the pipeName
+    await namedPipeClient.ConnectAsync(pipeName, cancellationToken: default).ConfigureAwait(false);
+    ```
 
-* Receiving a message:
+* Sending messages back & forth
 
-  ```csharp
-  string messageReceived =await namedPipeClient.ReadMessageAsync().ConfigureAwait(false);
-  ```
+  * Sending a message:
+
+    ```csharp
+    await namedPipeServer.SendMessageAsync("Hello from server!").ConfigureAwait(false);
+    ```
+
+  * Receiving a message:
+
+    ```csharp
+    string messageReceived =await namedPipeClient.ReadMessageAsync().ConfigureAwait(false);
+    ```
+
+Notes: The applicaiton above uses 2 threads to simulate 2 processes for simplicity. See the next example for code running in separate processes:
 
 ## To run the examples in multiple processes
 
@@ -62,6 +69,39 @@ dotnet run src/Example.Client
 ```
 
 The client will connect to the server and unlock the flow.
+
+## Dependency Injection supported for ASP.NET Core applications
+
+Check out [UseWithDI example](examples\UseWithDI\Program.cs) for full code. Here's the key lines.
+
+* Register the service
+
+  Do one of the following in your applicaiton. Do it in the Startup for ASP.NET Core application:
+
+  * Register the server
+
+    ```csharp
+    // Add NamedPipe server to the service collection, configure timeout by code
+    serviceCollection.AddNamedPipeServer(opt => opt.ConnectionTimeout = TimeSpan.FromMinutes(2));
+    ```
+
+  * Or register the client:
+
+    ```csharp
+    // Adding NamedPipe client, using the default configure from IConfiguration
+    serviceCollection.AddNamedPipeClient();
+    ```
+
+  Inject and use the following serivces respectively:
+
+  * INamedPipeServerService, or
+  * INamedPipeClientService
+
+  For example:
+
+    ```csharp
+    await _serverService.WaitForConnectionAsync(pipeName, cancellationToken: default).ConfigureAwait(false);
+    ```
 
 ## Goal
 
