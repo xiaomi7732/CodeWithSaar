@@ -6,16 +6,16 @@
 
   <PropertyGroup>
     <PackageId>CodeWithSaar.JWTAuthentication.WebAPI</PackageId>
-    <Version>1.0.0-beta5</Version>
+    <Version>1.0.0</Version>
     <Authors>Saar</Authors>
     <Company>Saar</Company>
-    <PackageTags>Microsoft Azure Storage Blobs;Microsoft;Azure;Blobs;Blob;Storage;StorageScalable</PackageTags>
+    <PackageTags>WebAPI;JWT;Authentication;Authorization</PackageTags>
     <Description>
       This is a package to support simple JWT authentication / authorization. Check out the projet site for usage.
     </Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageProjectUrl>https://github.com/xiaomi7732/CodeSaar/tree/main/Auth.AspNetCore.WebApi</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/xiaomi7732/CodeWithSaar/tree/main/Auth.AspNetCore.WebApi</PackageProjectUrl>
   </PropertyGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.3" />
