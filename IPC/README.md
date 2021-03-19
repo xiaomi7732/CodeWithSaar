@@ -4,6 +4,8 @@
 
 This is a simple warper around named-pipe for **local**, **two-way**, **inter-proc** communication.
 
+NuGet package: [https://www.nuget.org/packages/CodeWithSaar.IPC](https://www.nuget.org/packages/CodeWithSaar.IPC)
+
 * **src/DuplexNamedPipeService** contains the implementations.
 * **src/Example.Server** spins up a named pipe server;
   * [Program.cs](./examples/Example.Server/Program.cs)
