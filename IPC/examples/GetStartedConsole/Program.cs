@@ -22,7 +22,7 @@ namespace GetStartedConsole
         private static async Task RunServerAsync(string pipeName)
         {
             // Create the server service
-            INamedPipeServerService namedPipeServer = new DuplexNamedPipeService();
+            INamedPipeServerService namedPipeServer = NamedPipeServerFactory.Instance.CreateNamedPipeService();
 
             // Wait for connection
             await namedPipeServer.WaitForConnectionAsync(pipeName, cancellationToken: default).ConfigureAwait(false);
@@ -38,7 +38,7 @@ namespace GetStartedConsole
         private static async Task RunClientAsync(string pipeName)
         {
             // Create a client service
-            INamedPipeClientService namedPipeClient = new DuplexNamedPipeService();
+            INamedPipeClientService namedPipeClient = NamedPipeClientFactory.Instance.CreateNamedPipeService();
 
             // Try to connect to the server using the pipeName
             await namedPipeClient.ConnectAsync(pipeName, cancellationToken: default).ConfigureAwait(false);

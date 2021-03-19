@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace CodeWithSaar.IPC
 {
-    public sealed class DuplexNamedPipeService : INamedPipeServerService, INamedPipeClientService, IDisposable
+    internal class DuplexNamedPipeService : INamedPipeServerService, INamedPipeClientService, IDisposable
     {
         private SemaphoreSlim _threadSafeLock = new SemaphoreSlim(1, 1);
         private PipeStream _pipeStream;
@@ -18,19 +18,14 @@ namespace CodeWithSaar.IPC
         private readonly ILogger _logger;
         private NamedPipeRole _currentMode = NamedPipeRole.NotSpecified;
 
-        public DuplexNamedPipeService(NamedPipeOptions namedPipeOptions = null, ISerializationProvider serializer = null, ILogger<DuplexNamedPipeService> logger = null)
+        public string PipeName { get; private set; }
+
+        internal DuplexNamedPipeService(IOptions<NamedPipeOptions> namedPipeOptions, ISerializationProvider serializer = null, ILogger<DuplexNamedPipeService> logger = null)
         {
-            _options = namedPipeOptions ?? new NamedPipeOptions();
+            _options = namedPipeOptions?.Value ?? new NamedPipeOptions();
             _serializer = serializer ?? new DefaultSerializationProvider();
             _logger = logger;
         }
-
-        public DuplexNamedPipeService(IOptions<NamedPipeOptions> namedPipeOptions, ISerializationProvider serializer = null, ILogger<DuplexNamedPipeService> logger = null)
-            : this(namedPipeOptions?.Value, serializer, logger)
-        {
-        }
-
-        public string PipeName { get; private set; }
 
         public async Task WaitForConnectionAsync(string pipeName, CancellationToken cancellationToken)
         {

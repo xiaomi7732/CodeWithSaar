@@ -18,9 +18,7 @@ namespace CodeWithSaar.Example.Server
                 ConnectionTimeout = TimeSpan.FromSeconds(30),
             };
 
-            IOptions<NamedPipeOptions> options = Options.Create<NamedPipeOptions>(namedPipeOptions);
-            ILogger<DuplexNamedPipeService> logger = LoggerFactory.Create(config => { }).CreateLogger<DuplexNamedPipeService>();
-            using (INamedPipeServerService namedPipeServer = new DuplexNamedPipeService(options, serializer: default, logger))
+            using (INamedPipeServerService namedPipeServer = NamedPipeServerFactory.Instance.CreateNamedPipeService(namedPipeOptions, serializer: default, LoggerFactory.Create(builder => { })))
             {
                 // Send messages back and forth
                 Console.WriteLine("[SERVER] Waiting for connection.");

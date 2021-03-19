@@ -15,7 +15,7 @@ namespace CodeWithSaar.Example.Client
             {
                 ConnectionTimeout = TimeSpan.FromSeconds(30),
             };
-            using (INamedPipeClientService namedPipeClient = new DuplexNamedPipeService(namedPipeOptions))
+            using (INamedPipeClientService namedPipeClient = NamedPipeClientFactory.Instance.CreateNamedPipeService(namedPipeOptions))
             {
                 Console.WriteLine("[CLIENT] Connecting to named pipe server...");
                 await namedPipeClient.ConnectAsync(PipeName, cancellationToken: default).ConfigureAwait(false);
