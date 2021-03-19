@@ -5,6 +5,25 @@
     <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>CodeWithSaar.IPC</PackageId>
+    <Version>1.0.0-beta1</Version>
+    <Authors>Saar</Authors>
+    <Company>Saar</Company>
+    <PackageTags>IPC,NamedPipe,TwoWay,InterProcessesCommunication,Pipeline</PackageTags>
+    <Description>
+      This is a package to allow simple inter-process communication(IPC) based on the .NET NamedPipeStream. Check out the projet site for usage.
+    </Description>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/xiaomi7732/CodeWithSaar/tree/main/IPC</PackageProjectUrl>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <None Include="../../../LICENSE" Pack="true" PackagePath="" />
+    <None Include="../../../icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
