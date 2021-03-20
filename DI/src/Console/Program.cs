@@ -13,7 +13,7 @@ namespace DI.ConsoleApp
             };
 
             DogReport report = new DogReport();
-            report.Print(dogBella);
+            report.Print(dogBella, new Serializer2(), new ConsoleOutputer());
         }
     }
 }

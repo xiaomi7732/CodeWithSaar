@@ -1,6 +1,6 @@
 namespace DI.ConsoleApp
 {
-    class Dog
+    public class Dog
     {
         public string Name { get; set; }
         public string Breed { get; set; }

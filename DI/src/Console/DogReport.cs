@@ -3,12 +3,12 @@ using Newtonsoft.Json;
 
 namespace DI.ConsoleApp
 {
-    class DogReport
+    public class DogReport
     {
-        public void Print(Dog dog)
+        public void Print(Dog dog, ISerializer serializer, IOutputer outputer)
         {
-            string dogJson = JsonConvert.SerializeObject(dog);
-            Console.WriteLine(dogJson);
+            string dogJson = serializer.SerializeObject(dog);
+            outputer.WriteLine(dogJson);
         }
     }
 }
