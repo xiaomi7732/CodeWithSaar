@@ -13,6 +13,14 @@ NuGet package: [https://www.nuget.org/packages/CodeWithSaar.IPC](https://www.nug
   * [Program.cs](./examples/Example.Client/Program.cs)
 There are string transmitting from either side; there are serialized object transfer too.
 
+## Goal
+
+* Make two-way inter-process communication (IPC) simple;
+  * Allows mimimum configuration and establish a pipe for communication.
+
+* Have a clear, designed architecture to avoid Server-Client confusion;
+  * One process will either be a server or a client, won't be both.
+
 ## Getting Started
 
 Refer to [Program.cs](examples/GetStartedConsole/Program.cs) for the complete code:
@@ -104,14 +112,6 @@ Check out [UseWithDI example](examples\UseWithDI\Program.cs) for full code. Here
     ```csharp
     await _serverService.WaitForConnectionAsync(pipeName, cancellationToken: default).ConfigureAwait(false);
     ```
-
-## Goal
-
-* Make two-way inter-process communication (IPC) simple;
-  * Allows mimimum configuration and establish a pipe for communication.
-
-* Have a clear, designed architecture to avoid Server-Client confusion;
-  * One process will either be a server or a client, won't be both.
 
 ## Folder Structure
 
