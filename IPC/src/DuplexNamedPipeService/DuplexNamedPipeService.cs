@@ -106,39 +106,63 @@ namespace CodeWithSaar.IPC
             }
         }
 
-        public async Task<string> ReadMessageAsync()
-        {
-            VerifyModeIsSpecified();
-            string line;
-            using (StreamReader reader = new StreamReader(_pipeStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: -1, leaveOpen: true))
-            {
-                line = await reader.ReadLineAsync().ConfigureAwait(false);
-            }
-            return line;
-        }
-
-        public async Task SendMessageAsync(string message)
+        public async Task<string> ReadMessageAsync(TimeSpan timeout = default, CancellationToken cancellationToken = default)
         {
             VerifyModeIsSpecified();
 
-            using (StreamWriter writer = new StreamWriter(_pipeStream, encoding: Encoding.UTF8, bufferSize: -1, leaveOpen: true))
+            timeout = VerifyReadWriteTimeout(timeout);
+
+            using CancellationTokenSource timeoutSource = new CancellationTokenSource(timeout);
+            using CancellationTokenSource linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutSource.Token, cancellationToken);
+            cancellationToken = linkedCancellationTokenSource.Token;
+
+            StringBuilder resultBuilder = new StringBuilder();
+
+            Task timeoutTask = Task.Delay(timeout, cancellationToken);
+            Task<string> readlineTask = Task.Run(async () =>
             {
-                await writer.WriteLineAsync(message).ConfigureAwait(false);
+                using (StreamReader reader = new StreamReader(_pipeStream, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: -1, leaveOpen: true))
+                {
+                    return await reader.ReadLineAsync().ConfigureAwait(false);
+                }
+            });
+
+            await Task.WhenAny(timeoutTask, readlineTask).ConfigureAwait(false);
+
+            if (!readlineTask.IsCompleted)
+            {
+                throw new TimeoutException($"Can't finish reading message within given timeout: {timeout.TotalMilliseconds}ms");
             }
+
+            return readlineTask.Result;
         }
 
-        public Task SendAsync<T>(T payload)
+        public async Task SendMessageAsync(string message, TimeSpan timeout = default, CancellationToken cancellationToken = default)
+        {
+            VerifyModeIsSpecified();
+            timeout = VerifyReadWriteTimeout(timeout);
+
+            using CancellationTokenSource timeoutSource = new CancellationTokenSource(timeout);
+            using CancellationTokenSource linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutSource.Token, cancellationToken);
+            cancellationToken = linkedCancellationTokenSource.Token;
+
+            using StreamWriter writer = new StreamWriter(_pipeStream, encoding: Encoding.UTF8, bufferSize: -1, leaveOpen: true);
+            ReadOnlyMemory<char> buffer = new ReadOnlyMemory<char>(message.ToCharArray());
+            await writer.WriteLineAsync(buffer, cancellationToken).ConfigureAwait(false);
+        }
+
+        public Task SendAsync<T>(T payload, TimeSpan timeout = default, CancellationToken cancellationToken = default)
         {
             if (_serializer.TrySerialize(payload, out string serialized))
             {
-                return SendMessageAsync(serialized);
+                return SendMessageAsync(serialized, timeout, cancellationToken);
             }
             throw new NotSupportedException("Unsupported payload for sending over named pipeline.");
         }
 
-        public async Task<T> ReadAsync<T>()
+        public async Task<T> ReadAsync<T>(TimeSpan timeout = default, CancellationToken cancellationToken = default)
         {
-            string serialized = await ReadMessageAsync().ConfigureAwait(false);
+            string serialized = await ReadMessageAsync(timeout, cancellationToken).ConfigureAwait(false);
             if (_serializer.TryDeserialize<T>(serialized, out T target))
             {
                 return target;
@@ -152,6 +176,20 @@ namespace CodeWithSaar.IPC
             {
                 throw new InvalidOperationException("Pipe mode requires to be set before operations. Either wait for connection as a server or connect to a server as a client before reading or writing messages.");
             }
+        }
+
+        private TimeSpan VerifyReadWriteTimeout(TimeSpan timeout)
+        {
+            if (timeout == default)
+            {
+                timeout = _options.DefaultMessageTimeout;
+            }
+            if (timeout == default)
+            {
+                throw new InvalidOperationException("Read message timeout can't be set to 0.");
+            }
+
+            return timeout;
         }
 
         public void Dispose()
