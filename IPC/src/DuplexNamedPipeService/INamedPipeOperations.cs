@@ -1,3 +1,5 @@
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CodeWithSaar.IPC
@@ -13,22 +15,21 @@ namespace CodeWithSaar.IPC
         /// Sends a string message over the named pipe;
         /// </summary>
         /// <param name="message"></param>
-        Task SendMessageAsync(string message);
+        Task SendMessageAsync(string message, TimeSpan timeout = default, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Retrieves a string message from a named pipe;
         /// </summary>
-        /// <returns></returns>
-        Task<string> ReadMessageAsync();
+        Task<string> ReadMessageAsync(TimeSpan timeout = default, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sends an object over the named pipe.
         /// </summary>
-        Task SendAsync<T>(T payload);
+        Task SendAsync<T>(T payload, TimeSpan timeout = default, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Retrieves an object over the named pipe.
         /// </summary>
-        Task<T> ReadAsync<T>();
+        Task<T> ReadAsync<T>(TimeSpan timeout = default, CancellationToken cancellationToken = default);
     }
 }
