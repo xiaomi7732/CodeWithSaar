@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeWithSaar.IPC" Version="1.0.0-beta1" />
+    <PackageReference Include="CodeWithSaar.IPC" Version="1.0.0-*" />
   </ItemGroup>
 
 </Project>
