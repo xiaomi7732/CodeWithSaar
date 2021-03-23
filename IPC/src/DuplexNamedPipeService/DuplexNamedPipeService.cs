@@ -116,8 +116,6 @@ namespace CodeWithSaar.IPC
             using CancellationTokenSource linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutSource.Token, cancellationToken);
             cancellationToken = linkedCancellationTokenSource.Token;
 
-            StringBuilder resultBuilder = new StringBuilder();
-
             Task timeoutTask = Task.Delay(timeout, cancellationToken);
             Task<string> readlineTask = Task.Run(async () =>
             {
