@@ -14,10 +14,26 @@ namespace DI.ServiceContainerBasics
 
             // Register a service
             // TODO:
+            serviceCollection.AddSingleton<IOutputter, ConsoleOutputter>();
+            serviceCollection.AddSingleton<DogReport>();
+            serviceCollection.AddSingleton<ISerializer, Serializer1>();
+            serviceCollection.AddSingleton<ISerializer, Serializer2>();
+
+            // Build a service provider
+            IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
 
             // Resolve a service
+            IOutputter outputter = serviceProvider.GetRequiredService<IOutputter>();
+            DogReport dogReport = serviceProvider.GetRequiredService<DogReport>();
+
 
             // Inject a service
+            outputter.WriteLine("Hello DI!");
+            dogReport.Print(new Dog(){
+                Name="Bella",
+                Breed = "A",
+                Weight=10
+            });
         }
     }
 }
