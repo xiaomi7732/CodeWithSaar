@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DI.ServiceContainerBasics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,6 +33,10 @@ namespace ServiceContainerInWebAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ServiceContainerInWebAPI", Version = "v1" });
             });
+
+            services.AddTransient<ISerializer, Serializer1>();
+            services.AddTransient<IOutputter, ConsoleOutputter>();
+            services.AddTransient<DogReport>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
