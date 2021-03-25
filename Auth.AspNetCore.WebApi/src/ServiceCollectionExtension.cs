@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Logging;
 
@@ -18,8 +19,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static IServiceCollection AddJWTAuth(this IServiceCollection services, Action<JWTAuthOptions> configure = null)
         {
-            services.AddOptions<JWTAuthOptions>().BindConfiguration(JWTAuthOptions.SectionName).Configure<ILogger<JWTAuthOptions>>((options, logger) =>
+            services.AddOptions<JWTAuthOptions>().Configure<IConfiguration , ILogger<JWTAuthOptions>>((options, configuration, logger) =>
             {
+                configuration.GetSection(JWTAuthOptions.SectionName).Bind(options);
                 configure?.Invoke(options);
 
                 // Quick check for IssuerSigningSecret
