@@ -1,12 +1,8 @@
 using System;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
-using JWTAuth.AspNetCore.WebAPI;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -15,26 +11,27 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class ServiceCollectionExtensions
     {
+        private static JWTAuthOptions _jwtAuthOptionsCache = null;
+
         /// <summary>
         /// Add JWT authentication related services.
         /// </summary>
         public static IServiceCollection AddJWTAuth(this IServiceCollection services, Action<JWTAuthOptions> configure = null)
         {
-            IServiceProvider provider = services.BuildServiceProvider();
-            IConfiguration configuration = provider.GetRequiredService<IConfiguration>();
-            ILogger logger = provider.GetService<ILogger<TokenMiddleware>>();
-
-            JWTAuthOptions jwtAuthOptions = configuration.GetSection(JWTAuthOptions.SectionName).Get<JWTAuthOptions>() ?? new JWTAuthOptions();
-            configure?.Invoke(jwtAuthOptions);
-            if (string.IsNullOrEmpty(jwtAuthOptions.IssuerSigningSecret))
+            services.AddOptions<JWTAuthOptions>().BindConfiguration(JWTAuthOptions.SectionName).Configure<ILogger<JWTAuthOptions>>((options, logger) =>
             {
-                logger?.LogWarning("Issuer signing secret is not specified. Using random string as secrets temperory. Please specify issuer signing secret.");
-                jwtAuthOptions.IssuerSigningSecret = Guid.NewGuid().ToString();
-            }
+                configure?.Invoke(options);
 
-            IOptions<JWTAuthOptions> newOptionInstance = Options.Options.Create(jwtAuthOptions);
-            ServiceDescriptor replaceOption = new ServiceDescriptor(typeof(IOptions<JWTAuthOptions>), newOptionInstance);
-            services.Replace(replaceOption);
+                // Quick check for IssuerSigningSecret
+                if (string.IsNullOrEmpty(options.IssuerSigningSecret))
+                {
+                    logger?.LogWarning("Issuer signing secret is not specified. Using random string as secrets temperory. Please specify issuer signing secret.");
+                    options.IssuerSigningSecret = Guid.NewGuid().ToString();
+                }
+
+                // TODO: Is it a good idea to keep it in the static field like this?
+                _jwtAuthOptionsCache = options;
+            });
 
             services
             .AddAuthentication(opt =>
@@ -47,23 +44,23 @@ namespace Microsoft.Extensions.DependencyInjection
                 opt.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtAuthOptions.IssuerSigningSecret)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtAuthOptionsCache.IssuerSigningSecret)),
                     ValidateIssuer = true,
-                    ValidIssuer = jwtAuthOptions.Issuer,
+                    ValidIssuer = _jwtAuthOptionsCache.Issuer,
                     ValidateAudience = true,
-                    ValidAudience = jwtAuthOptions.Audience,
-                    NameClaimType = jwtAuthOptions.NameClaimType,
+                    ValidAudience = _jwtAuthOptionsCache.Audience,
+                    NameClaimType = _jwtAuthOptionsCache.NameClaimType,
                 };
-                if (!string.Equals(jwtAuthOptions.RoleClaimType, "role", StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(_jwtAuthOptionsCache.RoleClaimType, "role", StringComparison.OrdinalIgnoreCase))
                 {
-                    opt.TokenValidationParameters.RoleClaimType = jwtAuthOptions.RoleClaimType;
+                    opt.TokenValidationParameters.RoleClaimType = _jwtAuthOptionsCache.RoleClaimType;
                 }
 
-                if (jwtAuthOptions.OnJWTAuthenticationMessageReceived != null)
+                if (_jwtAuthOptionsCache.OnJWTAuthenticationMessageReceived != null)
                 {
                     opt.Events = new JwtBearerEvents()
                     {
-                        OnMessageReceived = jwtAuthOptions.OnJWTAuthenticationMessageReceived,
+                        OnMessageReceived = _jwtAuthOptionsCache.OnJWTAuthenticationMessageReceived,
                     };
                 }
             });
