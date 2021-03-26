@@ -7,7 +7,7 @@
 
   <PropertyGroup>
     <PackageId>CodeWithSaar.IPC</PackageId>
-    <Version>1.0.0-beta3</Version>
+    <Version>1.0.0</Version>
     <Authors>Saar</Authors>
     <Company>Saar</Company>
     <PackageTags>IPC,NamedPipe,TwoWay,InterProcessesCommunication,Pipeline</PackageTags>
