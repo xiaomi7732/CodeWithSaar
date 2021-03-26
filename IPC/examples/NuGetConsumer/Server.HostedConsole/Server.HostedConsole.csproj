@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeWithSaar.IPC" Version="1.0.0-beta2" />
+    <!-- <PackageReference Include="CodeWithSaar.IPC" Version="1.0.0-beta2" /> -->
     <!-- Use this reference for local debugging: -->
-    <!-- <ProjectReference Include="..\..\..\src\DuplexNamedPipeService\DuplexNamedPipeService.csproj" /> -->
+    <ProjectReference Include="..\..\..\src\DuplexNamedPipeService\DuplexNamedPipeService.csproj" />
   </ItemGroup>
 
   <ItemGroup>

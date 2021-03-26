@@ -24,12 +24,20 @@ namespace Server.HostedConsole
                 string pipeName = Guid.NewGuid().ToString();
                 while (true)
                 {
-                    _logger.LogInformation("Listening on named pipe: {pipeName}", pipeName);
-                    await _namedPipeServer.WaitForConnectionAsync(pipeName, cancellationToken);
-                    _logger.LogInformation("A connection is established. Sending a welcome message...");
-                    await _namedPipeServer.SendMessageAsync("Hi, welcome!");
-                    _logger.LogInformation("Welcome message sent...");
-                    _namedPipeServer.Disconnect();
+                    try
+                    {
+                        _logger.LogInformation("Listening on named pipe: {pipeName}", pipeName);
+                        await _namedPipeServer.WaitForConnectionAsync(pipeName, cancellationToken);
+                        _logger.LogInformation("A connection is established. Sending a welcome message...");
+                        await _namedPipeServer.SendMessageAsync("Hi, welcome!");
+                        _logger.LogInformation("Welcome message sent...");
+                        _namedPipeServer.Disconnect();
+                    }
+                    catch (NamedPipeTimeoutException ex) when (ex.Operation == nameof(_namedPipeServer.WaitForConnectionAsync))
+                    {
+                        // Move on to the next interation, keep waiting for input.
+                        _logger.LogInformation("{opName} operation timedout. Move on to the next iteration...", ex.Operation);
+                    }
                 }
             }
             catch (TaskCanceledException)

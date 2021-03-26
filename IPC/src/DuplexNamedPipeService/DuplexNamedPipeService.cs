@@ -29,10 +29,12 @@ namespace CodeWithSaar.IPC
 
         public async Task WaitForConnectionAsync(string pipeName, CancellationToken cancellationToken)
         {
+            CancellationToken timeoutCancellationToken = default;
             try
             {
                 using CancellationTokenSource timeoutCancellationTokenSource = new CancellationTokenSource(_options.ConnectionTimeout);
-                using CancellationTokenSource linkedCancellatinoTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancellationTokenSource.Token);
+                timeoutCancellationToken = timeoutCancellationTokenSource.Token;
+                using CancellationTokenSource linkedCancellatinoTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancellationToken);
                 cancellationToken = linkedCancellatinoTokenSource.Token;
 
                 await _threadSafeLock.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -60,6 +62,14 @@ namespace CodeWithSaar.IPC
 
                 await ((NamedPipeServerStream)_pipeStream).WaitForConnectionAsync(cancellationToken).ConfigureAwait(false);
             }
+            catch (TaskCanceledException ex)
+            {
+                if (timeoutCancellationToken != default && timeoutCancellationToken.IsCancellationRequested)
+                {
+                    throw new NamedPipeTimeoutException(ex.Message, ex);
+                }
+                throw;
+            }
             finally
             {
                 _threadSafeLock.Release();
@@ -69,10 +79,12 @@ namespace CodeWithSaar.IPC
 
         public async Task ConnectAsync(string pipeName, CancellationToken cancellationToken)
         {
+            CancellationToken timeoutCancellationToken = default;
             try
             {
                 using CancellationTokenSource timeoutCancellationTokenSource = new CancellationTokenSource(_options.ConnectionTimeout);
-                using CancellationTokenSource linkedCancellatinoTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancellationTokenSource.Token);
+                timeoutCancellationToken = timeoutCancellationTokenSource.Token;
+                using CancellationTokenSource linkedCancellatinoTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutCancellationToken);
                 cancellationToken = linkedCancellatinoTokenSource.Token;
 
                 await _threadSafeLock.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -99,6 +111,14 @@ namespace CodeWithSaar.IPC
 
                 await ((NamedPipeClientStream)_pipeStream).ConnectAsync(cancellationToken).ConfigureAwait(false);
 
+            }
+            catch (TaskCanceledException ex)
+            {
+                if (timeoutCancellationToken != default && timeoutCancellationToken.IsCancellationRequested)
+                {
+                    throw new NamedPipeTimeoutException(ex.Message, ex);
+                }
+                throw;
             }
             finally
             {
@@ -129,7 +149,7 @@ namespace CodeWithSaar.IPC
 
             if (!readlineTask.IsCompleted)
             {
-                throw new TimeoutException($"Can't finish reading message within given timeout: {timeout.TotalMilliseconds}ms");
+                throw new NamedPipeTimeoutException($"Can't finish reading message within given timeout: {timeout.TotalMilliseconds}ms");
             }
 
             return readlineTask.Result;
@@ -137,16 +157,29 @@ namespace CodeWithSaar.IPC
 
         public async Task SendMessageAsync(string message, TimeSpan timeout = default, CancellationToken cancellationToken = default)
         {
-            VerifyModeIsSpecified();
-            timeout = VerifyReadWriteTimeout(timeout);
+            CancellationToken timeoutCancellationToken = default;
+            try
+            {
+                VerifyModeIsSpecified();
+                timeout = VerifyReadWriteTimeout(timeout);
 
-            using CancellationTokenSource timeoutSource = new CancellationTokenSource(timeout);
-            using CancellationTokenSource linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutSource.Token, cancellationToken);
-            cancellationToken = linkedCancellationTokenSource.Token;
+                using CancellationTokenSource timeoutSource = new CancellationTokenSource(timeout);
+                timeoutCancellationToken = timeoutSource.Token;
+                using CancellationTokenSource linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutCancellationToken, cancellationToken);
+                cancellationToken = linkedCancellationTokenSource.Token;
 
-            using StreamWriter writer = new StreamWriter(_pipeStream, encoding: Encoding.UTF8, bufferSize: -1, leaveOpen: true);
-            ReadOnlyMemory<char> buffer = new ReadOnlyMemory<char>(message.ToCharArray());
-            await writer.WriteLineAsync(buffer, cancellationToken).ConfigureAwait(false);
+                using StreamWriter writer = new StreamWriter(_pipeStream, encoding: Encoding.UTF8, bufferSize: -1, leaveOpen: true);
+                ReadOnlyMemory<char> buffer = new ReadOnlyMemory<char>(message.ToCharArray());
+                await writer.WriteLineAsync(buffer, cancellationToken).ConfigureAwait(false);
+            }
+            catch (TaskCanceledException ex)
+            {
+                if (timeoutCancellationToken != default && timeoutCancellationToken.IsCancellationRequested)
+                {
+                    throw new NamedPipeTimeoutException(ex.Message, ex);
+                }
+                throw;
+            }
         }
 
         public Task SendAsync<T>(T payload, TimeSpan timeout = default, CancellationToken cancellationToken = default)
