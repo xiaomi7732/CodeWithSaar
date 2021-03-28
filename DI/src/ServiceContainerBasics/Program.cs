@@ -9,7 +9,7 @@ namespace DI.ServiceContainerBasics
         {
             // Adding the package of Microsoft.Extensions.DependencyInjection: dotnet add package Microsoft.Extensions.DependencyInjection
 
-            // Crate a service container
+            // Create a service container
             IServiceCollection serviceCollection = new ServiceCollection();
 
             // Register a service
