@@ -1,9 +1,10 @@
-using System;
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Diagnostics;
+using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -19,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static IServiceCollection AddJWTAuth(this IServiceCollection services, Action<JWTAuthOptions> configure = null)
         {
-            services.AddOptions<JWTAuthOptions>().Configure<IConfiguration , ILogger<JWTAuthOptions>>((options, configuration, logger) =>
+            services.AddOptions<JWTAuthOptions>().Configure<IConfiguration, ILogger<JWTAuthOptions>>((options, configuration, logger) =>
             {
                 configuration.GetSection(JWTAuthOptions.SectionName).Bind(options);
                 configure?.Invoke(options);
@@ -43,6 +44,8 @@ namespace Microsoft.Extensions.DependencyInjection
             })
             .AddJwtBearer(opt =>
             {
+                Debug.Assert(_jwtAuthOptionsCache != null, "_jWTAuthOptionsCache should have been set.");
+
                 opt.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
