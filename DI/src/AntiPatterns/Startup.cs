@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DI.ServiceContainerBasics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,6 +33,27 @@ namespace AntiPatterns
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AntiPatterns", Version = "v1" });
             });
+
+            // Anti-pattern #1, register a singleton service not created by service container
+            // services.AddSingleton<IOutputter, ConsoleOutputter>();
+            // services.AddSingleton<IOutputter>(p => new ConsoleOutputter());
+            // services.AddSingleton<IOutputter>(new ConsoleOutputter());
+
+            // Anti-pattern #2, captive dependency
+            // services.AddScoped<IOutputter, ConsoleOutputter>();
+            // services.AddScoped<ISerializer, Serializer1>();
+            // services.AddSingleton<DogReport>();
+
+            // Anti-pattern #3, use async in implementation factory
+            // services.AddScoped<IOutputter, ConsoleOutputter>();
+            // services.AddScoped<ISerializer, Serializer1>();
+            // services.AddScoped<DogReport>(p =>
+            // {
+            //     Console.WriteLine("Before async operation ...");
+            //     ISerializer s = WaitForItAsync(p).Result;
+            //     Console.WriteLine("Post async operation...");
+            //     return new DogReport(p.GetRequiredService<ISerializer>(), p.GetRequiredService<IOutputter>());
+            // });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,5 +77,11 @@ namespace AntiPatterns
                 endpoints.MapControllers();
             });
         }
+
+        // private async Task<ISerializer> WaitForItAsync(IServiceProvider p)
+        // {
+        //     await Task.Delay(1000).ConfigureAwait(false);
+        //     return p.GetRequiredService<ISerializer>();
+        // }
     }
 }

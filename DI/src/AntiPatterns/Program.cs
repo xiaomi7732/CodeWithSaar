@@ -20,7 +20,9 @@ namespace AntiPatterns
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>()
+                        // .UseDefaultServiceProvider(opt => opt.ValidateScopes = false) // Disable Scope Validation
+                        ;
                 });
     }
 }
