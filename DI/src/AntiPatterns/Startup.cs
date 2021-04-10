@@ -78,10 +78,10 @@ namespace AntiPatterns
             });
         }
 
-        // private async Task<ISerializer> WaitForItAsync(IServiceProvider p)
-        // {
-        //     await Task.Delay(1000).ConfigureAwait(false);
-        //     return p.GetRequiredService<ISerializer>();
-        // }
+        private async Task<ISerializer> WaitForItAsync(IServiceProvider p)
+        {
+            await Task.Delay(1000).ConfigureAwait(false);
+            return p.GetRequiredService<ISerializer>();
+        }
     }
 }

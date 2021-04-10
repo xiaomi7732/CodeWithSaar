@@ -17,19 +17,23 @@ namespace AntiPatterns.Controllers
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
         private readonly DogReport _dogReport;
+        // private readonly IOutputter _outputter;
         private readonly ILogger<WeatherForecastController> _logger;
 
         public WeatherForecastController(
             DogReport dogReport,
+            // IOutputter outputter,
             ILogger<WeatherForecastController> logger)
         {
             _dogReport = dogReport ?? throw new ArgumentNullException(nameof(dogReport));
+            // _outputter = outputter ?? throw new ArgumentNullException(nameof(outputter));
             _logger = logger;
         }
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            // _outputter.WriteLine("Hello");
             _dogReport.Print(new Dog()
             {
                 Name = "Bella",

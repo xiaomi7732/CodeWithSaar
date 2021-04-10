@@ -21,7 +21,7 @@ namespace AntiPatterns
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                        // .UseDefaultServiceProvider(opt => opt.ValidateScopes = false) // Disable Scope Validation
+                        .UseDefaultServiceProvider(opt => opt.ValidateScopes = false) // Disable Scope Validation
                         ;
                 });
     }
