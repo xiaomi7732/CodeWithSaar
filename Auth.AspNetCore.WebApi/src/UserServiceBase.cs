@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -27,15 +29,12 @@ namespace JWTAuth.AspNetCore.WebAPI
         }
 
         /// <summary>
-        /// Check the roles based on the user info. Updates the user info with role information.
+        /// Get the list of roles of the user and return the roles.
         /// </summary>
         /// <param name="validUser">A valid UserInfo instance.</param>
-        /// <returns>True when role validation succeeded. Otherwise, false.</returns>
-        public virtual Task<bool> ValidateRolesAsync(UserInfo validUser)
-        {
-            // No role info and verify successful.
-            return Task.FromResult(true);
-        }
+        /// <returns>The list of the roles.</returns>
+        public virtual Task<IEnumerable<string>> ValidateRolesAsync(UserInfo validUser)
+            => Task.FromResult(Enumerable.Empty<string>());
 
         /// <summary>
         /// Verify if the user is valid.
@@ -45,5 +44,6 @@ namespace JWTAuth.AspNetCore.WebAPI
 
         protected virtual Task<T> DeserializeUserLoginAsync(string jsonText)
             => Task.FromResult(JsonSerializer.Deserialize<T>(jsonText, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }));
+
     }
 }
