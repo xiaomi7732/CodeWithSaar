@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DI.ServiceContainerBasics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -15,17 +16,26 @@ namespace Patterns.Controllers
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
-
+        private readonly DogReport _dogReport;
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(
+            DogReport dogReport,
+            ILogger<WeatherForecastController> logger)
         {
-            _logger = logger;
+            this._dogReport = dogReport ?? throw new ArgumentNullException(nameof(dogReport));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            _dogReport.Print(new Dog{
+                Name = "Bella",
+                Breed = "Chihuahua",
+                Weight = 10
+            });
+
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {

@@ -10,7 +10,7 @@ namespace DI.ServiceContainerBasics
         public DogReport(ISerializer serializer, ConsoleOutputterFactory outputterFactory)
         {
             _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
-            _outputterFactory = _outputterFactory ?? throw new ArgumentNullException(nameof(_outputterFactory));
+            _outputterFactory = outputterFactory ?? throw new ArgumentNullException(nameof(outputterFactory));
         }
 
         public void Print(Dog dog)
