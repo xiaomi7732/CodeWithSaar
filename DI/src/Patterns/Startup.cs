@@ -42,6 +42,7 @@ namespace Patterns
             // Resolve anti pattern
             services.AddSingleton<ISerializer, Serializer1>();
             // Apply factory pattern to IOutputter:
+            services.AddScoped<ConsoleOutputter>();
             services.AddSingleton<ConsoleOutputterFactory>();
             // Update DogReport to rely on ConsoleOutputterFactory
             services.AddSingleton<DogReport>();

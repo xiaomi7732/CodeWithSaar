@@ -13,8 +13,10 @@ namespace DI.ServiceContainerBasics
 
         public IOutputter Create()
         {
-            // _ = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<?>();
-            return new ConsoleOutputter();
+            // return new ConsoleOutputter();
+
+            // This way, console outputter is still constructed by the service container:
+            return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ConsoleOutputter>();
         }
     }
 }
