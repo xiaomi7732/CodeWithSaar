@@ -4,19 +4,22 @@ namespace DI.ServiceContainerBasics
 {
     public class DogReport
     {
-        private readonly ISerializer serializer;
-        private readonly IOutputter outputter;
+        private readonly ISerializer _serializer;
+        private readonly ConsoleOutputterFactory _outputterFactory;
 
-        public DogReport(ISerializer serializer, IOutputter outputter)
+        public DogReport(ISerializer serializer, ConsoleOutputterFactory outputterFactory)
         {
-            this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
-            this.outputter = outputter ?? throw new ArgumentNullException(nameof(outputter));
+            _serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
+            _outputterFactory = _outputterFactory ?? throw new ArgumentNullException(nameof(_outputterFactory));
         }
 
         public void Print(Dog dog)
         {
-            string dogJson = serializer.SerializeObject(dog);
-            outputter.WriteLine(dogJson);
+            string dogJson = _serializer.SerializeObject(dog);
+            using (IOutputter outputter = _outputterFactory.Create())
+            {
+                outputter.WriteLine(dogJson);
+            }
         }
     }
 }

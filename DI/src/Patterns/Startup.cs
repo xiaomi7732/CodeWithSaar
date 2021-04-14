@@ -35,8 +35,15 @@ namespace Patterns
             });
 
             // Anti pattern: Captive Dependency: DogReport will hold ISerializer & IOutputter
-            services.AddScoped<ISerializer, Serializer1>();
-            services.AddScoped<IOutputter, ConsoleOutputter>();
+            // services.AddScoped<ISerializer, Serializer1>();
+            // services.AddScoped<IOutputter, ConsoleOutputter>();
+            // services.AddSingleton<DogReport>();
+
+            // Resolve anti pattern
+            services.AddSingleton<ISerializer, Serializer1>();
+            // Apply factory pattern to IOutputter:
+            services.AddSingleton<ConsoleOutputterFactory>();
+            // Update DogReport to rely on ConsoleOutputterFactory
             services.AddSingleton<DogReport>();
         }
 
