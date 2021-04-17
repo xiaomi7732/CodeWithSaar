@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DI.ServiceContainerBasics
 {
@@ -22,4 +23,33 @@ namespace DI.ServiceContainerBasics
             Console.WriteLine(value);
         }
     }
+
+    // public class ConsoleOutputterFactory
+    // {
+    //     private readonly IServiceScopeFactory scopeFactory;
+
+    //     public ConsoleOutputterFactory(IServiceScopeFactory scopeFactory)
+    //     {
+    //         this.scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
+    //     }
+
+    //     public ConsoleOutputter Create()
+    //     {
+    //         return scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ConsoleOutputter>();
+    //     }
+    // }
+
+    // public class ScopedServiceFactory<T>
+    //     where T: IDisposable
+    // {
+    //     private readonly IServiceScopeFactory scopeFactory;
+
+    //     public ScopedServiceFactory(IServiceScopeFactory scopeFactory)
+    //     {
+    //         this.scopeFactory = scopeFactory;
+    //     }
+
+    //     public T Create()
+    //         => scopeFactory.CreateScope().ServiceProvider.GetRequiredService<T>();
+    // }
 }

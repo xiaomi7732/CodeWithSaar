@@ -5,9 +5,9 @@ namespace DI.ServiceContainerBasics
     public class DogReport
     {
         private readonly ISerializer serializer;
-        private readonly IOutputter outputter;
+        private readonly ConsoleOutputter outputter;
 
-        public DogReport(ISerializer serializer, IOutputter outputter)
+        public DogReport(ISerializer serializer, ConsoleOutputter outputter)
         {
             this.serializer = serializer ?? throw new ArgumentNullException(nameof(serializer));
             this.outputter = outputter ?? throw new ArgumentNullException(nameof(outputter));

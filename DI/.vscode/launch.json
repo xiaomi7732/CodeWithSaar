@@ -24,13 +24,13 @@
             "stopAtEntry": false
         },
         {
-            "name": ".NET Core Launch (AnitPatterns WebAPI)",
+            "name": ".NET Core Launch (Patterns WebAPI)",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build pattern example",
-            "program": "${workspaceFolder}/src/AntiPatterns/bin/Debug/net5.0/AntiPatterns.dll",
+            "program": "${workspaceFolder}/src/Patterns/bin/Debug/net5.0/Patterns.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/src/AntiPatterns",
+            "cwd": "${workspaceFolder}/src/Patterns",
             "console": "internalConsole",
             "stopAtEntry": false
         },
