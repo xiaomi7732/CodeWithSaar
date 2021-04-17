@@ -1,16 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DI.ServiceContainerBasics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace Patterns
@@ -35,8 +28,9 @@ namespace Patterns
             });
 
             // Anti pattern: Captive Dependency: DogReport will hold ISerializer & IOutputter
-            services.AddScoped<ISerializer, Serializer1>();
-            services.AddScoped<IOutputter, ConsoleOutputter>();
+            services.AddSingleton<ISerializer, Serializer1>();
+            services.AddScoped<ConsoleOutputter>();
+            services.AddSingleton(typeof(ScoppedServiceFactory<,>));
             services.AddSingleton<DogReport>();
         }
 

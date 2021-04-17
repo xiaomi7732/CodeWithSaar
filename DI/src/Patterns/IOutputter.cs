@@ -24,6 +24,25 @@ namespace DI.ServiceContainerBasics
         }
     }
 
+    public class ScoppedServiceFactory<TService, TImplementation>
+        where TImplementation : TService
+    {
+        private readonly IServiceScopeFactory scopeFactory;
+
+        public ScoppedServiceFactory(IServiceScopeFactory scopeFactory)
+        {
+            this.scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
+        }
+        public TService Create()
+        {
+            using (IServiceScope scope = scopeFactory.CreateScope())
+            {
+                return scope.ServiceProvider.GetRequiredService<TImplementation>();
+            }
+        }
+    }
+
+
     // public class ConsoleOutputterFactory
     // {
     //     private readonly IServiceScopeFactory scopeFactory;
