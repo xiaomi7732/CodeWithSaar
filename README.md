@@ -17,3 +17,4 @@ This is the codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.
   * [DI in .NET Core & ASP.NET Core](https://youtu.be/cYV1JmWiTHQ) | Available on 3/28/2021
   * [Service lifetime in DI container of ASP.NET Core](https://youtu.be/MkORmRZrljo) | Available on 4/5/2021
   * [Three Anti-Patterns](https://youtu.be/8z1oJSPabLw) | Available on 4/12/2021
+  * [Factory Pattern in DI](https://youtu.be/9Ocjb-NLGhw) | Available on 4/19/2021
