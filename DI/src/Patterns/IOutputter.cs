@@ -19,7 +19,7 @@ namespace DI.ServiceContainerBasics
 
         public void WriteLine(string value)
         {
-            Console.WriteLine(_id);
+            Console.WriteLine($"{nameof(ConsoleOutputter)} instance id: {_id}");
             Console.WriteLine(value);
         }
     }
