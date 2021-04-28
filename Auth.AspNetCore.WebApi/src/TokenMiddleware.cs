@@ -29,7 +29,7 @@ namespace JWTAuth.AspNetCore.WebAPI
         public async Task Invoke(
             HttpContext httpContext,
             IUserValidationService userValidationService,
-            IServiceProvider serviceProvider,
+            IServiceScopeFactory serviceScopeFactory,
             IOptions<JWTAuthOptions> options)
         {
             if (httpContext is null)
@@ -42,9 +42,9 @@ namespace JWTAuth.AspNetCore.WebAPI
                 throw new InvalidOperationException("No IUserValidationService registered.");
             }
 
-            if (serviceProvider is null)
+            if (serviceScopeFactory is null)
             {
-                throw new ArgumentNullException(nameof(serviceProvider));
+                throw new ArgumentNullException(nameof(serviceScopeFactory));
             }
 
             JWTAuthOptions jwtAuthOptions = options?.Value ?? new JWTAuthOptions();
@@ -67,11 +67,8 @@ namespace JWTAuth.AspNetCore.WebAPI
                     return; // Do NOT pass user validation.
                 }
 
-                if (!await ValidateRoleInfo(validUser, serviceProvider))
-                {
-                    WriteUnauthorized(httpContext);
-                    return; // Do NOT pass role validation.
-                }
+                // Fetching the role info.
+                validUser.Roles = await ValidateRoleInfo(validUser, serviceScopeFactory).ConfigureAwait(false);
 
                 string accessToken = BuildAccessToken(jwtAuthOptions, validUser);
                 httpContext.Response.StatusCode = StatusCodes.Status200OK;
@@ -95,13 +92,15 @@ namespace JWTAuth.AspNetCore.WebAPI
             httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
         }
 
-        private Task<bool> ValidateRoleInfo(UserInfo validUser, IServiceProvider serviceProvider)
+        private Task<IEnumerable<string>> ValidateRoleInfo(UserInfo validUser, IServiceScopeFactory serviceScopeFactory)
         {
-            IRoleValidationService roleValidationService = serviceProvider.GetService<IRoleValidationService>();
+            using IServiceScope scope = serviceScopeFactory.CreateScope();
+
+            IRoleValidationService roleValidationService = scope.ServiceProvider.GetService<IRoleValidationService>();
             if (roleValidationService == null)
             {
                 // No role validation service exist, treat role validation as a success.
-                Task.FromResult(true);
+                return Task.FromResult(Enumerable.Empty<string>());
             }
             return roleValidationService.ValidateRolesAsync(validUser);
         }

@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using JWTAuth.AspNetCore.WebAPI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 
@@ -22,5 +25,9 @@ namespace Microsoft.Extensions.DependencyInjection
         public PathString TokenPath { get; set; } = "/token";
 
         public Func<MessageReceivedContext, Task> OnJWTAuthenticationMessageReceived { get; set; }
+
+        public Func<string, IServiceProvider, Task<UserInfo>> OnValidateUserInfo { get; set; } = (token, p) => Task.FromResult<UserInfo>(null);
+
+        public Func<UserInfo, IServiceProvider, Task<IEnumerable<string>>> OnValidateRoleInfo { get; set; } = (user, p) => Task.FromResult(Enumerable.Empty<string>());
     }
 }
