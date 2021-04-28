@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using JWTAuth.AspNetCore.WebAPI;
 
@@ -9,20 +10,17 @@ namespace AuthExample.ConsumeNuGet
         {
             if (login?.Username == "saar")
             {
-                return Task.FromResult(new UserInfo()
-                {
-                    Name = login.Username,
-                });
+                return Task.FromResult(new UserInfo(login.Username, login));
             }
-            return Task.FromResult((UserInfo)null);
+            return Task.FromResult<UserInfo>(null);
         }
 
-        public override Task ValidateRolesAsync(UserInfo validUser)
+        public override Task<IEnumerable<string>> ValidateRolesAsync(UserInfo validUser)
         {
-            validUser.Roles = new []{
+            validUser.Roles = new[]{
                 "User"
             };
-            return Task.CompletedTask;
+            return Task.FromResult(validUser.Roles);
         }
     }
 }
