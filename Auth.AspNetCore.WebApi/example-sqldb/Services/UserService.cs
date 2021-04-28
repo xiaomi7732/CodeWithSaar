@@ -36,9 +36,14 @@ namespace JWT.Example.WithSQLDB
             await UserDBContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public IAsyncEnumerable<User> ListUsersAsync(CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<User> ListUsersAsync(CancellationToken cancellationToken = default)
         {
-            return UserDBContext.Users.AsAsyncEnumerable<User>();
+            await foreach(User user in UserDBContext.Users.AsAsyncEnumerable<User>())
+            {
+                // Redact the password hash
+                user.PasswordHash = null;
+                yield  return user;
+            }
         }
 
         public Task ChangePasswordAsync(User user, CancellationToken cancellationToken = default)
