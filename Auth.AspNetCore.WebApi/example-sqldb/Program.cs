@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace example_sqldb
+namespace JWT.Example.WithSQLDB
 {
     public class Program
     {

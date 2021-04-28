@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace example_sqldb.Controllers
+namespace JWT.Example.WithSQLDB.Controllers
 {
     [ApiController]
     [Route("[controller]")]

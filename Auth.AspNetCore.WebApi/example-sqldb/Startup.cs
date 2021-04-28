@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace example_sqldb
+namespace JWT.Example.WithSQLDB
 {
     public class Startup
     {

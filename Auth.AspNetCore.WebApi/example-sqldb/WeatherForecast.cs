@@ -1,6 +1,6 @@
 using System;
 
-namespace example_sqldb
+namespace JWT.Example.WithSQLDB
 {
     public class WeatherForecast
     {
