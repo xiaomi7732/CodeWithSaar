@@ -8,6 +8,8 @@ namespace JWT.Example.WithSQLDB
         public Guid Id { get; set; }
         public string Name { get; set; }
 
-        public List<User> Users {get;} = new List<User>();
+        public bool IsActive { get; set; } = true;
+
+        public List<User> Users { get; } = new List<User>();
     }
 }
