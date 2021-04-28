@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace JWT.Example.WithSQLDB
 {
@@ -6,5 +7,8 @@ namespace JWT.Example.WithSQLDB
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public byte[] PasswordHash { get; set; }
+
+        public List<Role> Roles { get; } = new List<Role>();
     }
 }
