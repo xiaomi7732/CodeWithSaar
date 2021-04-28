@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using JWTAuth.AspNetCore.WebAPI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -34,13 +33,13 @@ namespace QuickStart.WebAPI
                 opt.OnValidateUserInfo = (jsonBody, p) =>
                 {
                     UserService userService = p.GetRequiredService<UserService>();
-                    return userService.ValidateUserAsync(jsonBody);
+                    return userService.CreateValidUserAsync(jsonBody);
                 };
 
                 opt.OnValidateRoleInfo = (userInfo, p) =>
                 {
                     UserService userService = p.GetRequiredService<UserService>();
-                    return userService.ValidateRolesAsync(userInfo);
+                    return userService.ValidateRolesAsync(userInfo.Name);
                 };
 
                 // To support SignalR authentication

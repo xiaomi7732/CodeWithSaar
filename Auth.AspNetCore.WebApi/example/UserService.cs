@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using JWTAuth.AspNetCore.WebAPI;
 
 namespace QuickStart.WebAPI
 {
-    internal class UserService : UserServiceBase<DefaultUserLogin>
+    internal class UserService
     {
         // User lookup dictionary. Should be in a database or something, password hashed.
         private Dictionary<string, byte[]> _inMemoryUserDB = new Dictionary<string, byte[]>()
@@ -24,8 +25,11 @@ namespace QuickStart.WebAPI
             ("adam", "User")
         };
 
-        protected override async Task<UserInfo> IsValidUserAsync(DefaultUserLogin login)
+        public async Task<UserInfo> CreateValidUserAsync(string jsonBody)
         {
+            // Deserialize the body from the token request.
+            DefaultUserLogin login = JsonSerializer.Deserialize<DefaultUserLogin>(jsonBody, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
             // This is just an example with hard-coded values.
             // Check with database or other service to making sure the user info is valid.
             byte[] passwordHash = await GetHashedPasswordFromDBOrSomewhereElseAsync(login.Username).ConfigureAwait(false);
@@ -46,9 +50,9 @@ namespace QuickStart.WebAPI
             return new UserInfo(login.Username, login);
         }
 
-        public override Task<IEnumerable<string>> ValidateRolesAsync(UserInfo userInfo)
+        public Task<IEnumerable<string>> ValidateRolesAsync(string validUserName)
         {
-            return GetRolesFromDBOrSomewhereElseAsync(userInfo.Name);
+            return GetRolesFromDBOrSomewhereElseAsync(validUserName);
         }
 
         /// <summary>
