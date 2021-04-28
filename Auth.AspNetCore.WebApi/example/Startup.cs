@@ -27,13 +27,22 @@ namespace QuickStart.WebAPI
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "QuickStart.WebAPI", Version = "v1" });
             });
 
-            // Add service to support User authentication / authorization.
-            services.AddSingleton<IUserValidationService, UserService>();
-            // Add service to support Role authentication / authorization.
-            services.AddSingleton<IRoleValidationService, UserService>();
+            services.AddScoped<UserService>();
             // Add services to support JWT authentication / authorization.
             services.AddJWTAuth(opt =>
             {
+                opt.OnValidateUserInfo = (jsonBody, p) =>
+                {
+                    UserService userService = p.GetRequiredService<UserService>();
+                    return userService.ValidateUserAsync(jsonBody);
+                };
+
+                opt.OnValidateRoleInfo = (userInfo, p) =>
+                {
+                    UserService userService = p.GetRequiredService<UserService>();
+                    return userService.ValidateRolesAsync(userInfo);
+                };
+
                 // To support SignalR authentication
                 opt.OnJWTAuthenticationMessageReceived = context =>
                 {

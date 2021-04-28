@@ -26,8 +26,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public Func<MessageReceivedContext, Task> OnJWTAuthenticationMessageReceived { get; set; }
 
-        public Func<string, Task<UserInfo>> ValidateUserInfo { get; set; } = token => Task.FromResult<UserInfo>(null);
+        public Func<string, IServiceProvider, Task<UserInfo>> OnValidateUserInfo { get; set; } = (token, p) => Task.FromResult<UserInfo>(null);
 
-        public Func<UserInfo, Task<IEnumerable<string>>> ValidateRoleInfo { get; set; } = user => Task.FromResult(Enumerable.Empty<string>());
+        public Func<UserInfo, IServiceProvider, Task<IEnumerable<string>>> OnValidateRoleInfo { get; set; } = (user, p) => Task.FromResult(Enumerable.Empty<string>());
     }
 }

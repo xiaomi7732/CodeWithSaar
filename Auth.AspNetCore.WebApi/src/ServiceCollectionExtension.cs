@@ -1,5 +1,7 @@
+using JWTAuth.AspNetCore.WebAPI;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -35,6 +37,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 // TODO: Is it a good idea to keep it in the static field like this?
                 _jwtAuthOptionsCache = options;
             });
+
+            services.TryAddScoped<IUserValidationService, DefaultUserService>();
+            services.TryAddScoped<IRoleValidationService, DefaultUserService>();
 
             services
             .AddAuthentication(opt =>
