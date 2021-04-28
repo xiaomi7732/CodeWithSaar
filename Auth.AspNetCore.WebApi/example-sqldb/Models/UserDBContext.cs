@@ -9,7 +9,7 @@ namespace JWT.Example.WithSQLDB
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("UserDB.db");
+            optionsBuilder.UseSqlite("Data Source=UserDB.db");
         }
     }
 }
