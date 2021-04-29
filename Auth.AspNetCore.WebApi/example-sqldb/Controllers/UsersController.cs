@@ -51,23 +51,8 @@ namespace JWT.Example.WithSQLDB
 
         [HttpPost]
         [Route("")]
-        public async Task<ActionResult> CreateUserAsync([FromBody] UserLogin newUserInfo)
+        public async Task<ActionResult> CreateUserAsync([FromBody] UserRegisterModel newUserInfo)
         {
-            if (newUserInfo is null)
-            {
-                return BadRequest("User info is not provided.");
-            }
-
-            if (string.IsNullOrEmpty(newUserInfo.UserName))
-            {
-                return BadRequest("User name is not provided.");
-            }
-
-            if (string.IsNullOrEmpty(newUserInfo.Password))
-            {
-                return BadRequest("Password is not provided.");
-            }
-
             try
             {
                 User newUser = await _userService.AddUserAsync(newUserInfo.UserName, newUserInfo.Password).ConfigureAwait(false);

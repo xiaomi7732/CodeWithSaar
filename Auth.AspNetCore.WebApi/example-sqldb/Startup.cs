@@ -38,7 +38,7 @@ namespace JWT.Example.WithSQLDB
             {
                 opt.OnValidateUserInfo = async (loginJson, p) =>
                 {
-                    UserLogin userLogin = JsonSerializer.Deserialize<UserLogin>(loginJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    UserLoginModel userLogin = JsonSerializer.Deserialize<UserLoginModel>(loginJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
                     UserService userService = p.GetRequiredService<UserService>();
                     User validUser = await userService.GetValidUserAsync(userLogin.UserName, userLogin.Password).ConfigureAwait(false);
                     return new UserInfo(validUser.Name, userLogin);
