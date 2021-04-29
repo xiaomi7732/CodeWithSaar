@@ -34,7 +34,7 @@ namespace JWT.Example.WithSQLDB
         {
             try
             {
-                User target = await _userService.GetUser(new User() { Id = id }).ConfigureAwait(false);
+                User target = await _userService.GetUserByIdAsync(id).ConfigureAwait(false);
                 return Ok(target);
             }
             catch (InvalidOperationException ex) when (ex.Message.StartsWith("Sequence contains no elements", StringComparison.OrdinalIgnoreCase))
@@ -51,7 +51,7 @@ namespace JWT.Example.WithSQLDB
 
         [HttpPost]
         [Route("")]
-        public async Task<ActionResult> CreateUserAsync([FromBody] NewUserInfo newUserInfo)
+        public async Task<ActionResult> CreateUserAsync([FromBody] UserLogin newUserInfo)
         {
             if (newUserInfo is null)
             {

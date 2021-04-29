@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
@@ -28,9 +29,7 @@ namespace JWT.Example.WithSQLDB
                 throw new System.ArgumentException($"'{nameof(password)}' cannot be null or empty.", nameof(password));
             }
 
-            using SHA256 sha256 = SHA256.Create();
-            using Stream passwordStream = password.ToStream();
-            byte[] passwordHash = await sha256.ComputeHashAsync(passwordStream).ConfigureAwait(false);
+            byte[] passwordHash = await ComputePasswordHashAsync(password).ConfigureAwait(false);
             User newUser = new User { Name = userName, PasswordHash = passwordHash };
             UserDBContext.Add<User>(newUser);
             await UserDBContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -46,20 +45,39 @@ namespace JWT.Example.WithSQLDB
             }
         }
 
+        public Task<User> GetUserByNameAsync(string userName)
+        {
+            return UserDBContext.Users.SingleAsync(u => string.Equals(userName, u.Name));
+        }
+        public async Task<User> GetValidUserAsync(string userName, string clearTextPassword, CancellationToken cancellationToken = default)
+        {
+            User target = await GetUserByNameAsync(userName).ConfigureAwait(false);
+            byte[] actualPasswordHash = await ComputePasswordHashAsync(clearTextPassword).ConfigureAwait(false);
+            if (actualPasswordHash.SequenceEqual(target.PasswordHash))
+            {
+                return target;
+            }
+            return null;
+        }
+
         public Task ChangePasswordAsync(User user, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<User> GetUser(User user, CancellationToken cancellationToken = default)
+        public async Task<User> GetUserByIdAsync(
+            Guid userId,
+            Func<IQueryable<User>, IQueryable<User>> onUserFetched = null,
+            Func<User, User> onReturnUser = null,
+            CancellationToken cancellationToken = default)
         {
-            if (user is null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            User target =  await UserDBContext.Users.SingleAsync(u => u.Id == user.Id);
-            return RedactSensitiveData(target);
+            onUserFetched ??= users => users;
+            onReturnUser ??= RedactSensitiveData;
+            IQueryable<User> users = UserDBContext.Users;
+            users = onUserFetched(users);
+            
+            User target = await users.SingleAsync(u => u.Id == userId);
+            return onReturnUser(target);
         }
 
         public async Task<IEnumerable<Role>> GetRoles(User user)
@@ -73,6 +91,14 @@ namespace JWT.Example.WithSQLDB
             // Redact the password hash
             user.PasswordHash = null;
             return user;
+        }
+
+        private async Task<byte[]> ComputePasswordHashAsync(string clearTextPassword)
+        {
+            using SHA256 sha256 = SHA256.Create();
+            using Stream passwordStream = clearTextPassword.ToStream();
+            byte[] passwordHash = await sha256.ComputeHashAsync(passwordStream).ConfigureAwait(false);
+            return passwordHash;
         }
     }
 }

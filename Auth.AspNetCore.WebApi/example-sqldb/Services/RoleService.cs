@@ -9,9 +9,13 @@ namespace JWT.Example.WithSQLDB
 {
     public class RoleService : UserDBBase
     {
-        public RoleService(UserDBContext userDBContext) : base(userDBContext)
-        {
+        private readonly UserService _userService;
 
+        public RoleService(
+            UserDBContext userDBContext,
+            UserService userService) : base(userDBContext)
+        {
+            _userService = userService ?? throw new ArgumentNullException(nameof(userService));
         }
 
         public IAsyncEnumerable<Role> ListRoles() => UserDBContext.Roles.AsAsyncEnumerable();
@@ -29,38 +33,23 @@ namespace JWT.Example.WithSQLDB
             return newRole;
         }
 
-        public async Task AddRoleAssignmentAsync(string userName, string roleName, CancellationToken cancellationToken = default)
+        public async Task AddRoleAssignmentAsync(Guid userId, Guid roleId, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrEmpty(userName))
-            {
-                throw new ArgumentException($"'{nameof(userName)}' cannot be null or empty.", nameof(userName));
-            }
-
-            if (string.IsNullOrEmpty(roleName))
-            {
-                throw new ArgumentException($"'{nameof(roleName)}' cannot be null or empty.", nameof(roleName));
-            }
-
             User targetUser = null;
-            try
-            {
+            targetUser = await _userService.GetUserByIdAsync(
+                userId,
+                users => users.Include(u => u.Roles),
+                onReturnUser: user => user).ConfigureAwait(false);
 
-                targetUser = GetFirstUserByName(userName);
-                if (targetUser is null)
-                {
-                    throw new InvalidOperationException($"Target user {userName} is not found.");
-                }
-            }
-            catch (Exception ex)
+            if (targetUser is null)
             {
-                System.Console.WriteLine(ex.ToString());
-                throw;
+                throw new InvalidOperationException($"Target user {userId} is not found.");
             }
 
-            Role targetRole = GetFirstRoleByName(roleName);
+            Role targetRole = await GetRoleByIdAsync(roleId).ConfigureAwait(false);
             if (targetRole is null)
             {
-                throw new InvalidOperationException($"Target role {roleName} is not found.");
+                throw new InvalidOperationException($"Target role {roleId} is not found.");
             }
 
             if (targetUser.Roles.FirstOrDefault(r => string.Equals(r.Name, targetRole.Name)) is null)
@@ -69,6 +58,9 @@ namespace JWT.Example.WithSQLDB
             }
             await UserDBContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
+
+        public Task<Role> GetRoleByIdAsync(Guid roleId)
+            => UserDBContext.Roles.SingleOrDefaultAsync(r => r.Id == roleId);
 
         public Task DisableRoleAsync(Role role)
         {
@@ -80,11 +72,5 @@ namespace JWT.Example.WithSQLDB
             Role targetRole = await UserDBContext.Roles.Include(r => r.Users).SingleAsync(r => r.Id == role.Id);
             return targetRole.Users;
         }
-
-        private User GetFirstUserByName(string userName)
-            => UserDBContext.Users.Include(u => u.Roles).SingleOrDefault(u => string.Equals(u.Name, userName));
-
-        private Role GetFirstRoleByName(string roleName)
-            => UserDBContext.Roles.SingleOrDefault(r => string.Equals(r.Name, roleName));
     }
 }

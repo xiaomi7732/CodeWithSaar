@@ -58,5 +58,21 @@ namespace JWT.Example.WithSQLDB
                 return StatusCode(500, "Internal Server Error");
             }
         }
+
+        [HttpPost]
+        [Route("{roleId}/users/{userId}")]
+        public async Task<ActionResult> CreateRoleAssignment(Guid roleId, Guid userId)
+        {
+            try
+            {
+                await _roleService.AddRoleAssignmentAsync(userId, roleId).ConfigureAwait(false);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed adding role assignment.");
+                return Conflict();
+            }
+        }
     }
 }

@@ -1,3 +1,8 @@
+using System;
+using System.Dynamic;
+using System.Linq;
+using System.Text.Json;
+using JWTAuth.AspNetCore.WebAPI;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +33,24 @@ namespace JWT.Example.WithSQLDB
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "example_sqldb", Version = "v1" });
             });
+
+            services.AddJWTAuth(opt =>
+            {
+                opt.OnValidateUserInfo = async (loginJson, p) =>
+                {
+                    UserLogin userLogin = JsonSerializer.Deserialize<UserLogin>(loginJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    UserService userService = p.GetRequiredService<UserService>();
+                    User validUser = await userService.GetValidUserAsync(userLogin.UserName, userLogin.Password).ConfigureAwait(false);
+                    return new UserInfo(validUser.Name, userLogin);
+                };
+
+                opt.OnValidateRoleInfo = async (userInfo, p) =>
+                {
+                    UserService userService = p.GetRequiredService<UserService>();
+                    User theUser = await userService.GetUserByNameAsync(userInfo.Name);
+                    return (await userService.GetRoles(theUser).ConfigureAwait(false)).Select(r => r.Name);
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,17 +63,11 @@ namespace JWT.Example.WithSQLDB
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "example_sqldb v1"));
             }
 
-            // Run the following code to initialize the DB with admin / 123
-            // UserService userService = app.ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<UserService>();
-            // Task.Run(() => userService.CreateAsync("admin", "123").ConfigureAwait(false));
-            // Task.Run(()=> userService.CreateRoleAsync("Admin").ConfigureAwait(false));
-            // Task.Run(() => userService.AddRoleAssignmentAsync("admin", "Admin").ConfigureAwait(false));
-
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseJWTAuth();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
