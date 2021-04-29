@@ -21,6 +21,7 @@ namespace JWT.Example.WithSQLDB
         {
             services.AddScoped<UserDBContext>();
             services.AddScoped<UserService>();
+            services.AddScoped<RoleService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

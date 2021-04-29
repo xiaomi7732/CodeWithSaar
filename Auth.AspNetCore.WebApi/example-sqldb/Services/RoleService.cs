@@ -14,14 +14,19 @@ namespace JWT.Example.WithSQLDB
 
         }
 
-        public async Task AddRoleAsync(string roleName, CancellationToken cancellationToken = default)
+        public IAsyncEnumerable<Role> ListRoles() => UserDBContext.Roles.AsAsyncEnumerable();
+
+        public async Task<Role> AddRoleAsync(string roleName, CancellationToken cancellationToken = default)
         {
             if (roleName is null)
             {
                 throw new System.ArgumentNullException(nameof(roleName));
             }
-            await UserDBContext.Roles.AddAsync(new Role() { Name = roleName }, cancellationToken).ConfigureAwait(false);
+            Role newRole = new Role() { Name = roleName };
+            await UserDBContext.Roles.AddAsync(newRole, cancellationToken).ConfigureAwait(false);
             await UserDBContext.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+            return newRole;
         }
 
         public async Task AddRoleAssignmentAsync(string userName, string roleName, CancellationToken cancellationToken = default)
