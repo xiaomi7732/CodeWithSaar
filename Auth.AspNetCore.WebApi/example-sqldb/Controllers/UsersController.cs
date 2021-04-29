@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace JWT.Example.WithSQLDB
 {
@@ -10,10 +11,14 @@ namespace JWT.Example.WithSQLDB
     public class UsersController : ControllerBase
     {
         private readonly UserService _userService;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(UserService userService)
+        public UsersController(
+            UserService userService,
+            ILogger<UsersController> logger)
         {
             _userService = userService ?? throw new System.ArgumentNullException(nameof(userService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         [HttpGet]
@@ -56,6 +61,7 @@ namespace JWT.Example.WithSQLDB
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Failed to create user login. {newUserInfo}", newUserInfo);
                 // Log it here.
                 return StatusCode(500, "Internal Server Error.");
             }
