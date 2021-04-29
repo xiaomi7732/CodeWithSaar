@@ -30,9 +30,23 @@ namespace JWT.Example.WithSQLDB
 
         [HttpGet]
         [Route("{id}")]
-        public ActionResult<User> GetUser(Guid id)
+        public async Task<ActionResult<User>> GetUser(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                User target = await _userService.GetUser(new User() { Id = id }).ConfigureAwait(false);
+                return Ok(target);
+            }
+            catch (InvalidOperationException ex) when (ex.Message.StartsWith("Sequence contains no elements", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogError(ex, "User by id doesn't exist.");
+                return NotFound(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed fetch the user.");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
 
         [HttpPost]

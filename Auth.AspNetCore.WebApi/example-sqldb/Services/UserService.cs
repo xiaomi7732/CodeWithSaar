@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace JWT.Example.WithSQLDB
 {
@@ -39,12 +37,11 @@ namespace JWT.Example.WithSQLDB
             return newUser; // New user with id.
         }
 
-        public async IAsyncEnumerable<User> ListUsersAsync([EnumeratorCancellation]CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<User> ListUsersAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (User user in UserDBContext.Users.AsAsyncEnumerable<User>())
             {
-                // Redact the password hash
-                user.PasswordHash = null;
+                RedactSensitiveData(user);
                 yield return user;
             }
         }
@@ -54,10 +51,28 @@ namespace JWT.Example.WithSQLDB
             throw new NotImplementedException();
         }
 
+        public async Task<User> GetUser(User user, CancellationToken cancellationToken = default)
+        {
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            User target =  await UserDBContext.Users.SingleAsync(u => u.Id == user.Id);
+            return RedactSensitiveData(target);
+        }
+
         public async Task<IEnumerable<Role>> GetRoles(User user)
         {
             User targetUser = await UserDBContext.Users.Include(u => u.Roles).SingleAsync(u => u.Id == user.Id);
             return targetUser.Roles;
+        }
+
+        private static User RedactSensitiveData(User user)
+        {
+            // Redact the password hash
+            user.PasswordHash = null;
+            return user;
         }
     }
 }
