@@ -18,3 +18,7 @@ This is the codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.
   * [Service lifetime in DI container of ASP.NET Core](https://youtu.be/MkORmRZrljo) | Available on 4/5/2021
   * [Three Anti-Patterns](https://youtu.be/8z1oJSPabLw) | Available on 4/12/2021
   * [Factory Pattern in DI](https://youtu.be/9Ocjb-NLGhw) | Available on 4/19/2021
+
+* JWT authentication for WebAPI full example
+  * [Readme](./JWTFullExample/README.md)
+  * [YouTube video](https://youtu.be/tLgdbTqQp7Q) | Available on 5/3/2021
