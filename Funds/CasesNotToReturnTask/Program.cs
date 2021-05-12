@@ -9,20 +9,20 @@ namespace CasesNotToReturnTask
         async static Task Main(string[] args)
         {
             Program p = new Program();
-            string result = await p.MethodA().ConfigureAwait(false);
+            string result = await p.MethodAAsync().ConfigureAwait(false);
             Console.WriteLine($"Final result: {result}");
         }
 
         #region Where Task Relay is OK
-        private async Task<string> MethodA()
+        private async Task<string> MethodAAsync()
         {
-            return await MethodB().ConfigureAwait(false);
+            return await MethodBAsync().ConfigureAwait(false);
         }
         #endregion
 
         #region  Task relay is not OK: Exception will escape
 
-        private async Task<string> MethodB()
+        private async Task<string> MethodBAsync()
         {
             try
             {
