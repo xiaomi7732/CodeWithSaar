@@ -9,32 +9,24 @@ namespace CasesNotToReturnTask
         async static Task Main(string[] args)
         {
             Program p = new Program();
-            string result = await p.PassOnTheWords().ConfigureAwait(false);
+            string result = await p.MethodA().ConfigureAwait(false);
             Console.WriteLine($"Final result: {result}");
         }
 
-        #region Task Relay is OK
-        private async Task<string> PassOnTheWords()
+        #region Where Task Relay is OK
+        private async Task<string> MethodA()
         {
-            Console.WriteLine($"In {nameof(PassOnTheWords)}");
-            return await ExceptionHandler().ConfigureAwait(false);
+            return await MethodB().ConfigureAwait(false);
         }
-
-        // private Task<string> PassOnTheWords()
-        // {
-        //     Console.WriteLine($"In {nameof(PassOnTheWords)}");
-        //     return ExceptionHandler();
-        // }
         #endregion
 
         #region  Task relay is not OK: Exception will escape
 
-        private async Task<string> ExceptionHandler()
+        private async Task<string> MethodB()
         {
             try
             {
-                Console.WriteLine($"In {nameof(ExceptionHandler)}");
-                return await GenerateString().ConfigureAwait(false);
+                return await GenerateStringAsync().ConfigureAwait(false);
             }
             catch (InvalidOperationException ex)
             {
@@ -43,29 +35,14 @@ namespace CasesNotToReturnTask
             }
         }
 
-        // The exception will escape the handler
-        // private Task<string> ExceptionHandler()
-        // {
-        //     try
-        //     {
-        //         Console.WriteLine($"In {nameof(ExceptionHandler)}");
-        //         return GenerateString();
-        //     }
-        //     catch (InvalidOperationException ex)
-        //     {
-        //         Console.WriteLine(ex);
-        //         return Task.FromResult("NO VALID STRING...");
-        //     }
-        // }
         #endregion
-
-        #region Exercise
-        private async Task<string> GenerateString()
+        private async Task<string> GenerateStringAsync()
         {
-            await Task.Delay(200);
+            await Task.Delay(200).ConfigureAwait(false);
             throw new InvalidOperationException("Someting is wrong");
         }
 
+        #region Exercise
         // Exercise: What is wrong with this code:
         // private Task WriteText(string input)
         // {
@@ -74,7 +51,6 @@ namespace CasesNotToReturnTask
         //         return sw.WriteAsync(input);
         //     }
         // }
+        #endregion
     }
-    #endregion
-
 }
