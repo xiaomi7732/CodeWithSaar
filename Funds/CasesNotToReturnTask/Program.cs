@@ -9,29 +9,35 @@ namespace CasesNotToReturnTask
         async static Task Main(string[] args)
         {
             Program p = new Program();
-            string result = await p.MethodAAsync().ConfigureAwait(false);
+            // Why unhandled InvalidOperationException?
+            string result = await p.MethodARelayBAsync().ConfigureAwait(false);
             Console.WriteLine($"Final result: {result}");
         }
 
         #region Where Task Relay is OK
-        private async Task<string> MethodAAsync()
+        // private async Task<string> MethodAAsync()
+        // {
+        //     return await MethodBAsync().ConfigureAwait(false);
+        // }
+
+        private Task<string> MethodARelayBAsync()
         {
-            return await MethodBAsync().ConfigureAwait(false);
+            return MethodBAsync();
         }
         #endregion
 
         #region  Task relay is not OK: Exception will escape
 
-        private async Task<string> MethodBAsync()
+        private Task<string> MethodBAsync()
         {
             try
             {
-                return await GenerateStringAsync().ConfigureAwait(false);
+                return GenerateStringAsync();
             }
             catch (InvalidOperationException ex)
             {
                 Console.WriteLine($"Handle exception. Message: {ex.Message}");
-                return "Something went wrong...";
+                return Task.FromResult("Something went wrong...");
             }
         }
 
@@ -44,13 +50,13 @@ namespace CasesNotToReturnTask
 
         #region Exercise
         // Exercise: What is wrong with this code:
-        // private Task WriteText(string input)
-        // {
-        //     using(StreamWriter sw = new StreamWriter("targetfile.txt"))
-        //     {
-        //         return sw.WriteAsync(input);
-        //     }
-        // }
+        private Task WriteText(string input)
+        {
+            using (StreamWriter sw = new StreamWriter("targetfile.txt"))
+            {
+                return sw.WriteAsync(input);
+            }
+        }
         #endregion
     }
 }
