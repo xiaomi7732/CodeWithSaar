@@ -6,6 +6,7 @@ namespace AnimalSuppliesClassLib
 {
     public class AnimalProvider
     {
+        private RandomIndexProvider _randomIndexProvider = new RandomIndexProvider();
         private static readonly HashSet<string> _animals = new HashSet<string>(){
             "A cat: meow",
             "Dog dog: woof",
@@ -19,6 +20,7 @@ namespace AnimalSuppliesClassLib
             return _animals.Skip(randomIndex).First();
         }
 
-        private int GetRandomAnimalIndex() => (new Random()).Next(_animals.Count - 1);
+        private int GetRandomAnimalIndex() =>
+            _randomIndexProvider.GetRandomIndex(_animals);
     }
 }
