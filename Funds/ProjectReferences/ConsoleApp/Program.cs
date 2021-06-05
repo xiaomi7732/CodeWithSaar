@@ -1,4 +1,5 @@
 ﻿using System;
+using AnimalSuppliesClassLib;
 
 namespace ConsoleApp
 {
@@ -6,7 +7,10 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            AnimalProvider provider = new AnimalProvider();
+            string animal = provider.GetAnAnimal();
+
+            Console.WriteLine(animal);
         }
     }
 }
