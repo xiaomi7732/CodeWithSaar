@@ -9,7 +9,8 @@ namespace AnimalSuppliesClassLib
         HashSet<string> animals = new HashSet<string>(){
             "A cat: meow",
             "Dog dog: woof",
-            "A cattle: moo"
+            "A cattle: moo",
+            "A lion: roar",
         };
 
         public string GetAnAnimal()
