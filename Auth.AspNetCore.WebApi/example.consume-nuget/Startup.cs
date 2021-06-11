@@ -31,7 +31,7 @@ namespace AuthExample.ConsumeNuGet
             services.AddJWTAuth(opt =>
             {
                 opt.OnValidateUserInfo = (jsonPayload, serviceProvider) =>
-                    serviceProvider.GetRequiredService<UserService>().ValidateUserAsync(jsonPayload);
+                    serviceProvider.GetRequiredService<UserService>().ValidUserAsync(jsonPayload);
 
                 opt.OnValidateRoleInfo = (userInfo, serviceProvider) =>
                     serviceProvider.GetRequiredService<UserService>().ValidateRolesAsync(userInfo);
