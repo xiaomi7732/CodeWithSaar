@@ -6,7 +6,7 @@
 
   <PropertyGroup>
     <PackageId>CodeWithSaar.JWTAuthentication.WebAPI</PackageId>
-    <Version>1.1.0-beta1</Version>
+    <Version>1.1.0-beta2</Version>
     <Authors>Saar</Authors>
     <Company>Saar</Company>
     <PackageTags>WebAPI;JWT;Authentication;Authorization</PackageTags>

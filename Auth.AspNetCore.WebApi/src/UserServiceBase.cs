@@ -10,6 +10,7 @@ namespace JWTAuth.AspNetCore.WebAPI
     /// A user service extension point.
     /// </summary>
     /// <typeparam name="T">Type for user login that deserialized from the login request.</typeparam>
+    [Obsolete("Do NOT use this anymore. Use delegates on JWTAuthOptions.", error: true)]
     public abstract class UserServiceBase<T> : IUserValidationService, IRoleValidationService
         where T : class
     {
