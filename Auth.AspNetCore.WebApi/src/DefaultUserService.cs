@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace JWTAuth.AspNetCore.WebAPI
 {
+    [Obsolete("Do NOT use this anymore. Use delegates on JWTAuthOptions.", error: true)]
     public class DefaultUserService : UserServiceBase<string>
     {
         private readonly JWTAuthOptions _options;

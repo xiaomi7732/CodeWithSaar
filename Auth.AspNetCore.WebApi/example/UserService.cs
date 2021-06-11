@@ -9,12 +9,17 @@ using JWTAuth.AspNetCore.WebAPI;
 
 namespace QuickStart.WebAPI
 {
+    /// <summary>
+    /// This is just an example implementation of UserService. Please adjust the code to getting the credentials from 
+    /// sources like external database or so.
+    /// </summary>
     internal class UserService
     {
         // User lookup dictionary. Should be in a database or something, password hashed.
         private Dictionary<string, byte[]> _inMemoryUserDB = new Dictionary<string, byte[]>()
         {
             ["saar"] = GetPasswordHash("123"),
+            ["user"] = GetPasswordHash("123"),
             ["adam"] = GetPasswordHash("123"),
         };
 
@@ -22,7 +27,8 @@ namespace QuickStart.WebAPI
         private HashSet<(string userName, string role)> _userRoleMapping = new HashSet<(string userName, string role)>(){
             ("saar", "User"),
             ("saar", "Admin"),
-            ("adam", "User")
+            ("adam", "User"),
+            ("user", "User"),
         };
 
         public async Task<UserInfo> CreateValidUserAsync(string jsonBody)

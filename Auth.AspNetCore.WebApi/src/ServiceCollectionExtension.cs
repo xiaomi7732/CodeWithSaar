@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Add JWT authentication related services.
         /// </summary>
-        public static IServiceCollection AddJWTAuth(this IServiceCollection services, Action<JWTAuthOptions> configure = null)
+        public static IServiceCollection AddJWTAuth(this IServiceCollection services, Action<JWTAuthOptions> configure = null, string jwtAuthOptionSectionName = JWTAuthOptions.SectionName)
         {
             services.AddOptions<JWTAuthOptions>().Configure<IConfiguration, ILogger<JWTAuthOptions>>((options, configuration, logger) =>
             {
@@ -37,9 +37,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 // TODO: Is it a good idea to keep it in the static field like this?
                 _jwtAuthOptionsCache = options;
             });
-
-            services.TryAddScoped<IUserValidationService, DefaultUserService>();
-            services.TryAddScoped<IRoleValidationService, DefaultUserService>();
 
             services
             .AddAuthentication(opt =>

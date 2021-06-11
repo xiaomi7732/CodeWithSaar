@@ -11,7 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public class JWTAuthOptions
     {
-        public static string SectionName = "JWTAuth";
+        public const string SectionName = "JWTAuth";
 
         public string IssuerSigningSecret { get; set; }
         public string Issuer { get; set; } = "JWTAuthIssuer";
@@ -24,10 +24,23 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public PathString TokenPath { get; set; } = "/token";
 
+        /// <summary>
+        /// A delegate that will be invoked when JWT authentication message is received. This is an extension point to allow manipulating the authentication context.
+        /// </summary>
         public Func<MessageReceivedContext, Task> OnJWTAuthenticationMessageReceived { get; set; }
 
+        /// <summary>
+        /// Gets or sets a delegate when user validation is needed. The delegate takes in a string as input, and returns a valid user info.
+        /// The string input will contain the POST request body for TokenPath.
+        /// </summary>
+        /// <returns>Returns a task that will have valid user information.</returns>
         public Func<string, IServiceProvider, Task<UserInfo>> OnValidateUserInfo { get; set; } = (token, p) => Task.FromResult<UserInfo>(null);
 
+        /// <summary>
+        /// Gets or sets a delegate when role validation is needed. The delegate takes in a valid user, it is expected to fetch the roles the user is in
+        /// as a list of string and returned as an async task.
+        /// </summary>
+        /// <returns>Returns a task, upon completion, gets the list of roles the user is in.</returns>
         public Func<UserInfo, IServiceProvider, Task<IEnumerable<string>>> OnValidateRoleInfo { get; set; } = (user, p) => Task.FromResult(Enumerable.Empty<string>());
     }
 }

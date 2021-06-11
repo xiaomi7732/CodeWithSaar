@@ -10,53 +10,32 @@ Authentication implementation without identity server should still be simple in 
     dotnet new webapi
     ```
 
-1. Create a UserService, inherits `UserServiceBase<DefaultUserLogin>`, to verify user info like it in [UserService.cs](example/UserService.cs)
+1. Create a UserService to verify user info like it in [UserService.cs](example/UserService.cs).
 
-    ```csharp
-    // User service to handle the Login created before 
-    internal class UserService : UserServiceBase<DefaultUserLogin>
-    {
-        protected override async Task<UserInfo> IsValidUserAsync(DefaultUserLogin login)
-        {
-            // This is just an example with hard-coded values.
-            // Check with database or other service to making sure the user info is valid.
-            byte[] passwordHash = await GetHashedPasswordFromDBOrSomewhereElseAsync(login.Username).ConfigureAwait(false);
-            if (passwordHash == null)
-            {
-                // Username doesn't match
-                return null;
-            }
-
-            byte[] loginPasswordHash = GetPasswordHash(login.Password);
-            if (!passwordHash.SequenceEqual(loginPasswordHash))
-            {
-                // Password doesn't match
-                return null;
-            }
-
-            // Create UserInfo
-            return new UserInfo(login.Username);
-        }
-
-        public override async Task ValidateRolesAsync(UserInfo userInfo)
-        {
-            userInfo.Roles = await GetRolesFromDBOrSomewhereElseAsync(userInfo.Name).ConfigureAwait(false);
-        }
-    }
-    ```
-
-1. Register the services in [Startup.cs](./example/Startup.cs):
+1. Setup JWT authentication / authorization in [Startup.cs](./example/Startup.cs):
 
     ```csharp
     public void ConfigureServices(IServiceCollection services)
     {
         ...
-        // Add service to support User authentication / authorization.
-        services.AddSingleton<IUserValidationService, UserService>();
-        // Add service to support Role authentication / authorization.
-        services.AddSingleton<IRoleValidationService, UserService>();
+        // The user service that will be used for validating users and roles.
+        services.AddScoped<UserService>();
         // Add service to support JWT authentication
-        services.AddJWTAuth();
+        services.AddJWTAuth(opt => {
+            // This delegate will be called when user validation is needed.
+            opt.OnValidateUserInfo = async (jsonBody, p) =>
+            {
+                UserService userService = p.GetRequiredService<UserService>();
+                return await userService.CreateValidUserAsync(jsonBody).ConfigureAwait(false);
+            };
+
+            // This delegate will be called when role validation is needed.
+            opt.OnValidateRoleInfo = async (userInfo, p) =>
+            {
+                UserService userService = p.GetRequiredService<UserService>();
+                return await userService.ValidateRolesAsync(userInfo.Name).ConfigureAwait(false);
+            };
+        });
     }
     ...
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -64,7 +43,6 @@ Authentication implementation without identity server should still be simple in 
         ...
         // Add this step in front of UserAuthorization().
         app.UseJWTAuth();
-        app.UseAuthorization();
         ...
     }
     ```
@@ -89,7 +67,7 @@ public class WeatherForecastController : ControllerBase
 
   ```json
   {
-    "username": "saar",
+    "username": "user",
     "password": "123"
   }
   ```

@@ -28,7 +28,6 @@ namespace JWTAuth.AspNetCore.WebAPI
 
         public async Task Invoke(
             HttpContext httpContext,
-            IUserValidationService userValidationService,
             IServiceScopeFactory serviceScopeFactory,
             IOptions<JWTAuthOptions> options)
         {
@@ -37,15 +36,13 @@ namespace JWTAuth.AspNetCore.WebAPI
                 throw new ArgumentNullException(nameof(httpContext));
             }
 
-            if (userValidationService is null)
-            {
-                throw new InvalidOperationException("No IUserValidationService registered.");
-            }
-
             if (serviceScopeFactory is null)
             {
                 throw new ArgumentNullException(nameof(serviceScopeFactory));
             }
+
+            using IServiceScope serviceScope = serviceScopeFactory.CreateScope();
+            IServiceProvider serviceProvider = serviceScope.ServiceProvider;
 
             JWTAuthOptions jwtAuthOptions = options?.Value ?? new JWTAuthOptions();
             PathString requestPath = httpContext.Request.Path;
@@ -60,7 +57,8 @@ namespace JWTAuth.AspNetCore.WebAPI
 
             try
             {
-                UserInfo validUser = await userValidationService.ValidateUserAsync(jsonContent).ConfigureAwait(false);
+
+                UserInfo validUser = await jwtAuthOptions.OnValidateUserInfo?.Invoke(jsonContent, serviceProvider);
                 if (validUser is null)
                 {
                     WriteUnauthorized(httpContext);
@@ -68,7 +66,7 @@ namespace JWTAuth.AspNetCore.WebAPI
                 }
 
                 // Fetching the role info.
-                validUser.Roles = await ValidateRoleInfo(validUser, serviceScopeFactory).ConfigureAwait(false);
+                validUser.Roles = await jwtAuthOptions.OnValidateRoleInfo?.Invoke(validUser, serviceProvider);
 
                 string accessToken = BuildAccessToken(jwtAuthOptions, validUser);
                 httpContext.Response.StatusCode = StatusCodes.Status200OK;
@@ -90,19 +88,6 @@ namespace JWTAuth.AspNetCore.WebAPI
         private void WriteUnauthorized(HttpContext httpContext)
         {
             httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        }
-
-        private Task<IEnumerable<string>> ValidateRoleInfo(UserInfo validUser, IServiceScopeFactory serviceScopeFactory)
-        {
-            using IServiceScope scope = serviceScopeFactory.CreateScope();
-
-            IRoleValidationService roleValidationService = scope.ServiceProvider.GetService<IRoleValidationService>();
-            if (roleValidationService == null)
-            {
-                // No role validation service exist, treat role validation as a success.
-                return Task.FromResult(Enumerable.Empty<string>());
-            }
-            return roleValidationService.ValidateRolesAsync(validUser);
         }
 
         private string BuildAccessToken(JWTAuthOptions jwtAuthOptions, UserInfo userInfo)

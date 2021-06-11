@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 
 namespace QuickStart.WebAPI
 {
@@ -21,43 +20,39 @@ namespace QuickStart.WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "QuickStart.WebAPI", Version = "v1" });
-            });
 
             services.AddScoped<UserService>();
             // Add services to support JWT authentication / authorization.
             services.AddJWTAuth(opt =>
             {
-                opt.OnValidateUserInfo = (jsonBody, p) =>
+                opt.OnValidateUserInfo = async (jsonBody, p) =>
                 {
                     UserService userService = p.GetRequiredService<UserService>();
-                    return userService.CreateValidUserAsync(jsonBody);
+                    return await userService.CreateValidUserAsync(jsonBody).ConfigureAwait(false);
                 };
 
-                opt.OnValidateRoleInfo = (userInfo, p) =>
-                {
-                    UserService userService = p.GetRequiredService<UserService>();
-                    return userService.ValidateRolesAsync(userInfo.Name);
-                };
+                opt.OnValidateRoleInfo = async (userInfo, p) =>
+                 {
+                     UserService userService = p.GetRequiredService<UserService>();
+                     return await userService.ValidateRolesAsync(userInfo.Name).ConfigureAwait(false);
+                 };
 
-                // To support SignalR authentication
-                opt.OnJWTAuthenticationMessageReceived = context =>
-                {
-                    var accessToken = context.Request.Query["access_token"];
+                // Optional, to support SignalR authentication
+                // opt.OnJWTAuthenticationMessageReceived = context =>
+                // {
+                //     var accessToken = context.Request.Query["access_token"];
 
-                    // If the request is for our hub...
-                    var path = context.HttpContext.Request.Path;
-                    if (!string.IsNullOrEmpty(accessToken) &&
-                        // Assuming the folling hub route:
-                        (path.StartsWithSegments("/chathub")))
-                    {
-                        // Read the token out of the query string
-                        context.Token = accessToken;
-                    }
-                    return Task.CompletedTask;
-                };
+                //     // If the request is for our hub...
+                //     var path = context.HttpContext.Request.Path;
+                //     if (!string.IsNullOrEmpty(accessToken) &&
+                //         // Assuming the folling hub route:
+                //         (path.StartsWithSegments("/chathub")))
+                //     {
+                //         // Read the token out of the query string
+                //         context.Token = accessToken;
+                //     }
+                //     return Task.CompletedTask;
+                // };
             });
         }
 
@@ -67,8 +62,6 @@ namespace QuickStart.WebAPI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "QuickStart.WebAPI v1"));
             }
 
             app.UseHttpsRedirection();
