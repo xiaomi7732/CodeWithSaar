@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using JWTAuth.AspNetCore.WebAPI;
 using Microsoft.AspNetCore.Builder;
@@ -24,8 +26,17 @@ namespace JWTAuthLib
             {
                 opt.OnValidateUserInfo = (jsonBody, p) =>
                 {
-                    UserInfo user = new UserInfo("saar", "");
+                    DefaultUserLogin login = JsonSerializer.Deserialize<DefaultUserLogin>(jsonBody,
+                        new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+                    // TODO: verify the password is valid.
+                    UserInfo user = new UserInfo(login.Username, login);
                     return Task.FromResult(user);
+                };
+
+                opt.OnValidateRoleInfo = (validUser, p) =>
+                {
+                    return Task.FromResult<IEnumerable<string>>(new string[] { validUser.Name });
                 };
             });
             services.AddControllers();

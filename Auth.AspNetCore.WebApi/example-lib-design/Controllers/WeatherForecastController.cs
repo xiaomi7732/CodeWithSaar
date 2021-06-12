@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace JWTAuthLib.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "User")]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
