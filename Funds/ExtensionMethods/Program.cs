@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ExtensionMethods
 {
@@ -7,21 +6,20 @@ namespace ExtensionMethods
     {
         static void Main(string[] args)
         {
-            IServiceCollection services = new ServiceCollection();
-            
-            // From 1
-            ExtensionMethods.AddJWTAuth(services);
-            // Form 2
-            services.AddJWTAuth();
+            int x = 20;
+            x = x * 2;
+            int y = x.Double();
+            // z = x.Double();
+            int z = ExtensionMethods.Double(x);
         }
+
     }
 
     static class ExtensionMethods
     {
-        public static IServiceCollection AddJWTAuth(this IServiceCollection services)
+        public static int Double(this int input)
         {
-            // add services into the service collection;
-            return services;
+            return input * 2;
         }
     }
 }
