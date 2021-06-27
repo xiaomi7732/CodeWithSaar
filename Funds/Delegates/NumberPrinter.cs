@@ -4,10 +4,10 @@ namespace LearnDelegates
 {
     class NumberPrinter
     {
-        public void Print(int value)
+        public void Print(int number, Func<int, int> preprocessor)
         {
-            value *= 2;
-            Console.WriteLine(value);
+            number = preprocessor(number);
+            Console.WriteLine(number);
         }
     }
 }
