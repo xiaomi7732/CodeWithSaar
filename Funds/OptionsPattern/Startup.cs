@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace HelloOptions
@@ -21,18 +22,29 @@ namespace HelloOptions
         public void ConfigureServices(IServiceCollection services)
         {
             // Demo 1, bind the value
-            // ApplicationOptions opts = Configuration.GetSection(ApplicationOptions.SectionName).Get<ApplicationOptions>();
+            // ApplicationOptions opts = new ApplicationOptions();
+            // IConfigurationSection applicationSection = Configuration.GetSection("Application");
+            // applicationSection.Bind(opts);
             // Console.WriteLine(opts.Name);
 
-            // Demo 2, register the options to DI
+            // Demo 2, shorthands: bind + return
+            // ApplicationOptions opts = Configuration
+            //     .GetSection(ApplicationOptions.SectionName)
+            //     .Get<ApplicationOptions>();
+            // Console.WriteLine(opts.Name);
+
+            // Demo 3, register the options to DI
 
             // Method 1:
-            // services.AddOptions<ApplicationOptions>().Bind(Configuration.GetSection(ApplicationOptions.SectionName));
+            services.AddOptions<ApplicationOptions>()
+                .Bind(Configuration.GetSection(ApplicationOptions.SectionName));
             // Method 2:
-            services.AddOptions<ApplicationOptions>().Configure<IConfiguration>((opt, config) =>
-            {
-                config.GetSection(ApplicationOptions.SectionName).Bind(opt);
-            });
+            // services.AddOptions<ApplicationOptions>()
+            //     .Configure<IConfiguration, ILogger<ApplicationOptions>>((opt, config, logger) =>
+            //         {
+            //             config.GetSection(ApplicationOptions.SectionName).Bind(opt);
+            //             logger.LogInformation(opt.Name);
+            //         });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

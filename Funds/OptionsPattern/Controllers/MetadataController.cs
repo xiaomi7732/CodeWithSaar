@@ -5,11 +5,11 @@ namespace HelloOptions
 {
     [ApiController]
     [Route("[controller]")]
-    public class ApplicationNameController : ControllerBase
+    public class MetadataController : ControllerBase
     {
         private readonly ApplicationOptions _options;
 
-        public ApplicationNameController(IOptions<ApplicationOptions> options)
+        public MetadataController(IOptions<ApplicationOptions> options)
         {
             _options = options?.Value ?? throw new System.ArgumentNullException(nameof(options));
         }
@@ -20,7 +20,8 @@ namespace HelloOptions
             return Ok(new
             {
                 ApplicationName = _options.Name,
-                Greeting = $"Hello, my name is {_options.Name}!",
+                CacheLifeTime = _options.CacheLifetime,
+                Greeting = $"Hello, my name is {_options.Name}! The settings for cache lifetime is: {_options.CacheLifetime:c}",
             });
         }
     }
