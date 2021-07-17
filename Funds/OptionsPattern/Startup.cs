@@ -36,8 +36,10 @@ namespace HelloOptions
             // Demo 3, register the options to DI
 
             // Method 1:
-            services.AddOptions<ApplicationOptions>()
-                .Bind(Configuration.GetSection(ApplicationOptions.SectionName));
+            // services.AddOptions<ApplicationOptions>()
+            //     .Bind(Configuration.GetSection(ApplicationOptions.SectionName))
+            //     .ValidateDataAnnotations();
+
             // Method 2:
             // services.AddOptions<ApplicationOptions>()
             //     .Configure<IConfiguration, ILogger<ApplicationOptions>>((opt, config, logger) =>
@@ -45,6 +47,16 @@ namespace HelloOptions
             //             config.GetSection(ApplicationOptions.SectionName).Bind(opt);
             //             logger.LogInformation(opt.Name);
             //         });
+
+            // Demo 4, binding to an IEnumerable
+            // AnimalInfoOptions opts = Configuration
+            //     .GetSection(ApplicationOptions.SectionName)
+            //     .GetSection("AnimalInfo")
+            //     .Get<AnimalInfoOptions>();
+            // foreach(string animal in opts.KnownAnimals)
+            // {
+            //     Console.WriteLine($"{animal}:{opts.AnimalSpeech[animal]}");
+            // }
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
