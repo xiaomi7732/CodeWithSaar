@@ -24,6 +24,7 @@ namespace JWTAuthLib
         {
             services.AddJWTAuth(opt =>
             {
+                opt.IssuerSigningSecret = "xxxx";
                 opt.OnValidateUserInfo = (jsonBody, p) =>
                 {
                     DefaultUserLogin login = JsonSerializer.Deserialize<DefaultUserLogin>(jsonBody,
@@ -38,7 +39,7 @@ namespace JWTAuthLib
                 {
                     return Task.FromResult<IEnumerable<string>>(new string[] { validUser.Name });
                 };
-            });
+            }, "AnotherSectionName");
             services.AddControllers();
         }
 

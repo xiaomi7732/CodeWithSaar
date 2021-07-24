@@ -20,11 +20,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Add JWT authentication related services.
         /// </summary>
-        public static IServiceCollection AddJWTAuth(this IServiceCollection services, Action<JWTAuthOptions> configure = null, string jwtAuthOptionSectionName = JWTAuthOptions.SectionName)
+        public static IServiceCollection AddJWTAuth(
+            this IServiceCollection services,
+            Action<JWTAuthOptions> configure = null, 
+            string jwtAuthOptionSectionName = JWTAuthOptions.SectionName)
         {
             services.AddOptions<JWTAuthOptions>().Configure<IConfiguration, ILogger<JWTAuthOptions>>((options, configuration, logger) =>
             {
-                configuration.GetSection(JWTAuthOptions.SectionName).Bind(options);
+                configuration.GetSection(jwtAuthOptionSectionName).Bind(options);
                 configure?.Invoke(options);
 
                 // Quick check for IssuerSigningSecret
