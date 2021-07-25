@@ -20,6 +20,13 @@ namespace WebAPIExample
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.ConfigureAppConfiguration(config =>
+                    {
+                        config.AddInMemoryCollection(new Dictionary<string, string>
+                        {
+                            ["FunKey"] = "Just for fun",
+                        });
+                    });
                     webBuilder.UseStartup<Startup>();
                 });
     }

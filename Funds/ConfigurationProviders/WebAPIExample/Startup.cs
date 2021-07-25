@@ -19,6 +19,15 @@ namespace WebAPIExample
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            foreach ((string key, string value)
+                in configuration.AsEnumerable().Where(t => t.Value is not null))
+            {
+                if(string.Equals(key, "FunKey", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    Console.Write("==== Hello my configuration ====>>> ");
+                }
+                Console.WriteLine($"{key}={value}");
+            }
         }
 
         public IConfiguration Configuration { get; }
