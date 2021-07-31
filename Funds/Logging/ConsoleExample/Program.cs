@@ -14,6 +14,9 @@ namespace ConsoleExample
                 ["LogLevel:Default"] = "Information",
                 ["LogLevel:CodeWithSaar"] = "Warning",
                 ["LogLevel:CodeWithSaar.JWT"] = "Debug",
+                ["LogLevel: Default"] = "Information",
+                ["Console:LogLevel:Default"] = "Warning",
+                ["Debug:LogLevel:Default"] = "Debug",
             }).Build();
 
             // 1. Create a logger factory, register logging providers
@@ -30,7 +33,7 @@ namespace ConsoleExample
             // 3. Logging
             logger.LogDebug("Hello Debug info.");
             logger.LogInformation("Hello Logger!");
-            
+
             ILogger logger2 = loggerFactory.CreateLogger("CodeWithSaar.JWTAuthentication.JWT");
             logger2.LogInformation("From category2");
 
