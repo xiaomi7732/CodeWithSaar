@@ -11,7 +11,9 @@ namespace ConsoleExample
         {
             IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
             {
-                ["LogLevel:Default"] = "Information"
+                ["LogLevel:Default"] = "Information",
+                ["LogLevel:CodeWithSaar"] = "Warning",
+                ["LogLevel:CodeWithSaar.JWT"] = "Debug",
             }).Build();
 
             // 1. Create a logger factory, register logging providers
@@ -29,6 +31,9 @@ namespace ConsoleExample
             logger.LogDebug("Hello Debug info.");
             logger.LogInformation("Hello Logger!");
             
+            ILogger logger2 = loggerFactory.CreateLogger("CodeWithSaar.JWTAuthentication.JWT");
+            logger2.LogInformation("From category2");
+
             Console.WriteLine("Press any key to continue");
             Console.ReadKey(intercept: true);
         }
