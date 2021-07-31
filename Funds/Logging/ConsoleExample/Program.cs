@@ -13,6 +13,7 @@ namespace ConsoleExample
             ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConsole();
+                builder.AddDebug();
             });
 
             // 2. Get a logger from the logger factory
