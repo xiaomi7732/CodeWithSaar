@@ -20,6 +20,10 @@ namespace WebAPIExample
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.ConfigureLogging(config =>{
+                        config.ClearProviders();
+                        config.AddConsole();
+                    });
                     webBuilder.UseStartup<Startup>();
                 });
     }
