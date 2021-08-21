@@ -8,22 +8,6 @@ namespace CodeWithSaar.Examples.Middleware
     {
         private readonly List<Func<Func<Task>, Func<Task>>> _components = new();
 
-        public Func<Task> Build()
-        {
-            Func<Task> app = () =>
-            {
-                Console.WriteLine("I am the last to execute");
-                return Task.CompletedTask;
-            };
-
-            for (int i = _components.Count - 1; i >= 0; i--)
-            {
-                app = _components[i].Invoke(app);
-            }
-
-            return app;
-        }
-
         [Obsolete("Consider the easier way by using 'Use' instead.", error: false)]
         public MyPipeline Add(Func<Func<Task>, Func<Task>> component)
         {
