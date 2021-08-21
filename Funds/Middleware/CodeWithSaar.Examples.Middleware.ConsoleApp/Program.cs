@@ -40,7 +40,18 @@ namespace CodeWithSaar.Examples.Middleware.DecoratorPattern
                 Console.WriteLine("Outgoing 2");
             });
 
-            Func<Task> lastTask = pipeline.Run(() => {
+            pipeline.Add(next =>
+            {
+                return async () =>
+                {
+                    Console.WriteLine("Incoming 3");
+                    await next();
+                    Console.WriteLine("Outgoing 3");
+                };
+            });
+
+            Func<Task> lastTask = pipeline.Run(() =>
+            {
                 Console.WriteLine("This is the last one. There is no next.");
                 return Task.CompletedTask;
             });

@@ -24,10 +24,18 @@ namespace CodeWithSaar.Examples.Middleware
             return app;
         }
 
+        [Obsolete("Consider the easier way by using 'Use' instead.", error: false)]
+        public MyPipeline Add(Func<Func<Task>, Func<Task>> component)
+        {
+            _components.Add(component);
+            return this;
+        }
+
         public MyPipeline Use(Func<Func<Task>, Task> current)
         {
-            Func<Func<Task>, Func<Task>> component = (n) => {
-                return ()=> current.Invoke(n);
+            Func<Func<Task>, Func<Task>> component = (next) =>
+            {
+                return () => current.Invoke(next);
             };
             _components.Add(component);
             return this;
@@ -35,7 +43,7 @@ namespace CodeWithSaar.Examples.Middleware
 
         public Func<Task> Run(Func<Task> last)
         {
-            for(int i=_components.Count-1;i>=0;i--)
+            for (int i = _components.Count - 1; i >= 0; i--)
             {
                 last = _components[i].Invoke(last);
             }
