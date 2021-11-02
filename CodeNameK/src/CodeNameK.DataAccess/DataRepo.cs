@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using CodeNameK.DataContracts;
+using Microsoft.Extensions.Logging;
 
 namespace CodeNameK.DataAccess
 {
@@ -12,9 +13,16 @@ namespace CodeNameK.DataAccess
     {
         private const string DataFolderName = "Data";
         private readonly string _baseDirectory;
-        public DataRepo()
+        private readonly IDataPointWriter _dataPointWriter;
+        private readonly ILogger _logger;
+
+        public DataRepo(
+            IDataPointWriter dataPointWriter,
+            ILogger<DataRepo> logger)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _baseDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), DataFolderName);
+            _dataPointWriter = dataPointWriter ?? throw new ArgumentNullException(nameof(dataPointWriter));
         }
 
         public Task<string> AddCategoryAsync(Category category)
@@ -35,20 +43,8 @@ namespace CodeNameK.DataAccess
                 throw new ArgumentNullException(nameof(newPoint));
             }
 
-            string targetFilePath = Path.Combine(_baseDirectory, newPoint.GetRelativePath());
-            Directory.CreateDirectory(Path.GetDirectoryName(targetFilePath));
-            using (Stream output = File.OpenWrite(targetFilePath))
-            {
-                await JsonSerializer.SerializeAsync(output, newPoint).ConfigureAwait(false);
-                return newPoint.Id;
-            }
-        }
-
-        public Task<bool> DeleteCategory(string categoryId)
-        {
-            string targetFolder = Path.Combine(_baseDirectory, categoryId);
-            Directory.Delete(targetFolder, recursive: true);
-            return Task.FromResult(true);
+            await _dataPointWriter.WriteDataPointAsync(newPoint, _baseDirectory).ConfigureAwait(false);
+            return newPoint.Id;
         }
 
         public async Task<bool> DeletePointAsync(DataPoint dataPoint)
@@ -59,21 +55,9 @@ namespace CodeNameK.DataAccess
                 throw new FileNotFoundException("Can't locate data point file.", filePath);
             }
 
-            string tempFile = Path.GetTempFileName();
-            try
-            {
-                dataPoint.IsDeleted = true;
-                using (Stream output = File.OpenWrite(tempFile))
-                {
-                    await JsonSerializer.SerializeAsync(output, dataPoint).ConfigureAwait(false);
-                }
-                File.Move(tempFile, filePath, overwrite: true);
-                return true;
-            }
-            finally
-            {
-                File.Delete(tempFile);
-            }
+            dataPoint.IsDeleted = true;
+            await _dataPointWriter.WriteDataPointAsync(dataPoint, _baseDirectory).ConfigureAwait(false);
+            return true;
         }
 
         public IAsyncEnumerable<Category> GetAllCategories()
@@ -81,9 +65,37 @@ namespace CodeNameK.DataAccess
             throw new NotImplementedException();
         }
 
-        public IAsyncEnumerable<DataPoint> GetPointsAsync(Category category, int? year, int? month)
+        public async IAsyncEnumerable<DataPoint> GetPointsAsync(Category category, int? year, int? month)
         {
-            throw new NotImplementedException();
+            if (category?.Id is null)
+            {
+                throw new ArgumentNullException(nameof(category));
+            }
+
+            string searchPrefix = Path.GetFullPath(Path.Combine(_baseDirectory, category.Id));
+            if (year.HasValue)
+            {
+                searchPrefix = Path.Combine(searchPrefix, year.Value.ToString("N4"));
+
+                if (month.HasValue)
+                {
+                    searchPrefix = Path.Combine(searchPrefix, month.Value.ToString("N2"));
+                }
+            }
+
+            _logger.LogInformation("Data searching prefix: {prefix}", searchPrefix);
+            DirectoryInfo searchBase = new DirectoryInfo(searchPrefix);
+            foreach (FileInfo file in searchBase.EnumerateFiles("*" + Constants.DataPointFileExtension, new EnumerationOptions() { RecurseSubdirectories = true }))
+            {
+                using (Stream input = File.OpenRead(file.FullName))
+                {
+                    DataPoint dataPoint = await JsonSerializer.DeserializeAsync<DataPoint>(input).ConfigureAwait(false);
+                    if (!dataPoint.IsDeleted)
+                    {
+                        yield return dataPoint;
+                    }
+                }
+            }
         }
 
         public Task<bool> UpdatePointAsync(DataPoint contract, Category category)

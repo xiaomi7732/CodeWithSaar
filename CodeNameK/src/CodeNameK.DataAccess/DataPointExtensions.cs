@@ -20,7 +20,7 @@ namespace CodeNameK.DataAccess
                 throw new ArgumentNullException(nameof(dataPoint.Category));
             }
 
-            return $"{dataPoint.Category.Id}/{dataPoint.WhenUTC:yyyy}/{dataPoint.WhenUTC:MM}/{dataPoint.Id:D}";
+            return $"{dataPoint.Category.Id}/{dataPoint.WhenUTC:yyyy}/{dataPoint.WhenUTC:MM}/{dataPoint.Id:D}{Constants.DataPointFileExtension}";
         }
     }
 }

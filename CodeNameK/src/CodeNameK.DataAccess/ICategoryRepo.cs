@@ -16,12 +16,5 @@ namespace CodeNameK.DataAccess
         /// </summary>
         /// <returns></returns>
         IAsyncEnumerable<Category> GetAllCategories();
-
-        /// <summary>
-        /// Delete a category
-        /// </summary>
-        /// <param name="categoryId"></param>
-        /// <returns></returns>
-        Task<bool> DeleteCategory(string categoryId);
     }
 }
