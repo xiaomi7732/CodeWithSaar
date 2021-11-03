@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.DataContracts", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.Cli", "CodeNameK.Cli\CodeNameK.Cli.csproj", "{050ED967-8EEB-4772-8AE9-D323A90096ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.DataAccess.UnitTests", "CodeNameK.DataAccess.UnitTests\CodeNameK.DataAccess.UnitTests.csproj", "{93DCF840-77A0-4123-8225-59CB979FF03E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,5 +60,17 @@ Global
 		{050ED967-8EEB-4772-8AE9-D323A90096ED}.Release|x64.Build.0 = Release|Any CPU
 		{050ED967-8EEB-4772-8AE9-D323A90096ED}.Release|x86.ActiveCfg = Release|Any CPU
 		{050ED967-8EEB-4772-8AE9-D323A90096ED}.Release|x86.Build.0 = Release|Any CPU
+		{93DCF840-77A0-4123-8225-59CB979FF03E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93DCF840-77A0-4123-8225-59CB979FF03E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93DCF840-77A0-4123-8225-59CB979FF03E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{93DCF840-77A0-4123-8225-59CB979FF03E}.Debug|x64.Build.0 = Debug|Any CPU
+		{93DCF840-77A0-4123-8225-59CB979FF03E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{93DCF840-77A0-4123-8225-59CB979FF03E}.Debug|x86.Build.0 = Debug|Any CPU
+		{93DCF840-77A0-4123-8225-59CB979FF03E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93DCF840-77A0-4123-8225-59CB979FF03E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93DCF840-77A0-4123-8225-59CB979FF03E}.Release|x64.ActiveCfg = Release|Any CPU
+		{93DCF840-77A0-4123-8225-59CB979FF03E}.Release|x64.Build.0 = Release|Any CPU
+		{93DCF840-77A0-4123-8225-59CB979FF03E}.Release|x86.ActiveCfg = Release|Any CPU
+		{93DCF840-77A0-4123-8225-59CB979FF03E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
