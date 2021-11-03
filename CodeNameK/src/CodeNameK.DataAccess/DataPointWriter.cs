@@ -8,27 +8,25 @@ namespace CodeNameK.DataAccess
 {
 
 
-    public class DataPointWriter : IDataPointWriter
+    public class DataPointWriter : IDataWriter<DataPoint>
     {
-        public async Task WriteDataPointAsync(DataPoint newPoint, string baseDirectory)
+        public async Task WriteAsync(DataPoint data, string filePath)
         {
-            if (newPoint is null)
+            if (data is null)
             {
-                throw new ArgumentNullException(nameof(newPoint));
+                throw new ArgumentNullException(nameof(data));
             }
-
-            string targetFilePath = Path.Combine(baseDirectory, newPoint.GetRelativePath());
-            Directory.CreateDirectory(Path.GetDirectoryName(targetFilePath));
 
             string tempFile = Path.GetTempFileName();
             try
             {
                 using (Stream output = File.OpenWrite(tempFile))
                 {
-                    await JsonSerializer.SerializeAsync(output, newPoint).ConfigureAwait(false);
+                    await JsonSerializer.SerializeAsync(output, data).ConfigureAwait(false);
                 }
 
-                File.Move(tempFile, targetFilePath, overwrite: true);
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                File.Move(tempFile, filePath, overwrite: true);
             }
             finally
             {

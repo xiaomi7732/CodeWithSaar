@@ -1,10 +1,12 @@
 using System.Threading.Tasks;
-using CodeNameK.DataContracts;
 
 namespace CodeNameK.DataAccess
 {
-    public interface IDataPointWriter
+    /// <summary>
+    /// Writes object to a target path.
+    /// </summary>
+    public interface IDataWriter<T>
     {
-        Task WriteDataPointAsync(DataPoint newPoint, string baseDirectory);
+        Task WriteAsync(T data, string filePath);
     }
 }

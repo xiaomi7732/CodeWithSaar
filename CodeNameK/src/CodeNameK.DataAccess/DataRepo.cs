@@ -13,16 +13,19 @@ namespace CodeNameK.DataAccess
     {
         private const string DataFolderName = "Data";
         private readonly string _baseDirectory;
-        private readonly IDataPointWriter _dataPointWriter;
+        private readonly IDataWriter<DataPoint> _dataPointWriter;
+        private readonly IDataPointPathService _pathService;
         private readonly ILogger _logger;
 
         public DataRepo(
-            IDataPointWriter dataPointWriter,
+            IDataWriter<DataPoint> dataPointWriter,
+            IDataPointPathService pathService,
             ILogger<DataRepo> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _baseDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), DataFolderName);
             _dataPointWriter = dataPointWriter ?? throw new ArgumentNullException(nameof(dataPointWriter));
+            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
         }
 
         public Task<string> AddCategoryAsync(Category category)
@@ -43,20 +46,20 @@ namespace CodeNameK.DataAccess
                 throw new ArgumentNullException(nameof(newPoint));
             }
 
-            await _dataPointWriter.WriteDataPointAsync(newPoint, _baseDirectory).ConfigureAwait(false);
+            await _dataPointWriter.WriteAsync(newPoint, _pathService.GetRelativePath(newPoint, _baseDirectory)).ConfigureAwait(false);
             return newPoint.Id;
         }
 
         public async Task<bool> DeletePointAsync(DataPoint dataPoint)
         {
-            string filePath = Path.Combine(_baseDirectory, dataPoint.GetRelativePath());
+            string filePath = _pathService.GetRelativePath(dataPoint, _baseDirectory);
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException("Can't locate data point file.", filePath);
             }
 
             dataPoint.IsDeleted = true;
-            await _dataPointWriter.WriteDataPointAsync(dataPoint, _baseDirectory).ConfigureAwait(false);
+            await _dataPointWriter.WriteAsync(dataPoint, _pathService.GetRelativePath(dataPoint, _baseDirectory)).ConfigureAwait(false);
             return true;
         }
 

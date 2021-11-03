@@ -17,9 +17,11 @@ namespace CodeNameK.Cli
                 builder.AddConsole();
             });
 
-            IDataPointWriter dataPointWriter = new DataPointWriter();
+            IDataWriter<DataPoint> dataPointWriter = new DataPointWriter();
+            IDataPointPathService pathService = new DataPointPathService();
             DataRepo dataRepo = new DataRepo(
                 dataPointWriter,
+                pathService,
                 loggerFactory.CreateLogger<DataRepo>());
 
             Category category = new Category() { Id = "401KSaving" };
