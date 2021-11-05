@@ -19,7 +19,7 @@ namespace CodeWithSaar.FileUtilityTests
 
         public void ShouldEncode(string input, string expected)
         {
-            ReservedFileNameHandler target = new ReservedFileNameHandler();
+            ReservedFileNameProcessor target = new ReservedFileNameProcessor();
             string actual = target.Encode(input);
             Assert.Equal(expected, actual);
         }
@@ -36,7 +36,7 @@ namespace CodeWithSaar.FileUtilityTests
         [InlineData("Test/%CON.txt/abc", "Test/CON.txt/abc")] // File with extension in the middle
         public void ShouldDecodeFullMatch(string input, string expected)
         {
-            ReservedFileNameHandler target = new ReservedFileNameHandler();
+            ReservedFileNameProcessor target = new ReservedFileNameProcessor();
             string actual = target.Decode(input);
 
             Assert.Equal(expected, actual);

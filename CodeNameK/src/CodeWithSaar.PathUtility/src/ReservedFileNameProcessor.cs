@@ -12,9 +12,9 @@ namespace CodeWithSaar
     /// CON, PRN, AUX, NUL, COM1, COM2, COM3, COM4, COM5, COM6, COM7, COM8, COM9, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, and LPT9.
     /// Also avoid these names followed immediately by an extension; for example, NUL.txt is not recommended.
     /// </summary>
-    internal class ReservedFileNameHandler : IFileNameProcessor
+    internal class ReservedFileNameProcessor : IFileNameProcessor
     {
-        private readonly char _escapeChar;
+        private const char _escapeChar = '%';
 
         private readonly List<string> _reservedNames = new List<string>(){
             "CON",
@@ -44,10 +44,8 @@ namespace CodeWithSaar
         private readonly Regex _decoderRegex;
         private readonly Regex _encodeRegex;
 
-        public ReservedFileNameHandler(char? escapeCharacter = null)
+        public ReservedFileNameProcessor()
         {
-            _escapeChar = escapeCharacter ?? '%';
-
             StringBuilder patternBuilder = new StringBuilder();
             patternBuilder.Append("^" + _escapeChar + "(");
             foreach (string reservedName in _reservedNames)
