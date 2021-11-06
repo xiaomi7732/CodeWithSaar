@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace CodeWithSaar.FileUtilityTests
+namespace CodeWithSaar.FileUtilityUnitTests
 {
     public class ReservedCharacterProcessorTests
     {

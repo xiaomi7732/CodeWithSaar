@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace CodeWithSaar.FileUtilityTests
+namespace CodeWithSaar.FileUtilityUnitTests
 {
     public class ReservedFileNameHandlerTests
     {
@@ -32,7 +32,7 @@ namespace CodeWithSaar.FileUtilityTests
         [Fact]
         public void ShouldAllowUseEscapeCharByUser()
         {
-            string content="%CON";
+            string content = "%CON";
             ReservedFileNameProcessor target = new ReservedFileNameProcessor();
             string actual = target.Decode(target.Encode(content));
             // If the user put in a file name that is same as encoded result, after encode and decode, the user input should not be changed.

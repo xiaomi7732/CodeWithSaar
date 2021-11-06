@@ -41,8 +41,9 @@ namespace CodeWithSaar
 
         private readonly Regex _decoder;
         private readonly Regex _encoder;
+        private readonly bool _escapeEscaper;
 
-        public ReservedFileNameProcessor()
+        public ReservedFileNameProcessor(bool escapeEscaper = true)
         {
             StringBuilder patternBuilder = new StringBuilder();
             patternBuilder.Append("^(?:");
@@ -56,6 +57,7 @@ namespace CodeWithSaar
 
             patternBuilder.Insert(1, _escapeChar);
             _decoder = new Regex(patternBuilder.ToString(), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+            _escapeEscaper = escapeEscaper;
         }
 
         /// <summary>
@@ -100,10 +102,15 @@ namespace CodeWithSaar
             return fileName;
         }
 
-        private string PreEncode(string filePath)
+        private string PreEncode(string fileName)
         {
+            if(!_escapeEscaper)
+            {
+                return fileName;
+            }
+
             // Escape the escape character by doubling itself
-            return filePath.Replace(_escapeChar.ToString(), _escapeChar.ToString() + _escapeChar);
+            return fileName.Replace(_escapeChar.ToString(), _escapeChar.ToString() + _escapeChar);
         }
 
         /// <summary>
@@ -111,6 +118,10 @@ namespace CodeWithSaar
         /// </summary>
         private string PostDecode(string fileName)
         {
+            if(!_escapeEscaper)
+            {
+                return fileName;
+            }
             return fileName.Replace(_escapeChar.ToString() + _escapeChar, _escapeChar.ToString());
         }
     }
