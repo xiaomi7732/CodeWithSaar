@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -41,50 +39,65 @@ namespace CodeWithSaar
             "LPT9",
         };
 
-        private readonly Regex _decoderRegex;
-        private readonly Regex _encodeRegex;
+        private readonly Regex _decoder;
+        private readonly Regex _encoder;
 
         public ReservedFileNameProcessor()
         {
             StringBuilder patternBuilder = new StringBuilder();
-            patternBuilder.Append("^" + _escapeChar + "(");
+            patternBuilder.Append("^(?:");
             foreach (string reservedName in _reservedNames)
             {
-                patternBuilder.AppendFormat("(?:{0})|", reservedName);
+                patternBuilder.AppendFormat("({0})|", reservedName);
             }
-            patternBuilder.Remove(patternBuilder.Length - 1, 1);
-            patternBuilder.Append(")$");
-            _decoderRegex = new Regex(patternBuilder.ToString(), RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
+            patternBuilder.Remove(patternBuilder.Length - 1, 1); // Remove the last separator |
+            patternBuilder.Append(")(?<ext>\\..*)*$");
+            _encoder = new Regex(patternBuilder.ToString(), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-            patternBuilder.Clear();
-            patternBuilder.Append("^(");
-            foreach (string reservedName in _reservedNames)
-            {
-                patternBuilder.AppendFormat("(?:{0})|", reservedName);
-            }
-            patternBuilder.Remove(patternBuilder.Length - 1, 1);
-            patternBuilder.Append(")$");
-            _encodeRegex = new Regex(patternBuilder.ToString(), RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant, TimeSpan.FromSeconds(1));
+            patternBuilder.Insert(1, _escapeChar);
+            _decoder = new Regex(patternBuilder.ToString(), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
         }
 
         /// <summary>
         /// Decodes a folder name to its original form. For example, if the folder name was encoded to '%CON' from 'CON', the return value would be 'CON'.
         /// </summary>
-        public string Decode(string safeFileName)
+        public string Decode(string fileName)
         {
-            string filePath = DoDecode(safeFileName);
-            return filePath.Replace(_escapeChar.ToString() + _escapeChar, _escapeChar.ToString());
+            if (_decoder.IsMatch(fileName))
+            {
+                fileName = _decoder.Replace(fileName, match =>
+                {
+                    string value = match.Groups[1].Value;
+                    if (match.Groups.ContainsKey("ext"))
+                    {
+                        value += match.Groups["ext"].Value;
+                    }
+                    return value;
+                });
+            }
+
+            return PostDecode(fileName);
         }
 
         /// <summary>
         /// Encode a file name to avoid using reserved file names.
         /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns></returns>
-        public string Encode(string filePath)
+        public string Encode(string fileName)
         {
-            filePath = PreEncode(filePath);
-            return DoEncode(filePath);
+            fileName = PreEncode(fileName);
+            if (_encoder.IsMatch(fileName))
+            {
+                fileName = _encoder.Replace(fileName, match =>
+                {
+                    string value = _escapeChar + match.Groups[1].Value;
+                    if (match.Groups.ContainsKey("ext"))
+                    {
+                        value += match.Groups["ext"].Value;
+                    }
+                    return value;
+                });
+            }
+            return fileName;
         }
 
         private string PreEncode(string filePath)
@@ -93,49 +106,12 @@ namespace CodeWithSaar
             return filePath.Replace(_escapeChar.ToString(), _escapeChar.ToString() + _escapeChar);
         }
 
-        private string DoDecode(string safeFileName)
+        /// <summary>
+        /// Un-escaping the escape character
+        /// </summary>
+        private string PostDecode(string fileName)
         {
-            string fileName = Path.GetFileName(safeFileName);
-            string fileNameNoExtension = Path.GetFileNameWithoutExtension(safeFileName);
-            string fileExtension = fileName.Substring(fileNameNoExtension.Length);
-            string decodedFileName = fileNameNoExtension;
-            if (_decoderRegex.IsMatch(decodedFileName))
-            {
-                decodedFileName = _decoderRegex.Replace(decodedFileName, match => match.Groups[1].Value);
-            }
-
-            string parent = safeFileName.Substring(0, safeFileName.Length - fileName.Length);
-            string decodedParent = parent;
-            if (parent.Length > 1)
-            {
-                decodedParent = DoDecode(decodedParent.Substring(0, parent.Length - 1));
-                decodedParent += parent.Last();
-            }
-
-            return decodedParent + decodedFileName + fileExtension;
-        }
-
-        private string DoEncode(string filePath)
-        {
-            string fileName = Path.GetFileName(filePath);
-            string fileNameNoExtension = Path.GetFileNameWithoutExtension(fileName);
-            string fileExtension = fileName.Substring(fileNameNoExtension.Length);
-
-            string encodedFileName = fileNameNoExtension;
-            if (_encodeRegex.IsMatch(encodedFileName))
-            {
-                encodedFileName = _encodeRegex.Replace(encodedFileName, match => _escapeChar + match.Value);
-            }
-
-            string directory = filePath.Substring(0, filePath.Length - fileName.Length);
-            string encodedDirectory = directory;
-            if (directory.Length > 1)
-            {
-                encodedDirectory = DoEncode(directory.Substring(0, directory.Length - 1));
-                encodedDirectory += directory.Last();
-            }
-
-            return encodedDirectory + encodedFileName + fileExtension;
+            return fileName.Replace(_escapeChar.ToString() + _escapeChar, _escapeChar.ToString());
         }
     }
 }
