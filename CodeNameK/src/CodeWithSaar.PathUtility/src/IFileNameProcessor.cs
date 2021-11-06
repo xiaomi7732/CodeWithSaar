@@ -5,11 +5,11 @@ namespace CodeWithSaar
         /// <summary>
         /// Encode a file path, so that it would be safe to be used as a file path.
         /// </summary>
-        string Encode(string filePath);
+        string Encode(string fileName);
 
         /// <summary>
         /// Decodes a file path to be used as a plain string.
         /// </summary>
-        string Decode(string safeFileName);
+        string Decode(string fileName);
     }
 }

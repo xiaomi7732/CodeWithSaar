@@ -9,6 +9,8 @@ namespace CodeWithSaar.FileUtilityUnitTests
         [InlineData("special * char", "special %002A char")]
         [InlineData("*CON", "%002ACON")]
         [InlineData("CON.TXT.con", "%CON.TXT.con")]
+        [InlineData(".", "%002E")]
+
         public void ShouldHandleSimpleCase(string input, string encoded)
         {
             string origin = input;

@@ -8,6 +8,7 @@ namespace CodeWithSaar
         static IEnumerable<IFileNameProcessor> _processors = new List<IFileNameProcessor>(){
             new ReservedCharacterProcessor(),
             new ReservedFileNameProcessor(escapeEscaper: false),
+            new PeriodsProcessor(escapeEscaper: false),
         };
 
         public static string Encode(string fileName)
