@@ -10,7 +10,7 @@ namespace CodeWithSaar.FileUtilityUnitTests
         [InlineData("*CON", "%002ACON")]
         [InlineData("CON.TXT.con", "%CON.TXT.con")]
         [InlineData(".", "%002E")]
-
+        [InlineData("No end with space ", "No end with space%0020")]
         public void ShouldHandleSimpleCase(string input, string encoded)
         {
             string origin = input;
