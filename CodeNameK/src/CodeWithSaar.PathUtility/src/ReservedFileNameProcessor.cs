@@ -70,11 +70,8 @@ namespace CodeWithSaar
                 fileName = _decoder.Replace(fileName, match =>
                 {
                     string value = match.Groups[1].Value;
-                    if (match.Groups.ContainsKey("ext"))
-                    {
-                        value += match.Groups["ext"].Value;
-                    }
-                    return value;
+                    string extension = match.Groups["ext"].Value;
+                    return value + extension;
                 });
             }
 
@@ -92,11 +89,8 @@ namespace CodeWithSaar
                 fileName = _encoder.Replace(fileName, match =>
                 {
                     string value = _escapeChar + match.Groups[1].Value;
-                    if (match.Groups.ContainsKey("ext"))
-                    {
-                        value += match.Groups["ext"].Value;
-                    }
-                    return value;
+                    string extension = match.Groups["ext"].Value;
+                    return value + extension;
                 });
             }
             return fileName;
@@ -104,7 +98,7 @@ namespace CodeWithSaar
 
         private string PreEncode(string fileName)
         {
-            if(!_escapeEscaper)
+            if (!_escapeEscaper)
             {
                 return fileName;
             }
@@ -118,7 +112,7 @@ namespace CodeWithSaar
         /// </summary>
         private string PostDecode(string fileName)
         {
-            if(!_escapeEscaper)
+            if (!_escapeEscaper)
             {
                 return fileName;
             }
