@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using CodeNameK.DataContracts;
+using CodeWithSaar;
 
 namespace CodeNameK.DataAccess
 {
@@ -20,13 +21,27 @@ namespace CodeNameK.DataAccess
                 throw new ArgumentNullException(nameof(dataPoint.Category));
             }
 
-
-            string relativePath = $"{dataPoint.Category.Id}/{dataPoint.WhenUTC:yyyy}/{dataPoint.WhenUTC:MM}/{dataPoint.Id:D}{DataPointFileExtension}";
+            string relativePath = $"{GetDirectoryName(dataPoint.Category)}/{dataPoint.WhenUTC:yyyy}/{dataPoint.WhenUTC:MM}/{dataPoint.Id:D}{DataPointFileExtension}";
             if (!string.IsNullOrEmpty(baseDirectory))
             {
                 relativePath = Path.Combine(baseDirectory, relativePath);
             }
             return relativePath;
+        }
+
+        public string GetDirectoryName(Category category)
+        {
+            if (category is null)
+            {
+                throw new ArgumentNullException(nameof(category));
+            }
+
+            if (category.Id is null)
+            {
+                throw new ArgumentNullException(nameof(category.Id));
+            }
+
+            return FileUtility.Encode(category.Id);
         }
     }
 }

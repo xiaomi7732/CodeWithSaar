@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CodeNameK.DataContracts\CodeNameK.DataContracts.csproj" />
+    <ProjectReference Include="..\CodeWithSaar.PathUtility\src\CodeWithSaar.PathUtility.csproj" />
   </ItemGroup>
 
   <ItemGroup>

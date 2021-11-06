@@ -35,7 +35,8 @@ namespace CodeNameK.DataAccess
                 throw new ArgumentNullException(nameof(category));
             }
 
-            Directory.CreateDirectory(Path.Combine(_baseDirectory, category.Id));
+            string directoryName = _pathService.GetDirectoryName(category);
+            Directory.CreateDirectory(Path.Combine(_baseDirectory, directoryName));
             return Task.FromResult(category.Id);
         }
 
@@ -75,7 +76,7 @@ namespace CodeNameK.DataAccess
                 throw new ArgumentNullException(nameof(category));
             }
 
-            string searchPrefix = Path.GetFullPath(Path.Combine(_baseDirectory, category.Id));
+            string searchPrefix = Path.GetFullPath(Path.Combine(_baseDirectory, _pathService.GetDirectoryName(category)));
             if (year.HasValue)
             {
                 searchPrefix = Path.Combine(searchPrefix, year.Value.ToString("N4"));

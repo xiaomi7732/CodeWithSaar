@@ -24,9 +24,14 @@ namespace CodeNameK.Cli
                 pathService,
                 loggerFactory.CreateLogger<DataRepo>());
 
-            Category category = new Category() { Id = "401KSaving" };
-            Console.WriteLine($"Add a category: {category.Id}");
+            Console.WriteLine("Create a new category. Please input category name: ");
+            string newCategoryName = Console.ReadLine();
+            newCategoryName = newCategoryName?? "401KSaving";
+            Category category = new Category() { Id = newCategoryName };
+            Console.WriteLine($"Adding a category: {category.Id}");
             await dataRepo.AddCategoryAsync(category);
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey(intercept: true);
 
             DataPoint dataPoint = new DataPoint()
             {
