@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -47,13 +46,13 @@ namespace CodeWithSaar
         public ReservedFileNameProcessor(bool escapeEscaper = true)
         {
             StringBuilder patternBuilder = new StringBuilder();
-            patternBuilder.Append("^(?:");
+            patternBuilder.Append("^((");
             foreach (string reservedName in _reservedNames)
             {
-                patternBuilder.AppendFormat("({0})|", reservedName);
+                patternBuilder.AppendFormat("{0}|", reservedName);
             }
             patternBuilder.Remove(patternBuilder.Length - 1, 1); // Remove the last separator |
-            patternBuilder.Append(")(?<ext>\\..*)*$");
+            patternBuilder.Append(")(?<ext>\\..*)*)$");
             _encoder = new Regex(patternBuilder.ToString(), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
             patternBuilder.Insert(1, _escapeChar);
@@ -68,12 +67,7 @@ namespace CodeWithSaar
         {
             if (_decoder.IsMatch(fileName))
             {
-                fileName = _decoder.Replace(fileName, match =>
-                {
-                    string value = match.Groups[0].Value;
-                    Debug.Assert(_escapeChar.ToString().Length == 1, "Assuming escape character is always a character.");
-                    return value.Substring(1);
-                });
+                fileName = _decoder.Replace(fileName, match => match.Groups[1].Value);
             }
 
             return PostDecode(fileName);
@@ -85,15 +79,7 @@ namespace CodeWithSaar
         public string Encode(string fileName)
         {
             fileName = PreEncode(fileName);
-            if (_encoder.IsMatch(fileName))
-            {
-                fileName = _encoder.Replace(fileName, match =>
-                {
-                    string value = _escapeChar + match.Groups[0].Value;
-                    return value;
-                });
-            }
-            return fileName;
+            return _encoder.IsMatch(fileName) ? _escapeChar + fileName : fileName;
         }
 
         private string PreEncode(string fileName)
