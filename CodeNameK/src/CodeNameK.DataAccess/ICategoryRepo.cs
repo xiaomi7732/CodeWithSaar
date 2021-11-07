@@ -14,7 +14,6 @@ namespace CodeNameK.DataAccess
         /// <summary>
         /// Get a list of categories
         /// </summary>
-        /// <returns></returns>
-        IAsyncEnumerable<Category> GetAllCategories();
+        IEnumerable<Category> GetAllCategories();
     }
 }

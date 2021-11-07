@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using CodeNameK.DataContracts;
+using CodeWithSaar;
 using Microsoft.Extensions.Logging;
 
 namespace CodeNameK.DataAccess
@@ -64,9 +66,21 @@ namespace CodeNameK.DataAccess
             return true;
         }
 
-        public IAsyncEnumerable<Category> GetAllCategories()
+        public IEnumerable<Category> GetAllCategories()
         {
-            throw new NotImplementedException();
+            IEnumerable<string> categoryEnum = Directory.EnumerateDirectories(_baseDirectory).Select(item => Path.GetFileName(item));
+            foreach (Category category in categoryEnum.Select(item =>
+            {
+                Category category = new Category()
+                {
+                    Id = FileUtility.Decode(item),
+                    Values = Enumerable.Empty<DataPoint>(),
+                };
+                return category;
+            }))
+            {
+                yield return category;
+            }
         }
 
         public async IAsyncEnumerable<DataPoint> GetPointsAsync(Category category, int? year, int? month)
