@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -69,9 +70,9 @@ namespace CodeWithSaar
             {
                 fileName = _decoder.Replace(fileName, match =>
                 {
-                    string value = match.Groups[1].Value;
-                    string extension = match.Groups["ext"].Value;
-                    return value + extension;
+                    string value = match.Groups[0].Value;
+                    Debug.Assert(_escapeChar.ToString().Length == 1, "Assuming escape character is always a character.");
+                    return value.Substring(1);
                 });
             }
 
@@ -88,9 +89,8 @@ namespace CodeWithSaar
             {
                 fileName = _encoder.Replace(fileName, match =>
                 {
-                    string value = _escapeChar + match.Groups[1].Value;
-                    string extension = match.Groups["ext"].Value;
-                    return value + extension;
+                    string value = _escapeChar + match.Groups[0].Value;
+                    return value;
                 });
             }
             return fileName;

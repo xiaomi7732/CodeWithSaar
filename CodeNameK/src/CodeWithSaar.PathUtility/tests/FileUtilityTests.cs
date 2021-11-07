@@ -6,6 +6,7 @@ namespace CodeWithSaar.FileUtilityUnitTests
     {
         [Theory]
         [InlineData("con", "%con")]
+        [InlineData("nul", "%nul")]
         [InlineData("special * char", "special %002A char")]
         [InlineData("*CON", "%002ACON")]
         [InlineData("CON.TXT.con", "%CON.TXT.con")]
