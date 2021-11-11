@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CodeNameK.DataAccess
@@ -7,6 +8,7 @@ namespace CodeNameK.DataAccess
     /// </summary>
     public interface IDataWriter<T>
     {
-        Task WriteAsync(T data, string filePath);
+        Task WriteAsync(T data, string filePath, CancellationToken cancellationToken);
+        void Delete(string filePath);
     }
 }

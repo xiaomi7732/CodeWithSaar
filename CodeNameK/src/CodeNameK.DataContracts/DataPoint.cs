@@ -3,14 +3,14 @@ using System.Text.Json.Serialization;
 
 namespace CodeNameK.DataContracts
 {
-    public class DataPoint
+    public record DataPoint
     {
-        public Guid Id { get; set; }
-        public DateTime WhenUTC { get; set; }
-        public double Value { get; set; }
-        public bool IsDeleted { get; set; }
+        public Guid Id { get; init; }
+        public DateTime WhenUTC { get; init; }
+        public double Value { get; init; }
+        public bool IsDeleted { get; init; }
 
         [JsonIgnore]
-        public Category Category { get; set; }
+        public Category Category { get; init; }
     }
 }

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using CodeNameK.DataContracts;
 using CodeWithSaar;
@@ -16,21 +18,24 @@ namespace CodeNameK.DataAccess
         private const string DataFolderName = "Data";
         private readonly string _baseDirectory;
         private readonly IDataWriter<DataPoint> _dataPointWriter;
+        private readonly IDataReader<DataPoint> _dataPointReader;
         private readonly IDataPointPathService _pathService;
         private readonly ILogger _logger;
 
         public DataRepo(
             IDataWriter<DataPoint> dataPointWriter,
+            IDataReader<DataPoint> dataPointReader,
             IDataPointPathService pathService,
             ILogger<DataRepo> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _baseDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), DataFolderName);
             _dataPointWriter = dataPointWriter ?? throw new ArgumentNullException(nameof(dataPointWriter));
+            _dataPointReader = dataPointReader ?? throw new ArgumentNullException(nameof(dataPointReader));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
         }
 
-        public Task<string> AddCategoryAsync(Category category)
+        public Task<string> AddCategoryAsync(Category category, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(category?.Id))
             {
@@ -42,18 +47,21 @@ namespace CodeNameK.DataAccess
             return Task.FromResult(category.Id);
         }
 
-        public async Task<Guid> AddPointAsync(DataPoint newPoint)
+        public async Task<Guid> AddPointAsync(DataPoint newPoint, CancellationToken cancellationToken)
         {
             if (newPoint is null)
             {
                 throw new ArgumentNullException(nameof(newPoint));
             }
 
-            await _dataPointWriter.WriteAsync(newPoint, _pathService.GetRelativePath(newPoint, _baseDirectory)).ConfigureAwait(false);
+            await _dataPointWriter.WriteAsync(
+                newPoint,
+                _pathService.GetRelativePath(newPoint, _baseDirectory),
+                cancellationToken).ConfigureAwait(false);
             return newPoint.Id;
         }
 
-        public async Task<bool> DeletePointAsync(DataPoint dataPoint)
+        public async Task<bool> DeletePointAsync(DataPoint dataPoint, CancellationToken cancellationToken)
         {
             string filePath = _pathService.GetRelativePath(dataPoint, _baseDirectory);
             if (!File.Exists(filePath))
@@ -61,8 +69,11 @@ namespace CodeNameK.DataAccess
                 throw new FileNotFoundException("Can't locate data point file.", filePath);
             }
 
-            dataPoint.IsDeleted = true;
-            await _dataPointWriter.WriteAsync(dataPoint, _pathService.GetRelativePath(dataPoint, _baseDirectory)).ConfigureAwait(false);
+            DataPoint toDelete = dataPoint with { IsDeleted = true };
+            await _dataPointWriter.WriteAsync(
+                dataPoint,
+                _pathService.GetRelativePath(dataPoint, _baseDirectory),
+                cancellationToken).ConfigureAwait(false);
             return true;
         }
 
@@ -83,7 +94,11 @@ namespace CodeNameK.DataAccess
             }
         }
 
-        public async IAsyncEnumerable<DataPoint> GetPointsAsync(Category category, int? year, int? month)
+        public async IAsyncEnumerable<DataPoint> GetPointsAsync(
+            Category category,
+            int? year,
+            int? month,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             if (category?.Id is null)
             {
@@ -116,9 +131,39 @@ namespace CodeNameK.DataAccess
             }
         }
 
-        public Task<bool> UpdatePointAsync(DataPoint contract, Category category)
+        public async Task<bool> UpdatePointAsync(DataPoint originalPointLocator, DataPoint newCategoryPayload, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            if (newCategoryPayload.IsDeleted)
+            {
+                return false;
+            }
+
+            string originalPointPath = _pathService.GetRelativePath(originalPointLocator, _baseDirectory);
+            if (!File.Exists(originalPointPath))
+            {
+                throw new InvalidOperationException("Original point doesn't exist for updating.");
+            }
+            DataPoint origin = await _dataPointReader.ReadAsync(originalPointPath, cancellationToken).ConfigureAwait(false);
+            if (origin.IsDeleted)
+            {
+                return false;
+            }
+            DataPoint toDelete = origin with { IsDeleted = true };
+            string newPointPath = _pathService.GetRelativePath(newCategoryPayload, _baseDirectory);
+
+            // Transactional operation:
+            await _dataPointWriter.WriteAsync(newCategoryPayload, newPointPath, cancellationToken).ConfigureAwait(false);
+            try
+            {
+                await _dataPointWriter.WriteAsync(toDelete, originalPointPath, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception)
+            {
+                // Revert the already written new point
+                _dataPointWriter.Delete(newPointPath);
+                throw;
+            }
+            return true;
         }
     }
 }
