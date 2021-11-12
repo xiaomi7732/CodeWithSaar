@@ -66,7 +66,7 @@ namespace CodeNameK.DataAccess
             };
         }
 
-        public async Task<bool> DeletePointAsync(DataPoint dataPoint, CancellationToken cancellationToken)
+        public Task<bool> DeletePointAsync(DataPoint dataPoint, CancellationToken cancellationToken)
         {
             string filePath = _pathService.GetRelativePath(dataPoint, _baseDirectory);
             if (!File.Exists(filePath))
@@ -74,12 +74,14 @@ namespace CodeNameK.DataAccess
                 throw new FileNotFoundException("Can't locate data point file.", filePath);
             }
 
-            DataPoint toDelete = dataPoint with { IsDeleted = true };
-            await _dataPointWriter.WriteAsync(
-                toDelete,
-                _pathService.GetRelativePath(toDelete, _baseDirectory),
-                cancellationToken).ConfigureAwait(false);
-            return true;
+            string deleteMark = _pathService.GetDeletedMarkerFilePath(dataPoint, _baseDirectory);
+            if (File.Exists(deleteMark))
+            {
+                throw new InvalidOperationException($"The target data point has already been deleted. Marking file: {deleteMark}");
+            }
+
+            _dataPointWriter.WriteEmpty(deleteMark);
+            return Task.FromResult(true);
         }
 
         public IEnumerable<Category> GetAllCategories()
@@ -128,10 +130,11 @@ namespace CodeNameK.DataAccess
                 using (Stream input = File.OpenRead(file.FullName))
                 {
                     DataPoint dataPoint = await JsonSerializer.DeserializeAsync<DataPoint>(input).ConfigureAwait(false);
-                    if (!dataPoint.IsDeleted)
+                    dataPoint = dataPoint with { Category = category };
+                    string deletedMarkPath = _pathService.GetDeletedMarkerFilePath(dataPoint, _baseDirectory);
+                    if (!File.Exists(deletedMarkPath))
                     {
-                        DataPoint toReturn = dataPoint with { Category = category };
-                        yield return toReturn;
+                        yield return dataPoint;
                     }
                 }
             }
@@ -139,8 +142,9 @@ namespace CodeNameK.DataAccess
 
         public async Task<bool> UpdatePointAsync(DataPoint originalPointLocator, DataPoint newPoint, CancellationToken cancellationToken)
         {
-            if (newPoint.IsDeleted)
+            if (File.Exists(_pathService.GetDeletedMarkerFilePath(newPoint, _baseDirectory)))
             {
+                // The target point has been deleted already;
                 return false;
             }
 

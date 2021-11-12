@@ -71,5 +71,10 @@ namespace CodeNameK.DataAccess
                 File.Delete(tempFile);
             }
         }
+
+        public void WriteEmpty(string filePath)
+        {
+            using Stream fileStream = File.OpenWrite(filePath);
+        }
     }
 }

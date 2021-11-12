@@ -8,7 +8,6 @@ namespace CodeNameK.DataContracts
         public Guid Id { get; init; }
         public DateTime WhenUTC { get; init; }
         public double Value { get; init; }
-        public bool IsDeleted { get; init; }
 
         [JsonIgnore]
         public Category Category { get; init; }

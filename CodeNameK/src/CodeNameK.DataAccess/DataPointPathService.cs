@@ -43,5 +43,11 @@ namespace CodeNameK.DataAccess
 
             return FileUtility.Encode(category.Id);
         }
+
+        public string GetDeletedMarkerFilePath(DataPoint dataPoint, string baseDirectory = null)
+        {
+            string dataPointPath = GetRelativePath(dataPoint, baseDirectory);
+            return Path.ChangeExtension(dataPointPath, "del");
+        }
     }
 }

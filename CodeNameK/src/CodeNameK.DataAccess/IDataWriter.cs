@@ -9,6 +9,7 @@ namespace CodeNameK.DataAccess
     public interface IDataWriter<T>
     {
         Task WriteAsync(T data, string filePath, CancellationToken cancellationToken);
+        void WriteEmpty(string filePath);
         void Delete(string filePath);
     }
 }
