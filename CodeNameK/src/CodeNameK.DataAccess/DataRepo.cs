@@ -47,18 +47,23 @@ namespace CodeNameK.DataAccess
             return Task.FromResult(category.Id);
         }
 
-        public async Task<Guid> AddPointAsync(DataPoint newPoint, CancellationToken cancellationToken)
+        public async Task<DataPointInfo> AddPointAsync(DataPoint newPoint, CancellationToken cancellationToken)
         {
             if (newPoint is null)
             {
                 throw new ArgumentNullException(nameof(newPoint));
             }
 
+            string filePath = _pathService.GetRelativePath(newPoint, _baseDirectory);
             await _dataPointWriter.WriteAsync(
                 newPoint,
-                _pathService.GetRelativePath(newPoint, _baseDirectory),
+                filePath,
                 cancellationToken).ConfigureAwait(false);
-            return newPoint.Id;
+            return new DataPointInfo()
+            {
+                DataPointId = newPoint.Id,
+                PhysicalLocation = filePath,
+            };
         }
 
         public async Task<bool> DeletePointAsync(DataPoint dataPoint, CancellationToken cancellationToken)
@@ -132,9 +137,9 @@ namespace CodeNameK.DataAccess
             }
         }
 
-        public async Task<bool> UpdatePointAsync(DataPoint originalPointLocator, DataPoint newCategoryPayload, CancellationToken cancellationToken)
+        public async Task<bool> UpdatePointAsync(DataPoint originalPointLocator, DataPoint newPoint, CancellationToken cancellationToken)
         {
-            if (newCategoryPayload.IsDeleted)
+            if (newPoint.IsDeleted)
             {
                 return false;
             }
@@ -144,26 +149,19 @@ namespace CodeNameK.DataAccess
             {
                 throw new InvalidOperationException("Original point doesn't exist for updating.");
             }
-            DataPoint origin = await _dataPointReader.ReadAsync(originalPointPath, cancellationToken).ConfigureAwait(false);
-            if (origin.IsDeleted)
-            {
-                return false;
-            }
-            DataPoint toDelete = origin with { IsDeleted = true };
-            string newPointPath = _pathService.GetRelativePath(newCategoryPayload, _baseDirectory);
 
-            // Transactional operation:
-            await _dataPointWriter.WriteAsync(newCategoryPayload, newPointPath, cancellationToken).ConfigureAwait(false);
+            DataPointInfo newPointHandle = await AddPointAsync(newPoint, cancellationToken).ConfigureAwait(false);
             try
             {
-                await _dataPointWriter.WriteAsync(toDelete, originalPointPath, cancellationToken).ConfigureAwait(false);
+                await DeletePointAsync(originalPointLocator, cancellationToken).ConfigureAwait(false);
             }
-            catch (Exception)
+            catch
             {
-                // Revert the already written new point
-                _dataPointWriter.Delete(newPointPath);
+                // If delete fails, the newly added point should be removed to avoid duplicated data points.
+                _dataPointWriter.Delete(newPointHandle.PhysicalLocation);
                 throw;
             }
+
             return true;
         }
     }

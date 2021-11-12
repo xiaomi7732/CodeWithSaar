@@ -11,7 +11,7 @@ namespace CodeNameK.DataAccess
         /// <summary>
         /// Creates a data point and persistents it.
         /// </summary>
-        Task<Guid> AddPointAsync(DataPoint newPoint, CancellationToken cancellationToken);
+        Task<DataPointInfo> AddPointAsync(DataPoint newPoint, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets a collection of data points for a given category, year and month.

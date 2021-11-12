@@ -86,9 +86,9 @@ namespace CodeNameK.Cli
                 Value = dataValue.Value,
                 Category = category,
             };
-            Guid newPointGuid = await dataRepo.AddPointAsync(dataPoint, cancellationToken: default).ConfigureAwait(false);
+            DataPointInfo newPointHandle = await dataRepo.AddPointAsync(dataPoint, cancellationToken: default).ConfigureAwait(false);
             dataPoints.Add(dataPoint);
-            Console.WriteLine("Added a point: {0:D}", newPointGuid);
+            Console.WriteLine("Added a point: {0:D}", newPointHandle);
 
             if (!dataPoints.Any())
             {
@@ -171,10 +171,18 @@ namespace CodeNameK.Cli
 
         private static void PrintDataPoints(IEnumerable<DataPoint> dots)
         {
+            int count = 0;
             foreach (DataPoint dot in dots)
             {
                 PrintDataPoint(dot);
+                count++;
             }
+
+            if (count == 0)
+            {
+                Console.WriteLine("No data");
+            }
+
             Console.WriteLine("===");
         }
 
