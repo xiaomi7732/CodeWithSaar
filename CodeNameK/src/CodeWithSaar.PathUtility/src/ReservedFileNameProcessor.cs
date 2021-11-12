@@ -12,7 +12,7 @@ namespace CodeWithSaar
     /// </summary>
     internal class ReservedFileNameProcessor : IFileNameProcessor
     {
-        private const char _escapeChar = '%';
+        private const string _escapeChar = "%";
 
         private readonly List<string> _reservedNames = new List<string>(){
             "CON",
@@ -69,7 +69,6 @@ namespace CodeWithSaar
             {
                 fileName = _decoder.Replace(fileName, match => match.Groups[1].Value);
             }
-
             return PostDecode(fileName);
         }
 
@@ -90,7 +89,7 @@ namespace CodeWithSaar
             }
 
             // Escape the escape character by doubling itself
-            return fileName.Replace(_escapeChar.ToString(), _escapeChar.ToString() + _escapeChar);
+            return fileName.Replace(_escapeChar, _escapeChar + _escapeChar);
         }
 
         /// <summary>
@@ -102,7 +101,7 @@ namespace CodeWithSaar
             {
                 return fileName;
             }
-            return fileName.Replace(_escapeChar.ToString() + _escapeChar, _escapeChar.ToString());
+            return fileName.Replace(_escapeChar + _escapeChar, _escapeChar);
         }
     }
 }
