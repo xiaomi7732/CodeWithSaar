@@ -71,8 +71,8 @@ namespace CodeNameK.DataAccess
 
             DataPoint toDelete = dataPoint with { IsDeleted = true };
             await _dataPointWriter.WriteAsync(
-                dataPoint,
-                _pathService.GetRelativePath(dataPoint, _baseDirectory),
+                toDelete,
+                _pathService.GetRelativePath(toDelete, _baseDirectory),
                 cancellationToken).ConfigureAwait(false);
             return true;
         }
@@ -125,7 +125,8 @@ namespace CodeNameK.DataAccess
                     DataPoint dataPoint = await JsonSerializer.DeserializeAsync<DataPoint>(input).ConfigureAwait(false);
                     if (!dataPoint.IsDeleted)
                     {
-                        yield return dataPoint;
+                        DataPoint toReturn = dataPoint with { Category = category };
+                        yield return toReturn;
                     }
                 }
             }

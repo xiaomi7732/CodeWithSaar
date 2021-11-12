@@ -25,19 +25,20 @@ namespace CodeNameK.Cli
             _logger = loggerFactory.CreateLogger<Program>();
             _logger.LogInformation("Logger is ready.");
 
-            IDataWriter<DataPoint> dataPointWriter = new DataPointWriter();
+            DataPointOperator dataPointOperator = new DataPointOperator();
+            IDataWriter<DataPoint> dataPointWriter = dataPointOperator;
+            IDataReader<DataPoint> dataPointReader = dataPointOperator;
             IDataPointPathService pathService = new DataPointPathService();
+
             DataRepo dataRepo = new DataRepo(
                 dataPointWriter,
+                dataPointReader,
                 pathService,
                 loggerFactory.CreateLogger<DataRepo>());
 
             Console.WriteLine("List all categories:");
             List<Category> categories = dataRepo.GetAllCategories().OrderBy(c => c.Id, StringComparer.InvariantCultureIgnoreCase).ToList();
-            foreach (Category c in categories)
-            {
-                Console.WriteLine("\t{0}", c.Id);
-            }
+            PrintCategories(categories);
             Console.WriteLine("Pick a category for the next operation:");
             string pickedCategoryName = Console.ReadLine();
             if (string.IsNullOrEmpty(pickedCategoryName))
@@ -51,7 +52,7 @@ namespace CodeNameK.Cli
                 Console.WriteLine("No category matched the picked named of: {0}, creating one.", pickedCategoryName);
                 category = new Category() { Id = pickedCategoryName };
                 Console.WriteLine($"Adding a category: {category.Id}");
-                await dataRepo.AddCategoryAsync(category);
+                await dataRepo.AddCategoryAsync(category, cancellationToken: default);
                 categories.Add(category);
             }
 
@@ -60,7 +61,7 @@ namespace CodeNameK.Cli
             Console.WriteLine("Listing all data points:");
             // Load all data points
             List<DataPoint> dataPoints = new List<DataPoint>();
-            await foreach (DataPoint dot in dataRepo.GetPointsAsync(category, null, null))
+            await foreach (DataPoint dot in dataRepo.GetPointsAsync(category, null, null, cancellationToken: default))
             {
                 dataPoints.Add(dot);
             }
@@ -85,7 +86,7 @@ namespace CodeNameK.Cli
                 Value = dataValue.Value,
                 Category = category,
             };
-            Guid newPointGuid = await dataRepo.AddPointAsync(dataPoint).ConfigureAwait(false);
+            Guid newPointGuid = await dataRepo.AddPointAsync(dataPoint, cancellationToken: default).ConfigureAwait(false);
             dataPoints.Add(dataPoint);
             Console.WriteLine("Added a point: {0:D}", newPointGuid);
 
@@ -100,13 +101,71 @@ namespace CodeNameK.Cli
             if (Guid.TryParse(dotId, out Guid dotGuid))
             {
                 DataPoint target = dataPoints.FirstOrDefault(dot => dot.Id == dotGuid);
-                target.Category = category;
-                bool deleted = await dataRepo.DeletePointAsync(target).ConfigureAwait(false);
+                bool deleted = await dataRepo.DeletePointAsync(target, cancellationToken: default).ConfigureAwait(false);
                 Console.WriteLine("Delete result: {0}", deleted);
             }
             else
             {
-                Console.WriteLine("Invalid guid.");
+                Console.WriteLine("No deletion. Invalid guid.");
+            }
+
+            Console.WriteLine("Do you want to update a data point? Input the guid if you want.");
+            dotId = Console.ReadLine();
+            if (Guid.TryParse(dotId, out dotGuid))
+            {
+                DataPoint target = dataPoints.FirstOrDefault(dot => dot.Id == dotGuid);
+                Console.WriteLine("You picked the following point:");
+                PrintDataPoint(target);
+                Console.WriteLine("What's the new value:");
+                string newValueString = Console.ReadLine();
+
+                Console.WriteLine("What's the new local time (yyyy-MM-dd HH:mm:ss):");
+                string newLocalTimeString = Console.ReadLine();
+
+                Console.WriteLine("There are these categories:");
+                PrintCategories(categories);
+                Console.WriteLine("What's the new category: ");
+                string newCategoryName = Console.ReadLine();
+
+                if (!double.TryParse(newValueString, out double newValue))
+                {
+                    newValue = target.Value;
+                }
+
+                if (!DateTime.TryParse(newLocalTimeString, provider: null, styles: System.Globalization.DateTimeStyles.AssumeLocal, out DateTime newLocalDateTime))
+                {
+                    newLocalDateTime = target.WhenUTC.ToLocalTime();
+                }
+
+                Category newCategory = null;
+                if (!string.IsNullOrEmpty(newCategoryName))
+                {
+                    newCategory = categories.FirstOrDefault(c => string.Equals(c.Id, newCategoryName));
+                }
+                newCategory = newCategory ?? target.Category;
+
+                DataPoint updateTo = target with
+                {
+                    Id = Guid.NewGuid(),
+                    Value = newValue,
+                    WhenUTC = newLocalDateTime.ToUniversalTime(),
+                    Category = newCategory,
+                };
+
+                await dataRepo.UpdatePointAsync(target, updateTo, default).ConfigureAwait(false);
+                Console.WriteLine("DataPoint updated: {0} => {1}", pathService.GetRelativePath(target), pathService.GetRelativePath(updateTo));
+            }
+            else
+            {
+                Console.WriteLine("No deletion. Invalid guid.");
+            }
+        }
+
+        private static void PrintCategories(IEnumerable<Category> categories)
+        {
+            foreach (Category c in categories)
+            {
+                Console.WriteLine("\t{0}", c.Id);
             }
         }
 
@@ -114,9 +173,15 @@ namespace CodeNameK.Cli
         {
             foreach (DataPoint dot in dots)
             {
-                Console.WriteLine("- {0} Local DateTime: {1:yyyy-MM-dd HH:mm:ss} (UTC: {4:o}), Value: {2} Is Deleted: {3}", dot.Id, dot.WhenUTC.ToLocalTime(), dot.Value, dot.IsDeleted, dot.WhenUTC);
+                PrintDataPoint(dot);
             }
             Console.WriteLine("===");
+        }
+
+        private static void PrintDataPoint(DataPoint dot)
+        {
+            Console.WriteLine("- " + dot.ToString());
+            // Console.WriteLine("- {0} Local DateTime: {1:yyyy-MM-dd HH:mm:ss} (UTC: {4:o}), Value: {2} Is Deleted: {3}", dot.Id, dot.WhenUTC.ToLocalTime(), dot.Value, dot.IsDeleted, dot.WhenUTC);
         }
     }
 }

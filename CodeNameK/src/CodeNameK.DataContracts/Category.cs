@@ -2,10 +2,10 @@ using System.Collections.Generic;
 
 namespace CodeNameK.DataContracts
 {
-    public class Category
+    public record Category
     {
-        public string Id { get; set; }
+        public string Id { get; init; }
 
-        public IEnumerable<DataPoint> Values { get; set; }
+        public IEnumerable<DataPoint> Values { get; init; }
     }
 }
