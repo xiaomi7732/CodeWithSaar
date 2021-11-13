@@ -6,7 +6,7 @@
 
   <PropertyGroup>
     <PackageId>CodeWithSaar.PathUtility</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>Saar</Authors>
     <Company>CodeWithSaar</Company>
     <NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
