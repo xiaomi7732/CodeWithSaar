@@ -46,17 +46,8 @@ namespace CodeWithSaar
         public ReservedFileNameProcessor(bool escapeEscaper = true)
         {
             StringBuilder patternBuilder = new StringBuilder();
-            patternBuilder.Append("^((");
-            foreach (string reservedName in _reservedNames)
-            {
-                patternBuilder.AppendFormat("{0}|", reservedName);
-            }
-            patternBuilder.Remove(patternBuilder.Length - 1, 1); // Remove the last separator |
-            patternBuilder.Append(")(?<ext>\\..*)*)$");
-            _encoder = new Regex(patternBuilder.ToString(), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
-
-            patternBuilder.Insert(1, _escapeChar);
-            _decoder = new Regex(patternBuilder.ToString(), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+            _encoder = new Regex(BuildEncoderPattern(patternBuilder), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+            _decoder = new Regex(BuildDecoderPattern(patternBuilder), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
             _escapeEscaper = escapeEscaper;
         }
 
@@ -102,6 +93,32 @@ namespace CodeWithSaar
                 return fileName;
             }
             return fileName.Replace(_escapeChar + _escapeChar, _escapeChar);
+        }
+
+        private string BuildEncoderPattern(StringBuilder patternBuilder)
+        {
+            patternBuilder.Clear();
+            patternBuilder.Append("^(?:");
+            foreach (string reservedName in _reservedNames)
+            {
+                patternBuilder.AppendFormat("{0}|", reservedName);
+            }
+            patternBuilder.Remove(patternBuilder.Length - 1, 1); // Remove the last separator |
+            patternBuilder.Append(")(?:\\..*)*$");
+            return patternBuilder.ToString();
+        }
+
+        private string BuildDecoderPattern(StringBuilder patternBuilder)
+        {
+            patternBuilder.Clear();
+            patternBuilder.Append("^%((?:");
+            foreach (string reservedName in _reservedNames)
+            {
+                patternBuilder.AppendFormat("{0}|", reservedName);
+            }
+            patternBuilder.Remove(patternBuilder.Length - 1, 1); // Remove the last separator |
+            patternBuilder.Append(")(?:\\..*)*)$");
+            return patternBuilder.ToString();
         }
     }
 }
