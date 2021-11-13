@@ -1,7 +1,9 @@
-﻿const string Data = "Data";
+﻿using CodeWithSaar;
+
+const string Data = "Data";
 void CreateCategory(string categoryName)
 {
-    string targetPath = Path.Combine(Data, categoryName);
+    string targetPath = Path.Combine(Data, FileUtility.Encode(categoryName));
     Directory.CreateDirectory(targetPath);
 }
 
