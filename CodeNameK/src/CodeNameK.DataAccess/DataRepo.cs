@@ -87,6 +87,12 @@ namespace CodeNameK.DataAccess
 
         public IEnumerable<Category> GetAllCategories()
         {
+            if(!Directory.Exists(_baseDirectory))
+            {
+                // Target folder doesn't exist;
+                yield break;
+            }
+
             IEnumerable<string> categoryEnum = Directory.EnumerateDirectories(_baseDirectory).Select(item => Path.GetFileName(item));
             foreach (Category category in categoryEnum.Select(item =>
             {
@@ -126,7 +132,7 @@ namespace CodeNameK.DataAccess
 
             _logger.LogInformation("Data searching prefix: {prefix}", searchPrefix);
             DirectoryInfo searchBase = new DirectoryInfo(searchPrefix);
-            foreach (FileInfo file in searchBase.EnumerateFiles("*" + Constants.DataPointFileExtension, new EnumerationOptions() { RecurseSubdirectories = true }))
+            foreach (FileInfo file in searchBase.EnumerateFiles("*" + Constants.DataPointFileExtension, SearchOption.AllDirectories))
             {
                 using (Stream input = File.OpenRead(file.FullName))
                 {

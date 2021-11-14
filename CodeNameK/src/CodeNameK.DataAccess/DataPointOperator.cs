@@ -73,11 +73,13 @@ namespace CodeNameK.DataAccess
                 {
                     Directory.CreateDirectory(parentDirectory);
                 }
-                File.Move(tempFile, filePath, overwrite: true);
+                File.Copy(tempFile, filePath, true);
+                File.Delete(tempFile);
             }
             finally
             {
-                File.Delete(tempFile);
+                // Best effort.
+                _ = Task.Run(() => File.Delete(tempFile));
             }
         }
 

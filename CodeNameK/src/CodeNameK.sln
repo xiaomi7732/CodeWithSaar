@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.Cli", "CodeNameK.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.DataAccess.UnitTests", "CodeNameK.DataAccess.UnitTests\CodeNameK.DataAccess.UnitTests.csproj", "{93DCF840-77A0-4123-8225-59CB979FF03E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.Biz", "CodeNameK.Biz\CodeNameK.Biz.csproj", "{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,17 @@ Global
 		{93DCF840-77A0-4123-8225-59CB979FF03E}.Release|x64.Build.0 = Release|Any CPU
 		{93DCF840-77A0-4123-8225-59CB979FF03E}.Release|x86.ActiveCfg = Release|Any CPU
 		{93DCF840-77A0-4123-8225-59CB979FF03E}.Release|x86.Build.0 = Release|Any CPU
+		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Debug|x64.Build.0 = Debug|Any CPU
+		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Debug|x86.Build.0 = Debug|Any CPU
+		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Release|x64.ActiveCfg = Release|Any CPU
+		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Release|x64.Build.0 = Release|Any CPU
+		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Release|x86.ActiveCfg = Release|Any CPU
+		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
