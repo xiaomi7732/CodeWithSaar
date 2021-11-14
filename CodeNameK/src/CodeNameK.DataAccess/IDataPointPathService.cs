@@ -12,11 +12,11 @@ namespace CodeNameK.DataAccess
         /// <summary>
         /// Get a relative path to the file for a data point
         /// </summary>
-        string GetRelativePath(DataPoint dataPoint, string baseDirectory = null);
+        string GetRelativePath(DataPoint dataPoint, string? baseDirectory = null);
 
         /// <summary>
         /// Gets a relative path to the file marking a deleted data point.
         /// </summary>
-        string GetDeletedMarkerFilePath(DataPoint dataPoint, string baseDirectory = null);
+        string GetDeletedMarkerFilePath(DataPoint dataPoint, string? baseDirectory = null);
     }
 }

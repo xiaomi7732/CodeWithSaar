@@ -10,6 +10,6 @@ namespace CodeNameK.DataContracts
         public double Value { get; init; }
 
         [JsonIgnore]
-        public Category Category { get; init; }
+        public Category? Category { get; init; }
     }
 }

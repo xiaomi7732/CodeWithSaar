@@ -31,14 +31,14 @@ namespace CodeNameK.DataAccess
             File.Delete(filePath);
         }
 
-        public async Task<DataPoint> ReadAsync(string filePath, CancellationToken cancellationToken)
+        public async Task<DataPoint?> ReadAsync(string filePath, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(filePath))
             {
                 throw new ArgumentException($"'{nameof(filePath)}' cannot be null or empty.", nameof(filePath));
             }
 
-            DataPoint entity = null;
+            DataPoint? entity = null;
             using (Stream utf8JsonStream = File.OpenRead(filePath))
             {
                 entity = await JsonSerializer.DeserializeAsync<DataPoint>(
@@ -55,6 +55,11 @@ namespace CodeNameK.DataAccess
                 throw new ArgumentNullException(nameof(data));
             }
 
+            if (string.IsNullOrEmpty(filePath))
+            {
+                throw new ArgumentException($"'{nameof(filePath)}' cannot be null or empty.", nameof(filePath));
+            }
+
             string tempFile = Path.GetTempFileName();
             try
             {
@@ -63,7 +68,11 @@ namespace CodeNameK.DataAccess
                     await JsonSerializer.SerializeAsync(output, data, _jsonSerializerOptions).ConfigureAwait(false);
                 }
 
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                string? parentDirectory = Path.GetDirectoryName(filePath);
+                if (!string.IsNullOrEmpty(parentDirectory))
+                {
+                    Directory.CreateDirectory(parentDirectory);
+                }
                 File.Move(tempFile, filePath, overwrite: true);
             }
             finally

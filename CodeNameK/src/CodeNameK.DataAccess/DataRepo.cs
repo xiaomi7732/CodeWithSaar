@@ -29,7 +29,8 @@ namespace CodeNameK.DataAccess
             ILogger<DataRepo> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _baseDirectory = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), DataFolderName);
+            string? exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            _baseDirectory = string.IsNullOrEmpty(exePath) ? DataFolderName : Path.Combine(exePath, DataFolderName);
             _dataPointWriter = dataPointWriter ?? throw new ArgumentNullException(nameof(dataPointWriter));
             _dataPointReader = dataPointReader ?? throw new ArgumentNullException(nameof(dataPointReader));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
@@ -129,7 +130,11 @@ namespace CodeNameK.DataAccess
             {
                 using (Stream input = File.OpenRead(file.FullName))
                 {
-                    DataPoint dataPoint = await JsonSerializer.DeserializeAsync<DataPoint>(input).ConfigureAwait(false);
+                    DataPoint? dataPoint = await JsonSerializer.DeserializeAsync<DataPoint>(input).ConfigureAwait(false);
+                    if (dataPoint is null)
+                    {
+                        continue;
+                    }
                     dataPoint = dataPoint with { Category = category };
                     string deletedMarkPath = _pathService.GetDeletedMarkerFilePath(dataPoint, _baseDirectory);
                     if (!File.Exists(deletedMarkPath))

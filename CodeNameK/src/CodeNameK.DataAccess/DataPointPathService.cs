@@ -9,7 +9,7 @@ namespace CodeNameK.DataAccess
     {
         public const string DataPointFileExtension = ".dpt";
 
-        public string GetRelativePath(DataPoint dataPoint, string baseDirectory = null)
+        public string GetRelativePath(DataPoint dataPoint, string? baseDirectory = null)
         {
             if (dataPoint is null)
             {
@@ -44,7 +44,7 @@ namespace CodeNameK.DataAccess
             return FileUtility.Encode(category.Id);
         }
 
-        public string GetDeletedMarkerFilePath(DataPoint dataPoint, string baseDirectory = null)
+        public string GetDeletedMarkerFilePath(DataPoint dataPoint, string? baseDirectory = null)
         {
             string dataPointPath = GetRelativePath(dataPoint, baseDirectory);
             return Path.ChangeExtension(dataPointPath, "del");

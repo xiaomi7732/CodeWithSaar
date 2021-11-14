@@ -10,7 +10,7 @@ namespace CodeNameK.Cli
 {
     class Program
     {
-        private static ILogger _logger;
+        private static ILogger? _logger;
 
         static async Task Main(string[] args)
         {
@@ -40,13 +40,13 @@ namespace CodeNameK.Cli
             List<Category> categories = dataRepo.GetAllCategories().OrderBy(c => c.Id, StringComparer.InvariantCultureIgnoreCase).ToList();
             PrintCategories(categories);
             Console.WriteLine("Pick a category for the next operation:");
-            string pickedCategoryName = Console.ReadLine();
+            string? pickedCategoryName = Console.ReadLine();
             if (string.IsNullOrEmpty(pickedCategoryName))
             {
                 Console.WriteLine("Must have a category name. Terminated.");
                 return;
             }
-            Category category = categories.FirstOrDefault(item => string.Equals(item.Id, pickedCategoryName, StringComparison.OrdinalIgnoreCase));
+            Category? category = categories.FirstOrDefault(item => string.Equals(item.Id, pickedCategoryName, StringComparison.OrdinalIgnoreCase));
             if (category is null)
             {
                 Console.WriteLine("No category matched the picked named of: {0}, creating one.", pickedCategoryName);
@@ -71,7 +71,7 @@ namespace CodeNameK.Cli
             while (!dataValue.HasValue)
             {
                 Console.WriteLine("Adding a data point. What will the value be?");
-                string dataValueString = Console.ReadLine();
+                string? dataValueString = Console.ReadLine();
 
                 if (double.TryParse(dataValueString, out double newValue))
                 {
@@ -96,13 +96,20 @@ namespace CodeNameK.Cli
             }
             PrintDataPoints(dataPoints);
             Console.WriteLine("There are {0} data points in the list. Pick a dot to delete:", dataPoints.Count);
-            string dotId = Console.ReadLine();
+            string? dotId = Console.ReadLine();
 
             if (Guid.TryParse(dotId, out Guid dotGuid))
             {
-                DataPoint target = dataPoints.FirstOrDefault(dot => dot.Id == dotGuid);
-                bool deleted = await dataRepo.DeletePointAsync(target, cancellationToken: default).ConfigureAwait(false);
-                Console.WriteLine("Delete result: {0}", deleted);
+                DataPoint? target = dataPoints.FirstOrDefault(dot => dot.Id == dotGuid);
+                if (target != null)
+                {
+                    bool deleted = await dataRepo.DeletePointAsync(target, cancellationToken: default).ConfigureAwait(false);
+                    Console.WriteLine("Delete result: {0}", deleted);
+                }
+                else
+                {
+                    Console.WriteLine("No point found by guid: {0}", dotGuid);
+                }
             }
             else
             {
@@ -113,47 +120,54 @@ namespace CodeNameK.Cli
             dotId = Console.ReadLine();
             if (Guid.TryParse(dotId, out dotGuid))
             {
-                DataPoint target = dataPoints.FirstOrDefault(dot => dot.Id == dotGuid);
-                Console.WriteLine("You picked the following point:");
-                PrintDataPoint(target);
-                Console.WriteLine("What's the new value:");
-                string newValueString = Console.ReadLine();
-
-                Console.WriteLine("What's the new local time (yyyy-MM-dd HH:mm:ss):");
-                string newLocalTimeString = Console.ReadLine();
-
-                Console.WriteLine("There are these categories:");
-                PrintCategories(categories);
-                Console.WriteLine("What's the new category: ");
-                string newCategoryName = Console.ReadLine();
-
-                if (!double.TryParse(newValueString, out double newValue))
+                DataPoint? target = dataPoints.FirstOrDefault(dot => dot.Id == dotGuid);
+                if (target is null)
                 {
-                    newValue = target.Value;
+                    Console.WriteLine("No point found with Guid: {0}", dotGuid);
                 }
-
-                if (!DateTime.TryParse(newLocalTimeString, provider: null, styles: System.Globalization.DateTimeStyles.AssumeLocal, out DateTime newLocalDateTime))
+                else
                 {
-                    newLocalDateTime = target.WhenUTC.ToLocalTime();
+                    Console.WriteLine("You picked the following point:");
+                    PrintDataPoint(target);
+                    Console.WriteLine("What's the new value:");
+                    string? newValueString = Console.ReadLine();
+
+                    Console.WriteLine("What's the new local time (yyyy-MM-dd HH:mm:ss):");
+                    string? newLocalTimeString = Console.ReadLine();
+
+                    Console.WriteLine("There are these categories:");
+                    PrintCategories(categories);
+                    Console.WriteLine("What's the new category: ");
+                    string? newCategoryName = Console.ReadLine();
+
+                    if (!double.TryParse(newValueString, out double newValue))
+                    {
+                        newValue = target.Value;
+                    }
+
+                    if (!DateTime.TryParse(newLocalTimeString, provider: null, styles: System.Globalization.DateTimeStyles.AssumeLocal, out DateTime newLocalDateTime))
+                    {
+                        newLocalDateTime = target.WhenUTC.ToLocalTime();
+                    }
+
+                    Category? newCategory = null;
+                    if (!string.IsNullOrEmpty(newCategoryName))
+                    {
+                        newCategory = categories.FirstOrDefault(c => string.Equals(c.Id, newCategoryName));
+                    }
+                    newCategory = newCategory ?? target.Category;
+
+                    DataPoint updateTo = target with
+                    {
+                        Id = Guid.NewGuid(),
+                        Value = newValue,
+                        WhenUTC = newLocalDateTime.ToUniversalTime(),
+                        Category = newCategory,
+                    };
+
+                    await dataRepo.UpdatePointAsync(target, updateTo, default).ConfigureAwait(false);
+                    Console.WriteLine("DataPoint updated: {0} => {1}", pathService.GetRelativePath(target), pathService.GetRelativePath(updateTo));
                 }
-
-                Category newCategory = null;
-                if (!string.IsNullOrEmpty(newCategoryName))
-                {
-                    newCategory = categories.FirstOrDefault(c => string.Equals(c.Id, newCategoryName));
-                }
-                newCategory = newCategory ?? target.Category;
-
-                DataPoint updateTo = target with
-                {
-                    Id = Guid.NewGuid(),
-                    Value = newValue,
-                    WhenUTC = newLocalDateTime.ToUniversalTime(),
-                    Category = newCategory,
-                };
-
-                await dataRepo.UpdatePointAsync(target, updateTo, default).ConfigureAwait(false);
-                Console.WriteLine("DataPoint updated: {0} => {1}", pathService.GetRelativePath(target), pathService.GetRelativePath(updateTo));
             }
             else
             {

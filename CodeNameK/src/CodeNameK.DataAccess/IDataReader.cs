@@ -8,6 +8,6 @@ namespace CodeNameK.DataAccess
         /// <summary>
         /// Reads an object from a target path.
         /// </summary>
-        Task<T> ReadAsync(string filePath, CancellationToken cancellationToken);
+        Task<T?> ReadAsync(string filePath, CancellationToken cancellationToken);
     }
 }
