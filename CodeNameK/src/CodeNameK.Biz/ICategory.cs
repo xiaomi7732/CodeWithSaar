@@ -7,7 +7,7 @@ namespace CodeNameK.Biz;
 
 public interface ICategory
 {
-    IEnumerable<Category> AllCategories { get; }
+    IEnumerable<Category> GetAllCategories();
 
     Task<OperationResult<Category>> AddCategoryAsync(Category newCategory, CancellationToken cancellationToken);
 }

@@ -15,7 +15,7 @@ internal class BizCategory : ICategory
         _categoryRepo = categoryRepo ?? throw new System.ArgumentNullException(nameof(categoryRepo));
     }
 
-    public IEnumerable<Category> AllCategories => _categoryRepo.GetAllCategories();
+    public IEnumerable<Category> GetAllCategories() => _categoryRepo.GetAllCategories();
 
     public async Task<OperationResult<Category>> AddCategoryAsync(Category newCategory, CancellationToken cancellationToken)
     {
