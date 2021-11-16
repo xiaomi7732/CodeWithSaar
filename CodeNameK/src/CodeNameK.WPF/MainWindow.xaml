@@ -4,9 +4,49 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CodeNameK.WPF"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Window.Resources>
+        <DataTemplate x:Key="categoryItemTemplate">
+            <TextBlock Text="{Binding Id}" ToolTip="{Binding Id}" />
+        </DataTemplate>
+    </Window.Resources>
+    <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
+        <GroupBox Header="Category" Padding="8">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <!--TextBox-->
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <!--ListView-->
+                    <RowDefinition Height="*"></RowDefinition>
+                    <!--Status-->
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding CategoryText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Command="{Binding AddCategoryCommand}" Key="Return"></KeyBinding>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <Button Grid.Column="1" MinWidth="20" Command="{Binding AddCategoryCommand}">+</Button>
+                </Grid>
+                <ListView Grid.Row="1"
+                          ItemsSource="{Binding CategoryCollectionView}"
+                          ItemTemplate="{StaticResource ResourceKey=categoryItemTemplate}" />
+                <TextBlock Grid.Row="2" Text="{Binding CategoryCount}" />
+            </Grid>
+        </GroupBox>
     </Grid>
 </Window>

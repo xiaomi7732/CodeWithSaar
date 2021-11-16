@@ -1,14 +1,15 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace CodeNameK.ViewModels;
-
-public abstract class ViewModelBase : INotifyPropertyChanged
+namespace CodeNameK.ViewModels
 {
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected void RaisePropertyChanged([CallerMemberName] string propertyName = "")
+    public abstract class ViewModelBase : INotifyPropertyChanged
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void RaisePropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

@@ -1,14 +1,15 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CodeNameK.ViewModels;
-
-public static class ViewModelRegister
+namespace CodeNameK.ViewModels
 {
-    public static IServiceCollection RegisterViewModels(this IServiceCollection services, IConfiguration configuration)
+    public static class ViewModelRegister
     {
-        services.AddScoped<MainViewModel>();
+        public static IServiceCollection RegisterViewModels(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddScoped<MainViewModel>();
 
-        return services;
+            return services;
+        }
     }
 }

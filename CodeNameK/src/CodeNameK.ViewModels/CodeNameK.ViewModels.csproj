@@ -6,7 +6,9 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+	  <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
 </Project>

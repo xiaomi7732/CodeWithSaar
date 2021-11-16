@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CodeNameK.DataAccess;
@@ -38,6 +40,17 @@ internal class BizCategory : ICategory
                 IsSuccess = false,
                 Entity = newCategory,
                 Reason = "Category name can't be long than 100 characters.",
+            };
+        }
+
+        // Business Logic: Do not create a category that already exist
+        if (GetAllCategories().Any(c => string.Equals(c.Id, newCategory.Id, StringComparison.OrdinalIgnoreCase)))
+        {
+            return new OperationResult<Category>()
+            {
+                IsSuccess = false,
+                Entity = newCategory,
+                Reason = $"The category of {newCategory.Id} already exists.",
             };
         }
 
