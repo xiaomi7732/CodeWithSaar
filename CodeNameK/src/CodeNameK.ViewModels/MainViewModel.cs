@@ -113,13 +113,9 @@ namespace CodeNameK.ViewModels
             List<DateTimePoint> dataPoints = new List<DateTimePoint>();
             await foreach (DataPoint dataPoint in _dataPointBiz.GetDataPoints(SelectedCategory, default).ConfigureAwait(false))
             {
-                dataPoints.Add(new DateTimePoint()
-                {
-                    DateTime = dataPoint.WhenUTC.ToLocalTime(),
-                    Value = dataPoint.Value,
-                });
+                dataPoints.Add(dataPoint.ToDateTimePoint());
             };
-            dataPoints = dataPoints.OrderBy(point => point.DateTime).ToList();
+            dataPoints.Sort(DateTimePointComparers.DateTimeComparer);
 
             Application.Current.Dispatcher.Invoke(() =>
             {
