@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CodeNameK.WPF"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
@@ -18,7 +19,10 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <GroupBox Header="Category" Padding="8">
+        <GroupBox Padding="8">
+            <GroupBox.Header>
+                <TextBlock Text="{Binding CategoryHeader}" />
+            </GroupBox.Header>
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -43,10 +47,17 @@
                     <Button Grid.Column="1" MinWidth="20" Command="{Binding AddCategoryCommand}">+</Button>
                 </Grid>
                 <ListView Grid.Row="1"
-                          ItemsSource="{Binding CategoryCollectionView}"
-                          ItemTemplate="{StaticResource ResourceKey=categoryItemTemplate}" />
+                          ItemsSource="{Binding CategoryCollectionView, Mode=OneWay}"
+                          ItemTemplate="{StaticResource ResourceKey=categoryItemTemplate}"
+                          SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"/>
                 <TextBlock Grid.Row="2" Text="{Binding CategoryCount}" />
             </Grid>
         </GroupBox>
+        <Grid Grid.Column="1" Margin="32">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <lvc:CartesianChart Series="{Binding Series}" XAxes="{Binding XAxes}" ZoomMode="X"></lvc:CartesianChart>
+        </Grid>
     </Grid>
 </Window>

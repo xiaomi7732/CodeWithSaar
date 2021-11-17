@@ -7,7 +7,7 @@ public static class BizRegister
     public static IServiceCollection RegisterBiz(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ICategory, BizCategory>();
-
+        services.AddScoped<IDataPoint, BizDataPoint>();
         return services;
     }
 }

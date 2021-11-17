@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using CodeNameK.DataAccess;
@@ -53,13 +54,22 @@ internal class BizDataPoint : IDataPoint
         throw new System.NotImplementedException();
     }
 
-    public IAsyncEnumerable<DataPoint> GetDataPoints(Category category, CancellationToken cancellationToken)
+    public Task<OperationResult<DataPoint>> Update(DataPoint oldDataPoint, DataPoint newDataPoint, CancellationToken cancellationToken)
     {
         throw new System.NotImplementedException();
     }
 
-    public Task<OperationResult<DataPoint>> Update(DataPoint oldDataPoint, DataPoint newDataPoint, CancellationToken cancellationToken)
+    public async IAsyncEnumerable<DataPoint> GetDataPoints(Category category, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        throw new System.NotImplementedException();
+        // Business Logic: category.id can't be null.
+        if (string.IsNullOrEmpty(category.Id))
+        {
+            yield break;
+        }
+
+        await foreach (DataPoint dataPoint in _dataPointRepo.GetPointsAsync(category, year: null, month: null, cancellationToken).ConfigureAwait(false))
+        {
+            yield return dataPoint;
+        }
     }
 }
