@@ -9,17 +9,12 @@ using System.Windows.Data;
 using System.Windows.Input;
 using CodeNameK.Biz;
 using CodeNameK.DataContracts;
-using LiveCharts;
-using LiveCharts.Configurations;
-using LiveCharts.Defaults;
-using LiveCharts.Definitions.Series;
-using LiveCharts.Wpf;
-// using LiveChartsCore;
-// using LiveChartsCore.Defaults;
-// using LiveChartsCore.Kernel.Sketches;
-// using LiveChartsCore.SkiaSharpView;
-// using LiveChartsCore.SkiaSharpView.Painting;
-// using SkiaSharp;
+using LiveChartsCore;
+using LiveChartsCore.Defaults;
+using LiveChartsCore.Kernel.Sketches;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
 
 namespace CodeNameK.ViewModels
 {
@@ -42,26 +37,21 @@ namespace CodeNameK.ViewModels
                 RaisePropertyChanged(nameof(CategoryHeader));
             };
 
-            // XAxes.Add(new Axis()
-            // {
-                
-            //     LabelFormatter = value => new DateTime((long)value).ToString("MM/dd HH:mm"),
-            //     LabelsRotation = 90,
-                
-            //     // UnitWidth = TimeSpan.FromDays(1).Ticks,
-            //     // MinStep = TimeSpan.FromDays(1).Ticks,
-            // });
-
-            var dayConfig = Mappers.Xy<DateTimePoint>().X(p => p.DateTime.Ticks / TimeSpan.FromDays(1).Ticks).Y(p => p.Value);
-            Series = new SeriesCollection(dayConfig);
+            XAxes.Add(new Axis()
+            {
+                Labeler = value => new DateTime((long)value).ToString("MM/dd HH:mm"),
+                LabelsRotation = 90,
+                UnitWidth = TimeSpan.FromDays(1).Ticks,
+                MinStep = TimeSpan.FromDays(1).Ticks,
+            });
         }
 
         public ICollectionView CategoryCollectionView { get; }
 
         public string CategoryHeader => $"Category ({CategoryCollectionView.Cast<object>().Count()})";
 
-        public SeriesCollection Series { get; } 
-        // public ObservableCollection<ICartesianAxis> XAxes { get; } = new ObservableCollection<ICartesianAxis>();
+        public ObservableCollection<ISeries> Series { get; } = new ObservableCollection<ISeries>();
+        public ObservableCollection<ICartesianAxis> XAxes { get; } = new ObservableCollection<ICartesianAxis>();
 
         private string? _categoryText;
         public string? CategoryText
@@ -126,23 +116,19 @@ namespace CodeNameK.ViewModels
                 dataPoints.Add(dataPoint.ToDateTimePoint());
             };
             dataPoints.Sort(DateTimePointComparers.DateTimeComparer);
-            
-            ChartValues<DateTimePoint> chartValues = new ChartValues<DateTimePoint>();
-            chartValues.AddRange(dataPoints);
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                Series.Add(new LineSeries()
+                Series.Add(new LineSeries<DateTimePoint>()
                 {
-                    Title = SelectedCategory.Id,
-                    Values = chartValues,
+                    Name = SelectedCategory.Id,
+                    Values = dataPoints,
                     LineSmoothness = 0,
                     Fill = null,
-                    
-                    // Stroke = new SolidColorPaint(SKColors.DodgerBlue, 3),
-                    // GeometrySize = 12,
-                    // GeometryFill = new SolidColorPaint(SKColors.AliceBlue),
-                    // GeometryStroke = new SolidColorPaint(SKColors.SteelBlue, 4),
+                    Stroke = new SolidColorPaint(SKColors.DodgerBlue, 3),
+                    GeometrySize = 12,
+                    GeometryFill = new SolidColorPaint(SKColors.AliceBlue),
+                    GeometryStroke = new SolidColorPaint(SKColors.SteelBlue, 4),
                 });
                 IsChartVisible = Visibility.Visible;
             });

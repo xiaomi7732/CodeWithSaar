@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using LiveCharts.Defaults;
+using LiveChartsCore.Defaults;
 
 namespace CodeNameK.ViewModels
 {

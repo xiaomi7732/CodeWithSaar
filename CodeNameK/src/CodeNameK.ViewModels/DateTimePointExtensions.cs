@@ -1,5 +1,5 @@
 using CodeNameK.DataContracts;
-using LiveCharts.Defaults;
+using LiveChartsCore.Defaults;
 
 namespace CodeNameK.ViewModels
 {
