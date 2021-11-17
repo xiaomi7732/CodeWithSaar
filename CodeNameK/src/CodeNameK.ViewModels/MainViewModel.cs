@@ -40,9 +40,9 @@ namespace CodeNameK.ViewModels
             XAxes.Add(new Axis()
             {
                 Labeler = value => new DateTime((long)value).ToString("MM/dd HH:mm"),
-                LabelsRotation = 15,
-                UnitWidth = TimeSpan.FromDays(.8).Ticks,
-                MinStep = TimeSpan.FromHours(4).Ticks,
+                LabelsRotation = 90,
+                UnitWidth = TimeSpan.FromDays(1).Ticks,
+                MinStep = TimeSpan.FromDays(1).Ticks,
             });
         }
 
@@ -123,7 +123,7 @@ namespace CodeNameK.ViewModels
                 {
                     Name = SelectedCategory.Id,
                     Values = dataPoints,
-                    LineSmoothness = .5,
+                    LineSmoothness = 0,
                     Fill = null,
                     Stroke = new SolidColorPaint(SKColors.DodgerBlue, 3),
                     GeometrySize = 12,

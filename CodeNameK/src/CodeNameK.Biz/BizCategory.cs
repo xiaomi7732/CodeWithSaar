@@ -19,7 +19,7 @@ internal class BizCategory : ICategory
 
     public IEnumerable<Category> GetAllCategories() => _categoryRepo.GetAllCategories();
 
-    public async Task<OperationResult<Category>> AddCategoryAsync(Category newCategory, CancellationToken cancellationToken)
+    public async Task<OperationResult<Category>> AddCategoryAsync(Category newCategory, bool overwrite = false, CancellationToken cancellationToken = default)
     {
         // Business Logic: Category name can't be null;
         if (string.IsNullOrEmpty(newCategory.Id))
@@ -43,8 +43,8 @@ internal class BizCategory : ICategory
             };
         }
 
-        // Business Logic: Do not create a category that already exist
-        if (GetAllCategories().Any(c => string.Equals(c.Id, newCategory.Id, StringComparison.OrdinalIgnoreCase)))
+        // Business Logic: Unless specified, do not create a category that already exist
+        if (!overwrite && GetAllCategories().Any(c => string.Equals(c.Id, newCategory.Id, StringComparison.OrdinalIgnoreCase)))
         {
             return new OperationResult<Category>()
             {
