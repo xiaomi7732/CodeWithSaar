@@ -4,11 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CodeNameK.WPF"
-        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
+        <!--xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"-->
         <DataTemplate x:Key="categoryItemTemplate">
             <TextBlock Text="{Binding Id}" ToolTip="{Binding Id}" />
         </DataTemplate>
@@ -57,7 +58,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <lvc:CartesianChart Series="{Binding Series}" XAxes="{Binding XAxes}" ZoomMode="X"></lvc:CartesianChart>
+            <lvc:CartesianChart Series="{Binding Series}"></lvc:CartesianChart>
         </Grid>
     </Grid>
 </Window>
