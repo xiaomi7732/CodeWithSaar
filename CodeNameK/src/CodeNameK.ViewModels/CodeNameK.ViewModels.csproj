@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-beta.80" />
+    <!-- <ProjectReference Include="..\..\..\..\fork-livechart-2\src\skiasharp\LiveChartsCore.SkiaSharp.WPF\LiveChartsCore.SkiaSharpView.WPF.csproj" /> -->
+
   </ItemGroup>
 
   <PropertyGroup>

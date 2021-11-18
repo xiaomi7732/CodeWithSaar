@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CodeNameK.ViewModels\CodeNameK.ViewModels.csproj" />
+    <!-- <ProjectReference Include="..\..\..\..\fork-livechart-2\src\skiasharp\LiveChartsCore.SkiaSharp.WPF\LiveChartsCore.SkiaSharpView.WPF.csproj" /> -->
   </ItemGroup>
 
   <ItemGroup>

@@ -59,7 +59,6 @@ namespace CodeNameK.ViewModels
                 }
             }
         }
-
         private ObservableCollection<ICartesianAxis>? _xAxes;
         public ObservableCollection<ICartesianAxis>? XAxes
         {
@@ -168,7 +167,24 @@ namespace CodeNameK.ViewModels
                 XAxes = new ObservableCollection<ICartesianAxis>(){
                     new Axis()
                     {
-                        Labeler = value => new DateTime((long)value).ToString("MM/dd HH:mm"),
+                        Labeler = value => {
+                            try{
+                                if(value<DateTime.MinValue.Ticks || value > DateTime.MaxValue.Ticks)
+                                {
+                                    return string.Empty;
+                                }
+                                return new DateTime((long)value).ToString("MM/dd HH:mm");
+                            }
+                            catch(Exception ex)
+                            {
+                                #if DEBUG
+                                Application.Current.Dispatcher.Invoke(()=>{
+                                    MessageBox.Show($"Unexpected Error. Details: {ex}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                });
+                                #endif
+                                return string.Empty;
+                            }
+                        },
                         LabelsRotation = 30,
                         UnitWidth = TimeSpan.FromDays(1).Ticks,
                         MinStep = TimeSpan.FromMinutes(5).Ticks,
