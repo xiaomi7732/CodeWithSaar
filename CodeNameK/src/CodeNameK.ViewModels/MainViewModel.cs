@@ -43,38 +43,10 @@ namespace CodeNameK.ViewModels
 
         public string CategoryHeader => $"Category ({CategoryCollectionView.Cast<object>().Count()})";
 
-        private ObservableCollection<ISeries>? _series;
-        public ObservableCollection<ISeries>? Series
-        {
-            get
-            {
-                return _series;
-            }
-            set
-            {
-                if (_series != value)
-                {
-                    _series = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-        private ObservableCollection<ICartesianAxis>? _xAxes;
-        public ObservableCollection<ICartesianAxis>? XAxes
-        {
-            get
-            {
-                return _xAxes;
-            }
-            set
-            {
-                if (_xAxes != value)
-                {
-                    _xAxes = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
+        public ObservableCollection<ISeries> Series { get; } = new ObservableCollection<ISeries>();
+        public ObservableCollection<ICartesianAxis> XAxes { get; } = new ObservableCollection<ICartesianAxis>();
+        public ObservableCollection<ICartesianAxis> YAxes { get; } = new ObservableCollection<ICartesianAxis>();
+
 
         private string? _categoryText;
         public string? CategoryText
@@ -99,9 +71,6 @@ namespace CodeNameK.ViewModels
             {
                 if (_selectedCategory != value)
                 {
-                    XAxes = null;
-                    Series = null;
-
                     _selectedCategory = value;
                     RaisePropertyChanged();
                     _ = UpdateSeriesAsync();
@@ -129,8 +98,10 @@ namespace CodeNameK.ViewModels
         {
             _ = Application.Current.Dispatcher.Invoke(() =>
             {
-                XAxes = null;
-                Series = null;
+                XAxes.Clear();
+                YAxes.Clear();
+                Series.Clear();
+
                 ChartWidth = 0;
                 return 0;
             });
@@ -150,7 +121,7 @@ namespace CodeNameK.ViewModels
             Application.Current.Dispatcher.Invoke(() =>
             {
                 ChartWidth = double.NaN;
-                Series = new ObservableCollection<ISeries>(){
+                Series.Add(
                     new LineSeries<DateTimePoint>()
                     {
                         Name = SelectedCategory.Id,
@@ -161,35 +132,37 @@ namespace CodeNameK.ViewModels
                         GeometrySize = 12,
                         GeometryFill = new SolidColorPaint(SKColors.AliceBlue),
                         GeometryStroke = new SolidColorPaint(SKColors.SteelBlue, 4),
-                    },
-                };
+                    });
 
-                XAxes = new ObservableCollection<ICartesianAxis>(){
+                XAxes.Add(
                     new Axis()
                     {
-                        Labeler = value => {
-                            try{
-                                if(value<DateTime.MinValue.Ticks || value > DateTime.MaxValue.Ticks)
+                        Labeler = value =>
+                        {
+                            try
+                            {
+                                if (value < DateTime.MinValue.Ticks || value > DateTime.MaxValue.Ticks)
                                 {
                                     return string.Empty;
                                 }
                                 return new DateTime((long)value).ToString("MM/dd HH:mm");
                             }
-                            catch(Exception ex)
+                            catch (Exception ex)
                             {
-                                #if DEBUG
-                                Application.Current.Dispatcher.Invoke(()=>{
+#if DEBUG
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
                                     MessageBox.Show($"Unexpected Error. Details: {ex}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                                 });
-                                #endif
+#endif
                                 return string.Empty;
                             }
                         },
                         LabelsRotation = 30,
                         UnitWidth = TimeSpan.FromDays(1).Ticks,
                         MinStep = TimeSpan.FromMinutes(5).Ticks,
-                    },
-                };
+                    }
+                );
             });
         }
 
