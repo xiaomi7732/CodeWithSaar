@@ -4,16 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CodeNameK.WPF"
-        xmlns:chartingToolkit="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=DotNetProjects.DataVisualization.Toolkit"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
         <DataTemplate x:Key="categoryItemTemplate">
             <TextBlock Text="{Binding Id}" ToolTip="{Binding Id}" />
         </DataTemplate>
-        <Style x:Key="DateTimeAxisLabelStyle1" TargetType="{x:Type chartingToolkit:DateTimeAxisLabel}">
-            <Setter Property="DaysIntervalStringFormat" Value="{}{0:dd-MMM}"></Setter>
-        </Style>
     </Window.Resources>
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
@@ -59,20 +57,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <chartingToolkit:Chart Title="Demo">
-                <chartingToolkit:Chart.Axes>
-                    <chartingToolkit:DateTimeAxis Orientation="X" ShowGridLines="False" Interval="1" IntervalType="Days" AxisLabelStyle="{DynamicResource DateTimeAxisLabelStyle1}" Height="150" >
-                    </chartingToolkit:DateTimeAxis>
-                    <chartingToolkit:LinearAxis Title="Value"
-                                                Orientation="Y"
-                                                ShowGridLines="False" />
-                </chartingToolkit:Chart.Axes>
-                <chartingToolkit:LineSeries DependentValueBinding="{Binding Value}"
-                                            IndependentValueBinding="{Binding WhenUTC}"
-                                            IsSelectionEnabled="True"
-                                            ItemsSource="{Binding DataPoints}">
-                </chartingToolkit:LineSeries>
-            </chartingToolkit:Chart>
+            <lvc:CartesianChart Series="{Binding Series}" XAxes="{Binding XAxes}" ZoomMode="X"></lvc:CartesianChart>
         </Grid>
     </Grid>
 </Window>

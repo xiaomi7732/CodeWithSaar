@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls.DataVisualization.Charting;
 using CodeNameK.ViewModels;
 
 namespace CodeNameK.WPF
@@ -13,7 +12,6 @@ namespace CodeNameK.WPF
         {
             DataContext = mainViewModel;
             InitializeComponent();
-            DateTimeAxisLabel label;
         }
     }
 }

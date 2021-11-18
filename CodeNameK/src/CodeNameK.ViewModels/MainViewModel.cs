@@ -9,6 +9,12 @@ using System.Windows.Data;
 using System.Windows.Input;
 using CodeNameK.Biz;
 using CodeNameK.DataContracts;
+using LiveChartsCore;
+using LiveChartsCore.Defaults;
+using LiveChartsCore.Kernel.Sketches;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
 
 namespace CodeNameK.ViewModels
 {
@@ -31,30 +37,21 @@ namespace CodeNameK.ViewModels
                 RaisePropertyChanged(nameof(CategoryHeader));
             };
 
-            // XAxes.Add(new Axis()
-            // {
-            //     Labeler = value => new DateTime((long)value).ToString("MM/dd HH:mm"),
-            //     LabelsRotation = 90,
-            //     UnitWidth = TimeSpan.FromDays(1).Ticks,
-            //     MinStep = TimeSpan.FromDays(1).Ticks,
-            // });
+            XAxes.Add(new Axis()
+            {
+                Labeler = value => new DateTime((long)value).ToString("MM/dd HH:mm"),
+                LabelsRotation = 90,
+                UnitWidth = TimeSpan.FromDays(1).Ticks,
+                MinStep = TimeSpan.FromDays(1).Ticks,
+            });
         }
 
         public ICollectionView CategoryCollectionView { get; }
-        public ObservableCollection<DataPoint> DataPoints { get; } = new ObservableCollection<DataPoint>(){
-            new DataPoint(){
-                WhenUTC = DateTime.UtcNow,
-                Value=100,
-            },
-            new DataPoint(){
-                WhenUTC = DateTime.UtcNow,
-                Value=50,
-            }
-        };
+
         public string CategoryHeader => $"Category ({CategoryCollectionView.Cast<object>().Count()})";
 
-        // public ObservableCollection<ISeries> Series { get; } = new ObservableCollection<ISeries>();
-        // public ObservableCollection<ICartesianAxis> XAxes { get; } = new ObservableCollection<ICartesianAxis>();
+        public ObservableCollection<ISeries> Series { get; } = new ObservableCollection<ISeries>();
+        public ObservableCollection<ICartesianAxis> XAxes { get; } = new ObservableCollection<ICartesianAxis>();
 
         private string? _categoryText;
         public string? CategoryText
@@ -105,58 +102,36 @@ namespace CodeNameK.ViewModels
 
         private async Task UpdateSeriesAsync()
         {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                DataPoints.Clear();
-            });
+            Series.Clear();
+            IsChartVisible = Visibility.Visible;
+
             if (string.IsNullOrEmpty(SelectedCategory?.Id))
             {
                 return;
             }
 
-            List<DataPoint> dataPoints = new List<DataPoint>();
+            List<DateTimePoint> dataPoints = new List<DateTimePoint>();
             await foreach (DataPoint dataPoint in _dataPointBiz.GetDataPoints(SelectedCategory, default).ConfigureAwait(false))
             {
-                dataPoints.Add(dataPoint);
+                dataPoints.Add(dataPoint.ToDateTimePoint());
             };
-            foreach (DataPoint dp in dataPoints.OrderBy(d => d.WhenUTC))
+            dataPoints.Sort(DateTimePointComparers.DateTimeComparer);
+
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                Application.Current.Dispatcher.Invoke(() =>
+                Series.Add(new LineSeries<DateTimePoint>()
                 {
-                    DataPoints.Add(dp);
+                    Name = SelectedCategory.Id,
+                    Values = dataPoints,
+                    LineSmoothness = 0,
+                    Fill = null,
+                    Stroke = new SolidColorPaint(SKColors.DodgerBlue, 3),
+                    GeometrySize = 12,
+                    GeometryFill = new SolidColorPaint(SKColors.AliceBlue),
+                    GeometryStroke = new SolidColorPaint(SKColors.SteelBlue, 4),
                 });
-            }
-
-            // Series.Clear();
-            // IsChartVisible = Visibility.Visible;
-
-            // if (string.IsNullOrEmpty(SelectedCategory?.Id))
-            // {
-            //     return;
-            // }
-
-            // List<DateTimePoint> dataPoints = new List<DateTimePoint>();
-            // await foreach (DataPoint dataPoint in _dataPointBiz.GetDataPoints(SelectedCategory, default).ConfigureAwait(false))
-            // {
-            //     dataPoints.Add(dataPoint.ToDateTimePoint());
-            // };
-            // dataPoints.Sort(DateTimePointComparers.DateTimeComparer);
-
-            // Application.Current.Dispatcher.Invoke(() =>
-            // {
-            //     Series.Add(new LineSeries<DateTimePoint>()
-            //     {
-            //         Name = SelectedCategory.Id,
-            //         Values = dataPoints,
-            //         LineSmoothness = 0,
-            //         Fill = null,
-            //         Stroke = new SolidColorPaint(SKColors.DodgerBlue, 3),
-            //         GeometrySize = 12,
-            //         GeometryFill = new SolidColorPaint(SKColors.AliceBlue),
-            //         GeometryStroke = new SolidColorPaint(SKColors.SteelBlue, 4),
-            //     });
-            //     IsChartVisible = Visibility.Visible;
-            // });
+                IsChartVisible = Visibility.Visible;
+            });
         }
 
         private ICommand? _addCategoryCommand;
