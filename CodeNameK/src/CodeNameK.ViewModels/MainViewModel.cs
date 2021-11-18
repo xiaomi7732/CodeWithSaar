@@ -12,6 +12,7 @@ using CodeNameK.DataContracts;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.Kernel.Sketches;
+using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
@@ -36,22 +37,45 @@ namespace CodeNameK.ViewModels
             {
                 RaisePropertyChanged(nameof(CategoryHeader));
             };
-
-            XAxes.Add(new Axis()
-            {
-                Labeler = value => new DateTime((long)value).ToString("MM/dd HH:mm"),
-                LabelsRotation = 90,
-                UnitWidth = TimeSpan.FromDays(1).Ticks,
-                MinStep = TimeSpan.FromDays(1).Ticks,
-            });
         }
 
         public ICollectionView CategoryCollectionView { get; }
 
         public string CategoryHeader => $"Category ({CategoryCollectionView.Cast<object>().Count()})";
 
-        public ObservableCollection<ISeries> Series { get; } = new ObservableCollection<ISeries>();
-        public ObservableCollection<ICartesianAxis> XAxes { get; } = new ObservableCollection<ICartesianAxis>();
+        private ObservableCollection<ISeries>? _series;
+        public ObservableCollection<ISeries>? Series
+        {
+            get
+            {
+                return _series;
+            }
+            set
+            {
+                if (_series != value)
+                {
+                    _series = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        private ObservableCollection<ICartesianAxis>? _xAxes;
+        public ObservableCollection<ICartesianAxis>? XAxes
+        {
+            get
+            {
+                return _xAxes;
+            }
+            set
+            {
+                if (_xAxes != value)
+                {
+                    _xAxes = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
 
         private string? _categoryText;
         public string? CategoryText
@@ -76,6 +100,9 @@ namespace CodeNameK.ViewModels
             {
                 if (_selectedCategory != value)
                 {
+                    XAxes = null;
+                    Series = null;
+
                     _selectedCategory = value;
                     RaisePropertyChanged();
                     _ = UpdateSeriesAsync();
@@ -83,27 +110,31 @@ namespace CodeNameK.ViewModels
             }
         }
 
-        private Visibility _isChartVisible = Visibility.Collapsed;
-        public Visibility IsChartVisible
+        // This is a workaround since after Visible.Collapsed is set, the chart won't show.
+        private double chartWidth = 0;
+        public double ChartWidth
         {
-            get
-            {
-                return _isChartVisible;
-            }
+            get { return chartWidth; }
             set
             {
-                if (_isChartVisible != value)
+                if (chartWidth != value)
                 {
-                    _isChartVisible = value;
+                    chartWidth = value;
                     RaisePropertyChanged();
                 }
             }
         }
 
+
         private async Task UpdateSeriesAsync()
         {
-            Series.Clear();
-            IsChartVisible = Visibility.Visible;
+            _ = Application.Current.Dispatcher.Invoke(() =>
+            {
+                XAxes = null;
+                Series = null;
+                ChartWidth = 0;
+                return 0;
+            });
 
             if (string.IsNullOrEmpty(SelectedCategory?.Id))
             {
@@ -119,18 +150,30 @@ namespace CodeNameK.ViewModels
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                Series.Add(new LineSeries<DateTimePoint>()
-                {
-                    Name = SelectedCategory.Id,
-                    Values = dataPoints,
-                    LineSmoothness = 0,
-                    Fill = null,
-                    Stroke = new SolidColorPaint(SKColors.DodgerBlue, 3),
-                    GeometrySize = 12,
-                    GeometryFill = new SolidColorPaint(SKColors.AliceBlue),
-                    GeometryStroke = new SolidColorPaint(SKColors.SteelBlue, 4),
-                });
-                IsChartVisible = Visibility.Visible;
+                ChartWidth = double.NaN;
+                Series = new ObservableCollection<ISeries>(){
+                    new LineSeries<DateTimePoint>()
+                    {
+                        Name = SelectedCategory.Id,
+                        Values = dataPoints,
+                        LineSmoothness = 0,
+                        Fill = null,
+                        Stroke = new SolidColorPaint(SKColors.DodgerBlue, 3),
+                        GeometrySize = 12,
+                        GeometryFill = new SolidColorPaint(SKColors.AliceBlue),
+                        GeometryStroke = new SolidColorPaint(SKColors.SteelBlue, 4),
+                    },
+                };
+
+                XAxes = new ObservableCollection<ICartesianAxis>(){
+                    new Axis()
+                    {
+                        Labeler = value => new DateTime((long)value).ToString("MM/dd HH:mm"),
+                        LabelsRotation = 30,
+                        UnitWidth = TimeSpan.FromDays(1).Ticks,
+                        MinStep = TimeSpan.FromMinutes(5).Ticks,
+                    },
+                };
             });
         }
 
@@ -145,9 +188,10 @@ namespace CodeNameK.ViewModels
                     {
                         if (string.IsNullOrEmpty(CategoryText))
                         {
-                            Application.Current.Dispatcher.Invoke(() =>
+                            _ = Application.Current.Dispatcher.Invoke(() =>
                             {
                                 MessageBox.Show("Can't add a category without a name. Please input a name.", "Failed Creating Category", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return 0;
                             });
                             return;
                         }
