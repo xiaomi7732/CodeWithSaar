@@ -11,11 +11,15 @@ using System.Windows.Input;
 using CodeNameK.Biz;
 using CodeNameK.DataContracts;
 using LiveChartsCore;
-using LiveChartsCore.Defaults;
+using LiveChartsCore.Drawing;
+using LiveChartsCore.Kernel;
 using LiveChartsCore.Kernel.Sketches;
-using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Drawing;
+using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
+using LiveChartsCore.SkiaSharpView.Drawing.Geometries.Segments;
 using LiveChartsCore.SkiaSharpView.Painting;
+using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
 namespace CodeNameK.ViewModels
@@ -24,10 +28,15 @@ namespace CodeNameK.ViewModels
     {
         private readonly ICategory _categoryBiz;
         private readonly IDataPoint _dataPointBiz;
+        private readonly ILogger _logger;
         private ObservableCollection<Category> _categoryCollection = new ObservableCollection<Category>();
 
-        public MainViewModel(ICategory categoryBiz, IDataPoint dataPointBiz)
+        public MainViewModel(
+            ICategory categoryBiz, 
+            IDataPoint dataPointBiz,
+            ILogger<MainViewModel> logger)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _categoryBiz = categoryBiz ?? throw new System.ArgumentNullException(nameof(categoryBiz));
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
             InitializeCategoryCollection();
@@ -98,7 +107,11 @@ namespace CodeNameK.ViewModels
         private async Task UpdateSeriesAsync()
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
-            YAxes.Clear();
+
+            foreach (var series in Series.OfType<LineSeries<DataPoint>>())
+            {
+                series.PointHovered -= SeriesPointHover;
+            }
             Series.Clear();
             ChartWidth = 0;
 
@@ -107,28 +120,18 @@ namespace CodeNameK.ViewModels
                 return;
             }
 
-            List<DateTimePoint> dataPoints = new List<DateTimePoint>();
+            List<DataPoint> dataPoints = new List<DataPoint>();
             await foreach (DataPoint dataPoint in _dataPointBiz.GetDataPoints(SelectedCategory, default).ConfigureAwait(false))
             {
-                dataPoints.Add(dataPoint.ToDateTimePoint());
+                dataPoints.Add(dataPoint);
             };
-            dataPoints.Sort(DateTimePointComparers.DateTimeComparer);
+            dataPoints.Sort(DatePointComparer.DateTimeComparer);
 
             await syncContext;
             ChartWidth = double.NaN;
-            Series.Add(new LineSeries<DateTimePoint>()
-            {
-                Name = SelectedCategory.Id,
-                Values = dataPoints,
-                LineSmoothness = 0,
-                Fill = null,
-                Stroke = new SolidColorPaint(SKColors.DodgerBlue, 3),
-                GeometrySize = 12,
-                GeometryFill = new SolidColorPaint(SKColors.AliceBlue),
-                GeometryStroke = new SolidColorPaint(SKColors.SteelBlue, 4),
-            });
 
-            
+            Series.Add(CreateNewSeries(dataPoints));
+
             XAxes.Clear();
             YAxes.Clear();
             if (SelectedCategory != null)
@@ -148,6 +151,47 @@ namespace CodeNameK.ViewModels
                     _axesCache.Add(SelectedCategory, (newXAxis, newYAxis));
                 }
             }
+        }
+
+        private LineSeries<DataPoint> CreateNewSeries(List<DataPoint> dataPoints)
+        {
+            if (string.IsNullOrEmpty(SelectedCategory?.Id))
+            {
+                throw new InvalidOperationException("Should never create a series when no selected category.");
+            }
+
+            LineSeries<DataPoint> series = new LineSeries<DataPoint>()
+            {
+                Name = SelectedCategory.Id,
+                TooltipLabelFormatter = FormatToolTip,
+                Values = dataPoints,
+                LineSmoothness = 0,
+                Fill = null,
+                Stroke = new SolidColorPaint(SKColors.DodgerBlue, 3),
+                GeometrySize = 12,
+                GeometryFill = new SolidColorPaint(SKColors.AliceBlue),
+                GeometryStroke = new SolidColorPaint(SKColors.SteelBlue, 4),
+                Mapping = SeriesMapping,
+            };
+            series.PointHovered += SeriesPointHover;
+
+            return series;
+        }
+
+        private void SeriesMapping(DataPoint dataPoint, ChartPoint chartPoint)
+        {
+            chartPoint.PrimaryValue = dataPoint.Value;
+            chartPoint.SecondaryValue = dataPoint.WhenUTC.ToLocalTime().Ticks;
+        }
+
+        private void SeriesPointHover(TypedChartPoint<DataPoint, LineBezierVisualPoint<SkiaSharpDrawingContext, CircleGeometry, CubicBezierSegment, SKPath>, LabelGeometry, SkiaSharpDrawingContext> point)
+        {
+            _logger.LogDebug("Hover point: {point}", point.Model);
+        }
+
+        string FormatToolTip(TypedChartPoint<DataPoint, LineBezierVisualPoint<SkiaSharpDrawingContext, CircleGeometry, CubicBezierSegment, SKPath>, LabelGeometry, SkiaSharpDrawingContext> point)
+        {
+            return string.Format($"{point?.Model?.WhenUTC.ToLocalTime():g}" + Environment.NewLine + $"{point?.PrimaryValue:N2}");
         }
 
         private Axis CreateNewXAxis()

@@ -9,8 +9,8 @@
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-beta.80" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -18,7 +18,12 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-	  <LangVersion>8.0</LangVersion>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="appsettings.jsonc" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="appsettings.debug.jsonc" CopyToOutputDirectory="PreserveNewest" Condition="'$(Configuration)'=='Debug'" />
+  </ItemGroup>
 
 </Project>

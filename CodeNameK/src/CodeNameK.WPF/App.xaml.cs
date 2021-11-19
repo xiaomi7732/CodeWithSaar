@@ -16,9 +16,11 @@ namespace CodeNameK.WPF
         private ServiceProvider _serviceProvider;
         public App()
         {
-            IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.jsonc", optional: true, reloadOnChange: true)
+            IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.jsonc", optional: false, reloadOnChange: true)
+#if DEBUG
+                .AddJsonFile("appsettings.debug.jsonc", optional: false, reloadOnChange: true)
+#endif
                                             .Build();
-
             IServiceCollection serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection, configuration);
             _serviceProvider = serviceCollection.BuildServiceProvider();
@@ -26,7 +28,11 @@ namespace CodeNameK.WPF
 
         private void ConfigureServices(IServiceCollection services, IConfiguration configurationRoot)
         {
-            services.AddLogging(builder => builder.AddConfiguration(configurationRoot.GetSection("Logging")));
+            services.AddLogging(builder =>
+            {
+                builder.AddConfiguration(configurationRoot.GetSection("Logging"));
+                builder.AddDebug();
+            });
 
             services.RegisterDataAccess(configurationRoot);
             services.RegisterBiz(configurationRoot);
