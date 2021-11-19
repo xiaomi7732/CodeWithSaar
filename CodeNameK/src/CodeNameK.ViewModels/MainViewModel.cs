@@ -47,7 +47,7 @@ namespace CodeNameK.ViewModels
         public ObservableCollection<ISeries> Series { get; } = new ObservableCollection<ISeries>();
         public ObservableCollection<ICartesianAxis> XAxes { get; } = new ObservableCollection<ICartesianAxis>();
         public ObservableCollection<ICartesianAxis> YAxes { get; } = new ObservableCollection<ICartesianAxis>();
-
+        private IDictionary<Category, (ICartesianAxis x, ICartesianAxis y)> _axesCache = new Dictionary<Category, (ICartesianAxis, ICartesianAxis)>();
 
         private string? _categoryText;
         public string? CategoryText
@@ -98,7 +98,6 @@ namespace CodeNameK.ViewModels
         private async Task UpdateSeriesAsync()
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
-            XAxes.Clear();
             YAxes.Clear();
             Series.Clear();
             ChartWidth = 0;
@@ -129,30 +128,56 @@ namespace CodeNameK.ViewModels
                 GeometryStroke = new SolidColorPaint(SKColors.SteelBlue, 4),
             });
 
-            XAxes.Add(new Axis()
+            
+            XAxes.Clear();
+            YAxes.Clear();
+            if (SelectedCategory != null)
             {
-                Labeler = value =>
+                if (_axesCache.ContainsKey(SelectedCategory))
                 {
-                    try
+                    (ICartesianAxis xAxis, ICartesianAxis yAxis) = _axesCache[SelectedCategory];
+                    XAxes.Add(xAxis);
+                    YAxes.Add(yAxis);
+                }
+                else
+                {
+                    Axis newXAxis = CreateNewXAxis();
+                    XAxes.Add(newXAxis);
+                    Axis newYAxis = new Axis();
+                    YAxes.Add(newYAxis);
+                    _axesCache.Add(SelectedCategory, (newXAxis, newYAxis));
+                }
+            }
+        }
+
+        private Axis CreateNewXAxis()
+        {
+            string CreateLabeler(double value)
+            {
+                try
+                {
+                    if (value < DateTime.MinValue.Ticks || value > DateTime.MaxValue.Ticks)
                     {
-                        if (value < DateTime.MinValue.Ticks || value > DateTime.MaxValue.Ticks)
-                        {
-                            return string.Empty;
-                        }
-                        return new DateTime((long)value).ToString("MM/dd HH:mm");
-                    }
-                    catch (Exception ex)
-                    {
-#if DEBUG
-                        MessageBox.Show($"Unexpected Error. Details: {ex}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-#endif
                         return string.Empty;
                     }
-                },
+                    return new DateTime((long)value).ToString("MM/dd HH:mm");
+                }
+                catch (Exception ex)
+                {
+#if DEBUG
+                    MessageBox.Show($"Unexpected Error. Details: {ex}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+#endif
+                    return string.Empty;
+                }
+            }
+
+            return new Axis()
+            {
+                Labeler = CreateLabeler,
                 LabelsRotation = 30,
                 UnitWidth = TimeSpan.FromDays(1).Ticks,
                 MinStep = TimeSpan.FromMinutes(5).Ticks,
-            });
+            };
         }
 
         private ICommand? _addCategoryCommand;
