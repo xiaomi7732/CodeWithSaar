@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -96,15 +97,11 @@ namespace CodeNameK.ViewModels
 
         private async Task UpdateSeriesAsync()
         {
-            _ = Application.Current.Dispatcher.Invoke(() =>
-            {
-                XAxes.Clear();
-                YAxes.Clear();
-                Series.Clear();
-
-                ChartWidth = 0;
-                return 0;
-            });
+            SynchronizationContext syncContext = SynchronizationContext.Current!;
+            XAxes.Clear();
+            YAxes.Clear();
+            Series.Clear();
+            ChartWidth = 0;
 
             if (string.IsNullOrEmpty(SelectedCategory?.Id))
             {
@@ -118,51 +115,43 @@ namespace CodeNameK.ViewModels
             };
             dataPoints.Sort(DateTimePointComparers.DateTimeComparer);
 
-            Application.Current.Dispatcher.Invoke(() =>
+            await syncContext;
+            ChartWidth = double.NaN;
+            Series.Add(new LineSeries<DateTimePoint>()
             {
-                ChartWidth = double.NaN;
-                Series.Add(
-                    new LineSeries<DateTimePoint>()
-                    {
-                        Name = SelectedCategory.Id,
-                        Values = dataPoints,
-                        LineSmoothness = 0,
-                        Fill = null,
-                        Stroke = new SolidColorPaint(SKColors.DodgerBlue, 3),
-                        GeometrySize = 12,
-                        GeometryFill = new SolidColorPaint(SKColors.AliceBlue),
-                        GeometryStroke = new SolidColorPaint(SKColors.SteelBlue, 4),
-                    });
+                Name = SelectedCategory.Id,
+                Values = dataPoints,
+                LineSmoothness = 0,
+                Fill = null,
+                Stroke = new SolidColorPaint(SKColors.DodgerBlue, 3),
+                GeometrySize = 12,
+                GeometryFill = new SolidColorPaint(SKColors.AliceBlue),
+                GeometryStroke = new SolidColorPaint(SKColors.SteelBlue, 4),
+            });
 
-                XAxes.Add(
-                    new Axis()
+            XAxes.Add(new Axis()
+            {
+                Labeler = value =>
+                {
+                    try
                     {
-                        Labeler = value =>
+                        if (value < DateTime.MinValue.Ticks || value > DateTime.MaxValue.Ticks)
                         {
-                            try
-                            {
-                                if (value < DateTime.MinValue.Ticks || value > DateTime.MaxValue.Ticks)
-                                {
-                                    return string.Empty;
-                                }
-                                return new DateTime((long)value).ToString("MM/dd HH:mm");
-                            }
-                            catch (Exception ex)
-                            {
-#if DEBUG
-                                Application.Current.Dispatcher.Invoke(() =>
-                                {
-                                    MessageBox.Show($"Unexpected Error. Details: {ex}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                                });
-#endif
-                                return string.Empty;
-                            }
-                        },
-                        LabelsRotation = 30,
-                        UnitWidth = TimeSpan.FromDays(1).Ticks,
-                        MinStep = TimeSpan.FromMinutes(5).Ticks,
+                            return string.Empty;
+                        }
+                        return new DateTime((long)value).ToString("MM/dd HH:mm");
                     }
-                );
+                    catch (Exception ex)
+                    {
+#if DEBUG
+                        MessageBox.Show($"Unexpected Error. Details: {ex}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+#endif
+                        return string.Empty;
+                    }
+                },
+                LabelsRotation = 30,
+                UnitWidth = TimeSpan.FromDays(1).Ticks,
+                MinStep = TimeSpan.FromMinutes(5).Ticks,
             });
         }
 

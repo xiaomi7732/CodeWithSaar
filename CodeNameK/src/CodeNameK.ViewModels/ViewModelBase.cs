@@ -1,5 +1,7 @@
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace CodeNameK.ViewModels
 {
@@ -10,6 +12,11 @@ namespace CodeNameK.ViewModels
         protected void RaisePropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected T Dispatch<T>(Func<T> callBack)
+        {
+            return Application.Current.Dispatcher.Invoke<T>(callBack);
         }
     }
 }
