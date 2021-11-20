@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using CodeNameK.Biz;
 using CodeNameK.DataContracts;
@@ -95,10 +96,29 @@ namespace CodeNameK.ViewModels
                 _logger.LogInformation("Adding a data point into category: {category}", mainViewModel.SelectedCategory?.Id);
                 _ = Task.Run(async () =>
                 {
-                    OperationResult<DataPoint> addResult = await _dataPointBiz.AddAsync(_model, default).ConfigureAwait(false);
-                    if(addResult.IsSuccess)
+                    try
                     {
-                        await mainViewModel.UpdateSeriesAsync().ConfigureAwait(false);
+                        OperationResult<DataPoint> addResult = await _dataPointBiz.AddAsync(_model, default).ConfigureAwait(false);
+                        if (addResult.IsSuccess)
+                        {
+                            await mainViewModel.UpdateSeriesAsync().ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            Dispatch<int>(() =>
+                            {
+                                MessageBox.Show(addResult.Reason, "Failed adding a data point", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return int.MinValue;
+                            });
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Dispatch<int>(() =>
+                        {
+                            MessageBox.Show(ex.Message, "Unexpected exception.", MessageBoxButton.OK, MessageBoxImage.Stop);
+                            return int.MinValue;
+                        });
                     }
                 });
             }

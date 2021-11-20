@@ -122,11 +122,11 @@ namespace CodeNameK.DataAccess
             string searchPrefix = Path.GetFullPath(Path.Combine(_baseDirectory, _pathService.GetDirectoryName(category)));
             if (year.HasValue)
             {
-                searchPrefix = Path.Combine(searchPrefix, year.Value.ToString("N4"));
+                searchPrefix = Path.Combine(searchPrefix, year.Value.ToString("D4"));
 
                 if (month.HasValue)
                 {
-                    searchPrefix = Path.Combine(searchPrefix, month.Value.ToString("N2"));
+                    searchPrefix = Path.Combine(searchPrefix, month.Value.ToString("D2"));
                 }
             }
 

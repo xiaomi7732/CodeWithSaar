@@ -40,6 +40,18 @@ internal class BizDataPoint : IDataPoint
 
         // Business logic: no duplicated data point
         // TODO: Add the logic
+        await foreach (DataPoint conflictCandidate in _dataPointRepo.GetPointsAsync(newPoint.Category, newPoint.WhenUTC.Year, newPoint.WhenUTC.Month, cancellationToken))
+        {
+            if (conflictCandidate.WhenUTC == newPoint.WhenUTC && conflictCandidate.Value == newPoint.Value)
+            {
+                return new OperationResult<DataPoint>()
+                {
+                    Entity = newPoint,
+                    IsSuccess = false,
+                    Reason = $"The data point in category {newPoint.Category.Id} that has a value of {newPoint.Value} by {newPoint.WhenUTC.ToLocalTime()} already exists.",
+                };
+            }
+        }
 
         DataPointInfo newDataPointInfo = await _dataPointRepo.AddPointAsync(newPoint, cancellationToken).ConfigureAwait(false);
         return new OperationResult<DataPoint>()
