@@ -61,9 +61,37 @@ internal class BizDataPoint : IDataPoint
         };
     }
 
-    public Task<OperationResult<bool>> DeleteAsync(DataPoint dataPoint, CancellationToken cancellationToken)
+    public async Task<OperationResult<bool>> DeleteAsync(DataPoint dataPoint, CancellationToken cancellationToken)
     {
-        throw new System.NotImplementedException();
+        // Business logic: Must have a valid guid
+        if (dataPoint.Id == Guid.Empty)
+        {
+            return new OperationResult<bool>()
+            {
+                Entity = false,
+                IsSuccess = false,
+                Reason = $"Can't delete a data point with empty guid Id: {dataPoint.Id}",
+            };
+        }
+
+        // Business logic: Can't delete a point with in category
+        if (string.IsNullOrEmpty(dataPoint.Category?.Id))
+        {
+            return new OperationResult<bool>()
+            {
+                Entity = false,
+                IsSuccess = false,
+                Reason = $"Can't delete a data point without proper category info.",
+            };
+        }
+
+        await _dataPointRepo.DeletePointAsync(dataPoint, cancellationToken).ConfigureAwait(false);
+        return new OperationResult<bool>()
+        {
+            Entity = true,
+            IsSuccess = true,
+            Reason = $"Successfully deleted a data point. Category: {dataPoint.Category}, Id: {dataPoint.Id}",
+        };
     }
 
     public Task<OperationResult<DataPoint>> Update(DataPoint oldDataPoint, DataPoint newDataPoint, CancellationToken cancellationToken)

@@ -60,7 +60,14 @@
                 <!-- Selected dataPoint -->
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <lvc:CartesianChart Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="Both"/>
+            <lvc:CartesianChart Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="Both">
+                <lvc:CartesianChart.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Delete" Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}">
+                        </MenuItem>
+                    </ContextMenu>
+                </lvc:CartesianChart.ContextMenu>
+            </lvc:CartesianChart>
             <GroupBox Grid.Row="1" Padding="8">
                 <GroupBox.Header>
                     <TextBlock Text="Add Data Point" />
@@ -87,7 +94,7 @@
                              Text="{Binding SelectedDataPoint.Value, Mode=TwoWay}"/>
                     <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="3">
                         <Button Command="{Binding SelectedDataPoint.AddPointCommand}" CommandParameter="{Binding}">_Add</Button>
-                        <Button>_Delete</Button>
+                        <Button Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}">_Delete</Button>
                     </StackPanel>
                 </Grid>
             </GroupBox>
