@@ -53,6 +53,8 @@ namespace CodeNameK.ViewModels
             {
                 RaisePropertyChanged(nameof(CategoryHeader));
             };
+
+            ResetZoomCommand = new RelayCommand(ResetZoom);
         }
 
         public ICollectionView CategoryCollectionView { get; }
@@ -282,6 +284,25 @@ namespace CodeNameK.ViewModels
                 }
                 return _addCategoryCommand;
             }
+        }
+
+        public ICommand ResetZoomCommand { get; }
+        private void ResetZoom(object? parameter)
+        {
+            foreach (Axis x in XAxes)
+            {
+                ResetZoom(x);
+            }
+            foreach (Axis y in YAxes)
+            {
+                ResetZoom(y);
+            }
+        }
+
+        private void ResetZoom(Axis axis)
+        {
+            axis.MinLimit = null;
+            axis.MaxLimit = null;
         }
 
         private void InitializeCategoryCollection()

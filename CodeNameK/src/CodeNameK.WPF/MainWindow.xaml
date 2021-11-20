@@ -63,8 +63,10 @@
             <lvc:CartesianChart Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="Both">
                 <lvc:CartesianChart.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="Delete" Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}">
+                        <MenuItem Header="Delete" Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}"
+                                  IsEnabled="{Binding SelectedDataPoint, TargetNullValue=False}">
                         </MenuItem>
+                        <MenuItem Header="Reset Zoom" Command="{Binding ResetZoomCommand}" />
                     </ContextMenu>
                 </lvc:CartesianChart.ContextMenu>
             </lvc:CartesianChart>
