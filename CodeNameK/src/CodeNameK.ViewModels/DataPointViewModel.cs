@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using CodeNameK.Biz;
 using CodeNameK.DataContracts;
@@ -131,6 +132,13 @@ namespace CodeNameK.ViewModels
             }
 
             _logger.LogInformation("Deleting a data point by id {id}.", _model.Id);
+
+            MessageBoxResult userChoice = MessageBox.Show($"Do you want to delete the data point: {_model.Value} at {_model.WhenUTC.ToLocalTime():f}?", "Delete", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            if (userChoice == MessageBoxResult.No)
+            {
+                return;
+            }
+
             Task.Run(async () =>
             {
                 try
