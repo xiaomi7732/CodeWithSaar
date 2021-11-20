@@ -54,11 +54,42 @@
             </Grid>
         </GroupBox>
         <!-- Chart container -->
-        <Grid Grid.Column="1" Margin="32" Width="{Binding ChartWidth}">
+        <Grid Grid.Column="1" Margin="32,32,32,0" Width="{Binding ChartWidth}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
+                <!-- Selected dataPoint -->
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <lvc:CartesianChart Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="Both"/>
+            <GroupBox Grid.Row="1" Padding="8">
+                <GroupBox.Header>
+                    <TextBlock Text="Add Data Point" />
+                </GroupBox.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Date Time:" VerticalAlignment="Center" />
+                    <DatePicker Grid.Column="1" VerticalAlignment="Center" SelectedDateFormat="Long"
+                                SelectedDate="{Binding SelectedDataPoint.WhenLocal, Mode=TwoWay}"/>
+                    <TextBox Grid.Column="2" VerticalAlignment="Center" Text="{Binding SelectedDataPoint.TimeSpan, Mode=TwoWay}" />
+
+                    <TextBlock Text="Value:" Grid.Row="1" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2"
+                             Text="{Binding SelectedDataPoint.Value, Mode=TwoWay}"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                        <Button Command="{Binding SelectedDataPoint.AddPointCommand}" CommandParameter="{Binding}">_Add</Button>
+                        <Button>_Delete</Button>
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
         </Grid>
     </Grid>
 </Window>

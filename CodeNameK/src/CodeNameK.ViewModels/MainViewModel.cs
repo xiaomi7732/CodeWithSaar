@@ -28,17 +28,23 @@ namespace CodeNameK.ViewModels
     {
         private readonly ICategory _categoryBiz;
         private readonly IDataPoint _dataPointBiz;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
         private ObservableCollection<Category> _categoryCollection = new ObservableCollection<Category>();
 
         public MainViewModel(
-            ICategory categoryBiz, 
+            ICategory categoryBiz,
             IDataPoint dataPointBiz,
+            DataPointViewModel dataPointOperator,
+            ILoggerFactory loggerFactory,
             ILogger<MainViewModel> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _categoryBiz = categoryBiz ?? throw new System.ArgumentNullException(nameof(categoryBiz));
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
+            SelectedDataPoint = dataPointOperator ?? throw new ArgumentNullException(nameof(dataPointOperator));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+
             InitializeCategoryCollection();
             CategoryCollectionView = CollectionViewSource.GetDefaultView(_categoryCollection);
             CategoryCollectionView.SortDescriptions.Add(new SortDescription(nameof(Category.Id), ListSortDirection.Ascending));
@@ -103,8 +109,9 @@ namespace CodeNameK.ViewModels
             }
         }
 
+        public DataPointViewModel SelectedDataPoint { get; }
 
-        private async Task UpdateSeriesAsync()
+        public async Task UpdateSeriesAsync()
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
 
@@ -174,7 +181,6 @@ namespace CodeNameK.ViewModels
                 Mapping = SeriesMapping,
             };
             series.PointHovered += SeriesPointHover;
-
             return series;
         }
 
@@ -187,6 +193,15 @@ namespace CodeNameK.ViewModels
         private void SeriesPointHover(TypedChartPoint<DataPoint, LineBezierVisualPoint<SkiaSharpDrawingContext, CircleGeometry, CubicBezierSegment, SKPath>, LabelGeometry, SkiaSharpDrawingContext> point)
         {
             _logger.LogDebug("Hover point: {point}", point.Model);
+            if (point.Model is null)
+            {
+                return;
+            }
+            Dispatch<int>(() =>
+            {
+                SelectedDataPoint.SetModel(point.Model);
+                return int.MaxValue;
+            });
         }
 
         string FormatToolTip(TypedChartPoint<DataPoint, LineBezierVisualPoint<SkiaSharpDrawingContext, CircleGeometry, CubicBezierSegment, SKPath>, LabelGeometry, SkiaSharpDrawingContext> point)

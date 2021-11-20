@@ -39,6 +39,7 @@ namespace CodeNameK.WPF
             services.RegisterViewModels(configurationRoot);
 
             services.AddSingleton<MainWindow>();
+            services.AddSingleton<DataPointViewModel>(); // DataPoint operator
         }
 
         protected void OnStartup(object sender, StartupEventArgs e)

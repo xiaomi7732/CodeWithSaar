@@ -18,11 +18,8 @@ internal class BizDataPoint : IDataPoint
 
     public async Task<OperationResult<DataPoint>> AddAsync(DataPoint newPoint, CancellationToken cancellationToken)
     {
-        // Business logic: new datapoint shall have a non-empty guid
-        if (newPoint.Id == Guid.Empty)
-        {
-            newPoint = newPoint with { Id = Guid.NewGuid() };
-        }
+        // Business logic: new datapoint shall have a new guid
+        newPoint = newPoint with { Id = Guid.NewGuid() };
 
         // Business logic: WhenUTC will be specified using current date time if not specificed.
         if (newPoint.WhenUTC == default)
@@ -40,6 +37,9 @@ internal class BizDataPoint : IDataPoint
                 Reason = "Category is required for a data point.",
             };
         }
+
+        // Business logic: no duplicated data point
+        // TODO: Add the logic
 
         DataPointInfo newDataPointInfo = await _dataPointRepo.AddPointAsync(newPoint, cancellationToken).ConfigureAwait(false);
         return new OperationResult<DataPoint>()
