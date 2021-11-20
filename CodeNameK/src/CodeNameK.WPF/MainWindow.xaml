@@ -44,7 +44,7 @@
                             <KeyBinding Command="{Binding AddCategoryCommand}" Key="Return"></KeyBinding>
                         </TextBox.InputBindings>
                     </TextBox>
-                    <Button Grid.Column="1" MinWidth="20" Command="{Binding AddCategoryCommand}">+</Button>
+                    <Button Grid.Column="1" Width="48" Margin="4 0 0 0" Command="{Binding AddCategoryCommand}" VerticalAlignment="Center" Height="24">+</Button>
                 </Grid>
                 <ListView Grid.Row="1"
                           ItemsSource="{Binding CategoryCollectionView, Mode=OneWay}"
@@ -79,12 +79,13 @@
                     <TextBlock Text="Date Time:" VerticalAlignment="Center" />
                     <DatePicker Grid.Column="1" VerticalAlignment="Center" SelectedDateFormat="Long"
                                 SelectedDate="{Binding SelectedDataPoint.WhenLocal, Mode=TwoWay}"/>
-                    <TextBox Grid.Column="2" VerticalAlignment="Center" Text="{Binding SelectedDataPoint.TimeSpan, Mode=TwoWay}" />
+                    <TextBox Grid.Column="2" VerticalAlignment="Center" Text="{Binding SelectedDataPoint.TimeSpan, Mode=TwoWay}"
+                             Margin="4 4 0 4"/>
 
                     <TextBlock Text="Value:" Grid.Row="1" VerticalAlignment="Center" />
                     <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2"
                              Text="{Binding SelectedDataPoint.Value, Mode=TwoWay}"/>
-                    <StackPanel Orientation="Horizontal" Grid.Row="2">
+                    <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="3">
                         <Button Command="{Binding SelectedDataPoint.AddPointCommand}" CommandParameter="{Binding}">_Add</Button>
                         <Button>_Delete</Button>
                     </StackPanel>

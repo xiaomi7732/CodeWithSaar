@@ -4,6 +4,19 @@
              xmlns:local="clr-namespace:CodeNameK.WPF"
              Startup="OnStartup">
     <Application.Resources>
-         
+        <Style TargetType="Button">
+            <Setter Property="Width" Value="60" />
+            <Setter Property="Padding" Value="8 2" />
+            <Setter Property="Margin" Value="0 8 8 8" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="MinHeight" Value="24" />
+            <Setter Property="Margin" Value="0 4" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+
+        </Style>
+        <Style TargetType="DatePicker">
+            <Setter Property="Margin" Value="0 4" />
+        </Style>
     </Application.Resources>
 </Application>
