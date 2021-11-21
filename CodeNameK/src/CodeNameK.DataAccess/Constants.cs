@@ -1,4 +1,4 @@
-namespace CodeNameK.DataAccess
+namespace CodeNameK.DAL
 {
     internal static class Constants
     {

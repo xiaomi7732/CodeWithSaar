@@ -3,7 +3,7 @@ using System.IO;
 using CodeNameK.DataContracts;
 using CodeWithSaar;
 
-namespace CodeNameK.DataAccess
+namespace CodeNameK.DAL
 {
     public class DataPointPathService : IDataPointPathService
     {

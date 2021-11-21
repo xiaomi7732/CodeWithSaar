@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CodeNameK.DataAccess;
+using CodeNameK.DAL;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Logging;
 

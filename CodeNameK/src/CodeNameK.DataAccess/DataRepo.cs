@@ -7,11 +7,12 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
 using CodeWithSaar;
 using Microsoft.Extensions.Logging;
 
-namespace CodeNameK.DataAccess
+namespace CodeNameK.DAL
 {
     public class DataRepo : IDataPointRepo, ICategoryRepo
     {

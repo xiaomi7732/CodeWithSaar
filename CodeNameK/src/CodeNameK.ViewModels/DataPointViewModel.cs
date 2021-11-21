@@ -2,7 +2,8 @@ using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using CodeNameK.Biz;
+using CodeNameK.BIZ.Interfaces;
+using CodeNameK.Contracts;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Logging;
 

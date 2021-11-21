@@ -5,13 +5,17 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.DataAccess", "CodeNameK.DataAccess\CodeNameK.DataAccess.csproj", "{A95012D0-B6E7-4CD8-A368-A3C45F00EE4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.DataContracts", "CodeNameK.DataContracts\CodeNameK.DataContracts.csproj", "{D7304060-6B6B-4F10-A4FB-C583B51F1CD1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.Contracts", "CodeNameK.Contracts\CodeNameK.Contracts.csproj", "{D7304060-6B6B-4F10-A4FB-C583B51F1CD1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.Cli", "CodeNameK.Cli\CodeNameK.Cli.csproj", "{050ED967-8EEB-4772-8AE9-D323A90096ED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.DataAccess.UnitTests", "CodeNameK.DataAccess.UnitTests\CodeNameK.DataAccess.UnitTests.csproj", "{93DCF840-77A0-4123-8225-59CB979FF03E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.Biz", "CodeNameK.Biz\CodeNameK.Biz.csproj", "{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.ViewModels", "CodeNameK.ViewModels\CodeNameK.ViewModels.csproj", "{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.WPF", "CodeNameK.WPF\CodeNameK.WPF.csproj", "{5C2270C3-8BDE-44DB-9165-650B03120E9B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,5 +90,29 @@ Global
 		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Release|x64.Build.0 = Release|Any CPU
 		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Release|x86.ActiveCfg = Release|Any CPU
 		{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}.Release|x86.Build.0 = Release|Any CPU
+		{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}.Debug|x64.Build.0 = Debug|Any CPU
+		{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}.Debug|x86.Build.0 = Debug|Any CPU
+		{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}.Release|x64.ActiveCfg = Release|Any CPU
+		{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}.Release|x64.Build.0 = Release|Any CPU
+		{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}.Release|x86.ActiveCfg = Release|Any CPU
+		{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}.Release|x86.Build.0 = Release|Any CPU
+		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Debug|x64.Build.0 = Debug|Any CPU
+		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Debug|x86.Build.0 = Debug|Any CPU
+		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Release|x64.ActiveCfg = Release|Any CPU
+		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Release|x64.Build.0 = Release|Any CPU
+		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Release|x86.ActiveCfg = Release|Any CPU
+		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

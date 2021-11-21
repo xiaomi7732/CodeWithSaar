@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeNameK.DataAccess
+namespace CodeNameK.DAL
 {
     /// <summary>
     /// Writes object to a target path.

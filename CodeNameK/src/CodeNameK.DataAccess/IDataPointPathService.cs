@@ -1,6 +1,6 @@
 using CodeNameK.DataContracts;
 
-namespace CodeNameK.DataAccess
+namespace CodeNameK.DAL
 {
     public interface IDataPointPathService
     {

@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CodeNameK.DataAccess
+namespace CodeNameK.DAL
 {
     public interface IDataReader<T>
     {

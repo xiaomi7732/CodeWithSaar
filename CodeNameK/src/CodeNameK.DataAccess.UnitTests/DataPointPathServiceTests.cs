@@ -3,7 +3,7 @@ using System;
 using CodeNameK.DataContracts;
 using Xunit;
 
-namespace CodeNameK.DataAccess.UnitTests
+namespace CodeNameK.DAL.UnitTests
 {
     public class DataPointPathServiceTests
     {

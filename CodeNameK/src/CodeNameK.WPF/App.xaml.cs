@@ -1,6 +1,6 @@
 ﻿using System.Windows;
-using CodeNameK.Biz;
-using CodeNameK.DataAccess;
+using CodeNameK.BIZ;
+using CodeNameK.DAL;
 using CodeNameK.ViewModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

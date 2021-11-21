@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using CodeNameK.DataAccess;
+using CodeNameK.BIZ.Interfaces;
+using CodeNameK.Contracts;
+using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
 
-namespace CodeNameK.Biz;
+namespace CodeNameK.BIZ;
 internal class BizDataPoint : IDataPoint
 {
     private readonly IDataPointRepo _dataPointRepo;

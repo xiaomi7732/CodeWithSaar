@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CodeNameK.DataContracts;
 
-namespace CodeNameK.DataAccess
+namespace CodeNameK.DAL.Interfaces
 {
     public interface IDataPointRepo
     {

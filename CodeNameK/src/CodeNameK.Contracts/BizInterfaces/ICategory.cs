@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using CodeNameK.Contracts;
 using CodeNameK.DataContracts;
 
-namespace CodeNameK.Biz;
+namespace CodeNameK.BIZ.Interfaces;
 
 public interface ICategory
 {

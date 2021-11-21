@@ -1,4 +1,4 @@
-namespace CodeNameK.Biz;
+namespace CodeNameK.Contracts;
 public record class OperationResult<T>
 {
     public T? Entity { get; init; }

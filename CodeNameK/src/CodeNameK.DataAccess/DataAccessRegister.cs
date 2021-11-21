@@ -1,8 +1,10 @@
+
+using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CodeNameK.DataAccess
+namespace CodeNameK.DAL
 {
     public static class DataAccessRegister
     {

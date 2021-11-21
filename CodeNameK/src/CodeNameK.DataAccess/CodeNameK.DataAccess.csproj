@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\CodeNameK.DataContracts\CodeNameK.DataContracts.csproj" />
+    <ProjectReference Include="..\CodeNameK.Contracts\CodeNameK.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
