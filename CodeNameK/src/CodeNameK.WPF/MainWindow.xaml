@@ -12,6 +12,7 @@
         <DataTemplate x:Key="categoryItemTemplate">
             <TextBlock Text="{Binding Id}" ToolTip="{Binding Id}" />
         </DataTemplate>
+        <local:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     </Window.Resources>
     <Grid Margin="16">
         <Grid.ColumnDefinitions>
@@ -60,7 +61,7 @@
                 <!-- Selected dataPoint -->
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <lvc:CartesianChart Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="Both">
+            <lvc:CartesianChart Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="X">
                 <lvc:CartesianChart.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Delete" Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}"
@@ -78,23 +79,35 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <TextBlock Text="Date Time:" VerticalAlignment="Center" />
-                    <DatePicker Grid.Column="1" VerticalAlignment="Center" SelectedDateFormat="Long"
-                                SelectedDate="{Binding SelectedDataPoint.WhenLocal, Mode=TwoWay}"/>
-                    <TextBox Grid.Column="2" VerticalAlignment="Center" Text="{Binding SelectedDataPoint.TimeSpan, Mode=TwoWay}"
-                             Margin="4 4 0 4"/>
+                    <RadioButton
+                        GroupName="DateMode" Grid.ColumnSpan="3" 
+                        VerticalAlignment="Center"
+                        IsChecked="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Mode=TwoWay}">Use Current Datetime</RadioButton>
+                    <!--Date Time-->
+                    <RadioButton
+                        IsChecked="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Converter={StaticResource InverseBooleanConverter}}"
+                        GroupName="DateMode" Grid.Row="1" VerticalAlignment="Center">
+                        Specify:
+                    </RadioButton>
+                    <DatePicker Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" SelectedDateFormat="Long"
+                                SelectedDate="{Binding SelectedDataPoint.WhenLocal, Mode=TwoWay}"
+                                IsEnabled="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Converter={StaticResource InverseBooleanConverter}}"/>
+                    <TextBox Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Text="{Binding SelectedDataPoint.TimeSpan, Mode=TwoWay}"
+                             Margin="4 4 0 4" MinWidth="120" IsEnabled="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Converter={StaticResource InverseBooleanConverter}}" />
 
-                    <TextBlock Text="Value:" Grid.Row="1" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2"
+                    <!--Value-->
+                    <TextBlock Text="Value:" Grid.Row="2" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2"
                              Text="{Binding SelectedDataPoint.Value, Mode=TwoWay}"/>
-                    <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.ColumnSpan="3">
+                    <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.ColumnSpan="3">
                         <Button Command="{Binding SelectedDataPoint.AddPointCommand}" CommandParameter="{Binding}">_Add</Button>
                         <Button Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}">_Delete</Button>
                     </StackPanel>

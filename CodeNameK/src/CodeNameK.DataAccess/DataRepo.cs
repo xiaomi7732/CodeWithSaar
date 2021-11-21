@@ -132,6 +132,11 @@ namespace CodeNameK.DataAccess
 
             _logger.LogInformation("Data searching prefix: {prefix}", searchPrefix);
             DirectoryInfo searchBase = new DirectoryInfo(searchPrefix);
+            if(!Directory.Exists(searchBase.FullName))
+            {
+                // Nothing
+                yield break;
+            }
             foreach (FileInfo file in searchBase.EnumerateFiles("*" + Constants.DataPointFileExtension, SearchOption.AllDirectories))
             {
                 using (Stream input = File.OpenRead(file.FullName))

@@ -92,6 +92,20 @@ namespace CodeNameK.ViewModels
             }
         }
 
+        private bool _isCurrentDateTimeMode = true;
+        public bool IsCurrentDateTimeMode
+        {
+            get { return _isCurrentDateTimeMode; }
+            set
+            {
+                if (_isCurrentDateTimeMode != value)
+                {
+                    _isCurrentDateTimeMode = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
         public ICommand AddPointCommand { get; }
         private void AddPoint(object? parameter)
         {
@@ -100,12 +114,19 @@ namespace CodeNameK.ViewModels
                 return;
             }
 
-            _logger.LogInformation("Adding a data point into category: {category}", mainViewModel.SelectedCategory?.Id);
+            Category? targetCategory = mainViewModel.SelectedCategory;
+            DateTime whenUTC = IsCurrentDateTimeMode? DateTime.UtcNow : _model.WhenUTC;
+            DataPoint newItem = _model with {
+                Category = targetCategory,
+                WhenUTC = whenUTC,
+            };
+
+            _logger.LogInformation("Adding a data point into category: {category}", newItem.Category?.Id);
             _ = Task.Run(async () =>
             {
                 try
                 {
-                    OperationResult<DataPoint> addResult = await _dataPointBiz.AddAsync(_model, default).ConfigureAwait(false);
+                    OperationResult<DataPoint> addResult = await _dataPointBiz.AddAsync(newItem, default).ConfigureAwait(false);
                     if (addResult.IsSuccess)
                     {
                         await mainViewModel.UpdateSeriesAsync().ConfigureAwait(false);
