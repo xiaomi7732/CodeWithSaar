@@ -6,5 +6,8 @@
             "Microsoft.Hosting.Lifetime": "Information",
             "CodeNameK": "Debug"
         }
+    },
+    "LocalStore":{
+        "DataStorePath": "%userprofile%/.codeNameK/DebugData"
     }
 }

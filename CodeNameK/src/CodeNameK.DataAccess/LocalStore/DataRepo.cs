@@ -7,10 +7,12 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
 using CodeWithSaar;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace CodeNameK.DAL
 {
@@ -27,11 +29,23 @@ namespace CodeNameK.DAL
             IDataWriter<DataPoint> dataPointWriter,
             IDataReader<DataPoint> dataPointReader,
             IDataPointPathService pathService,
+            IOptions<LocalStoreOptions> options,
             ILogger<DataRepo> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            string? exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            _baseDirectory = string.IsNullOrEmpty(exePath) ? DataFolderName : Path.Combine(exePath, DataFolderName);
+            string? localStorePath = options?.Value.DataStorePath;
+            if (string.IsNullOrEmpty(localStorePath))
+            {
+                string? exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                _baseDirectory = string.IsNullOrEmpty(exePath) ? DataFolderName : Path.Combine(exePath, DataFolderName);
+            }
+            else
+            {
+                _baseDirectory = Environment.ExpandEnvironmentVariables(localStorePath);
+            }
+            _logger.LogInformation("Local Store Path: {localStorePath}", _baseDirectory);
+            Directory.CreateDirectory(_baseDirectory);
+
             _dataPointWriter = dataPointWriter ?? throw new ArgumentNullException(nameof(dataPointWriter));
             _dataPointReader = dataPointReader ?? throw new ArgumentNullException(nameof(dataPointReader));
             _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
@@ -88,7 +102,7 @@ namespace CodeNameK.DAL
 
         public IEnumerable<Category> GetAllCategories()
         {
-            if(!Directory.Exists(_baseDirectory))
+            if (!Directory.Exists(_baseDirectory))
             {
                 // Target folder doesn't exist;
                 yield break;
@@ -133,7 +147,7 @@ namespace CodeNameK.DAL
 
             _logger.LogInformation("Data searching prefix: {prefix}", searchPrefix);
             DirectoryInfo searchBase = new DirectoryInfo(searchPrefix);
-            if(!Directory.Exists(searchBase.FullName))
+            if (!Directory.Exists(searchBase.FullName))
             {
                 // Nothing
                 yield break;

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using CodeNameK.BIZ;
+using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.DAL;
 using CodeNameK.ViewModels;
 using Microsoft.Extensions.Configuration;
@@ -35,6 +36,7 @@ namespace CodeNameK.WPF
             });
 
             services.RegisterDataAccess(configurationRoot);
+            services.AddOptions<LocalStoreOptions>().Bind(configurationRoot.GetSection(LocalStoreOptions.SectionName));
             services.RegisterBiz(configurationRoot);
             services.RegisterViewModels(configurationRoot);
 

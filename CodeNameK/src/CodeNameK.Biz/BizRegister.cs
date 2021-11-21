@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace CodeNameK.BIZ;
 public static class BizRegister
 {
-    public static IServiceCollection RegisterBiz(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection RegisterBiz(this IServiceCollection services, IConfiguration localStoreSection)
     {
         services.AddScoped<ICategory, BizCategory>();
         services.AddScoped<IDataPoint, BizDataPoint>();
