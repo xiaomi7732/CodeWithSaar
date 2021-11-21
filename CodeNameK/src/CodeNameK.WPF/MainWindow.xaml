@@ -57,11 +57,17 @@
         <!-- Chart container -->
         <Grid Grid.Column="1" Margin="32,32,32,0" Width="{Binding ChartWidth}">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <!-- Selected dataPoint -->
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <lvc:CartesianChart Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="X">
+            <Grid HorizontalAlignment="Right">
+                <Grid.ColumnDefinitions>
+                </Grid.ColumnDefinitions>
+                <Button ToolTip="Use mouse scroller to zoom in. Click here to reset zoom." Command="{Binding ResetZoomCommand}">_Reset Zoom</Button>
+            </Grid>
+            <lvc:CartesianChart Grid.Row="1" Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="X">
                 <lvc:CartesianChart.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Delete" Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}"
@@ -71,7 +77,7 @@
                     </ContextMenu>
                 </lvc:CartesianChart.ContextMenu>
             </lvc:CartesianChart>
-            <GroupBox Grid.Row="1" Padding="8">
+            <GroupBox Grid.Row="2" Padding="8">
                 <GroupBox.Header>
                     <TextBlock Text="Add Data Point" />
                 </GroupBox.Header>

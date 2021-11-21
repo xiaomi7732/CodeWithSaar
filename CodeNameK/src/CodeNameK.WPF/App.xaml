@@ -5,7 +5,7 @@
              Startup="OnStartup">
     <Application.Resources>
         <Style TargetType="Button">
-            <Setter Property="Width" Value="60" />
+            <Setter Property="MinWidth" Value="60" />
             <Setter Property="Padding" Value="8 2" />
             <Setter Property="Margin" Value="0 8 8 8" />
         </Style>
