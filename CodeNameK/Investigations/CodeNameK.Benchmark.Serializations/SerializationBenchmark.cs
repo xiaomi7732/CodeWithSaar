@@ -9,7 +9,7 @@ namespace CodeNameK.Benchmark.Serializations
         private static readonly DataPoint _data = new DataPoint()
         {
             Id = Guid.NewGuid(),
-            OccurDateTime = DateTime.UtcNow,
+            WhenUTC = DateTime.UtcNow,
             Value = 256,
         };
 
@@ -18,7 +18,7 @@ namespace CodeNameK.Benchmark.Serializations
         [Benchmark]
         public bool ManualSerialize()
         {
-            string result = string.Format("{0:D}|{1:O}|{2}", _data.Id, _data.OccurDateTime, _data.Value);
+            string result = string.Format("{0:D}|{1:O}|{2}", _data.Id, _data.WhenUTC, _data.Value);
             return !string.IsNullOrEmpty(result);
         }
 
@@ -36,7 +36,7 @@ namespace CodeNameK.Benchmark.Serializations
             DataPoint data = new DataPoint()
             {
                 Id = Guid.Parse(tokens[0]),
-                OccurDateTime = DateTime.Parse(tokens[1]),
+                WhenUTC = DateTime.Parse(tokens[1]),
                 Value = double.Parse(tokens[2]),
             };
             return data != null;
