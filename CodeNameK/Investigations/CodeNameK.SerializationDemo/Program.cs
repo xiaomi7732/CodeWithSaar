@@ -23,8 +23,9 @@ using (Stream input = File.OpenRead("data.psv"))
 using (StreamReader reader = new StreamReader(input))
 {
     string allText = await reader.ReadToEndAsync().ConfigureAwait(false);
-    string[] tokens = allText.Split('|');
-    DataPoint newDataPoint = new DataPoint(){
+    string[] tokens = allText.Split("|");
+    DataPoint newDataPoint = new DataPoint()
+    {
         Id = Guid.Parse(tokens[0]),
         // WhenUTC = DateTime.Parse(tokens[1]),
         WhenUTC = DateTime.Parse(tokens[1]).ToUniversalTime(),
@@ -33,7 +34,7 @@ using (StreamReader reader = new StreamReader(input))
     Console.WriteLine("Deserialized from psv: {0}", newDataPoint);
 }
 
-using(Stream inputJson = File.OpenRead("data.json"))
+using (Stream inputJson = File.OpenRead("data.json"))
 {
     DataPoint? newDataPoint = await JsonSerializer.DeserializeAsync<DataPoint>(inputJson).ConfigureAwait(false);
     Console.WriteLine("Deserialized from json: {0}", newDataPoint);
