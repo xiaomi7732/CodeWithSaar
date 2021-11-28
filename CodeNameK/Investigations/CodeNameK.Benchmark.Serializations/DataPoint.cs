@@ -2,7 +2,7 @@ using System;
 
 namespace CodeNameK.Benchmark.Serializations
 {
-    public class DataPoint
+    public record DataPoint
     {
         public Guid Id { get; set; }
         public DateTime WhenUTC { get; set; }
