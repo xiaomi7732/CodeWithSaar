@@ -4,7 +4,7 @@ namespace CodeWithSaar
 {
     public class ReservedFilenameProcessorOptions : IReservedFileNameProcessorOptions
     {
-        public IEnumerable<string> ReservedFileNames => new List<string>
+        public IEnumerable<string> ReservedFileNames { get; init; } = new List<string>
         {
             "CON",
             "PRN",
@@ -30,7 +30,7 @@ namespace CodeWithSaar
             "LPT9",
         };
 
-        public string Escaper => "%";
+        public string Escaper { get; init; } = "%";
 
         public bool EscapeEscaper { get; init; } = false;
     }

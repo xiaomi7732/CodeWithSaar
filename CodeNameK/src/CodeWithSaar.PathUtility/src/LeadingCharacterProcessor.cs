@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace CodeWithSaar
 {
-    public class LeadingCharacterProcessor
+    public class LeadingCharacterProcessor : IFileNameProcessor
     {
         private readonly ILeadingCharacterProcessorOptions _options;
 
