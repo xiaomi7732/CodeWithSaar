@@ -12,43 +12,23 @@ namespace CodeWithSaar
     /// </summary>
     internal class ReservedFileNameProcessor : IFileNameProcessor
     {
-        private const string _escapeChar = "%";
+        private readonly string _escapeChar = "%";
 
-        private readonly List<string> _reservedNames = new List<string>(){
-            "CON",
-            "PRN",
-            "AUX",
-            "NUL",
-            "COM1",
-            "COM2",
-            "COM3",
-            "COM4",
-            "COM5",
-            "COM6",
-            "COM7",
-            "COM8",
-            "COM9",
-            "LPT1",
-            "LPT2",
-            "LPT3",
-            "LPT4",
-            "LPT5",
-            "LPT6",
-            "LPT7",
-            "LPT8",
-            "LPT9",
-        };
-
+        private readonly IEnumerable<string> _reservedNames;
         private readonly Regex _decoder;
         private readonly Regex _encoder;
         private readonly bool _escapeEscaper;
 
-        public ReservedFileNameProcessor(bool escapeEscaper = true)
+        public ReservedFileNameProcessor(
+            IReservedFileNameProcessorOptions options)
         {
+            _reservedNames = options.ReservedFileNames;
+            _escapeChar = options.Escaper;
+            _escapeEscaper = options.EscapeEscaper;
+
             StringBuilder patternBuilder = new StringBuilder();
             _encoder = new Regex(BuildEncoderPattern(patternBuilder), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
             _decoder = new Regex(BuildDecoderPattern(patternBuilder), RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
-            _escapeEscaper = escapeEscaper;
         }
 
         /// <summary>

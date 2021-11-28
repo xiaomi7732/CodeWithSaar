@@ -2,7 +2,7 @@ using Xunit;
 
 namespace CodeWithSaar.FileUtilityUnitTests
 {
-    public class ReservedFileNameHandlerTests
+    public class ReservedFileNameProcessorTests
     {
         [Theory]
         [InlineData("CON", "%CON")] // Simple case
@@ -13,7 +13,7 @@ namespace CodeWithSaar.FileUtilityUnitTests
         [InlineData("COM3.com.txt", "%COM3.com.txt")] // With multiple extensions
         public void ShouldEncode(string input, string expected)
         {
-            ReservedFileNameProcessor target = new ReservedFileNameProcessor();
+            ReservedFileNameProcessor target = new ReservedFileNameProcessor(new ReservedFilenameProcessorOptions() { EscapeEscaper = true });
             string actual = target.Encode(input);
             Assert.Equal(expected, actual);
 

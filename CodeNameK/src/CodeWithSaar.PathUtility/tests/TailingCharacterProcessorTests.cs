@@ -15,7 +15,7 @@ namespace CodeWithSaar.FileUtilityUnitTests
         [InlineData("CanNotEndWithDot.", "CanNotEndWithDot%002E")] // Even it is invalid, shall not encode
         public void ShouldEncodeDecode(string input, string expected)
         {
-            TailingCharacterProcessor target = new TailingCharacterProcessor();
+            TailingCharacterProcessor target = new TailingCharacterProcessor(new TailingCharacterProcessorOptions() { EscapeEscaper = true });
             string actual = target.Encode(input);
             Assert.Equal(expected, actual);
 

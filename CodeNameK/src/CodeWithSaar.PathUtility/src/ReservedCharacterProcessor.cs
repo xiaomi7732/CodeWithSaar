@@ -17,15 +17,16 @@ namespace CodeWithSaar
     /// </summary>    
     internal class ReservedCharacterProcessor : IFileNameProcessor
     {
-        private const string _escapeChar = "%";
-        private string _invalidChars = "<>:\"/\\|?*";
-
+        private readonly string _escapeChar = "%";
         private readonly Regex _encoder;
         private readonly Regex _decoder;
 
-        public ReservedCharacterProcessor()
+        public ReservedCharacterProcessor(IReservedCharacterProcessorOptions options)
         {
-            _encoder = new Regex("[" + Regex.Escape(_invalidChars + _escapeChar) + "]", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+            _escapeChar = options.Escaper;
+            string invalidChars = options.InvalidCharacters;
+
+            _encoder = new Regex("[" + Regex.Escape(invalidChars + _escapeChar) + "]", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
             _decoder = new Regex(Regex.Escape(_escapeChar) + "([0-9A-Z]{4})", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
         }
 

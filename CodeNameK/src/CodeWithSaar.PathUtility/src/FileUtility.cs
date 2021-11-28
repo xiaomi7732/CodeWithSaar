@@ -6,9 +6,9 @@ namespace CodeWithSaar
     public static class FileUtility
     {
         static IEnumerable<IFileNameProcessor> _processors = new List<IFileNameProcessor>(){
-            new ReservedCharacterProcessor(),
-            new ReservedFileNameProcessor(escapeEscaper: false),
-            new TailingCharacterProcessor(escapeEscaper: false),
+            new ReservedCharacterProcessor(new ReservedCharacterProcessorOptions()),
+            new ReservedFileNameProcessor(new ReservedFilenameProcessorOptions() {EscapeEscaper = false}),
+            new TailingCharacterProcessor(new TailingCharacterProcessorOptions() {EscapeEscaper = false}),
         };
 
         public static string Encode(string fileName)

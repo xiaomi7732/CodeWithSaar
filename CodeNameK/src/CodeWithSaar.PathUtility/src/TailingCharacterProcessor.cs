@@ -5,14 +5,18 @@ namespace CodeWithSaar
 {
     internal class TailingCharacterProcessor : IFileNameProcessor
     {
-        private const string _escapeChar = "%";
+        private readonly string _escapeChar;
         private readonly bool _escapeEscaper;
-        private const string _invalidEnding = ". ";
+        private readonly string _invalidEnding;
         private readonly List<(string encodedEnding, char origin)> _encodedTrails;
 
-        public TailingCharacterProcessor(bool escapeEscaper = true)
+        public TailingCharacterProcessor(
+            ITailingCharacterProcessorOptions options)
         {
-            _escapeEscaper = escapeEscaper;
+            _escapeEscaper = options.EscapeEscaper;
+            _invalidEnding = options.InvalidCharacters;
+            _escapeChar = options.Escaper;
+
             _encodedTrails = new List<(string, char)>();
             foreach (char invalidEndingChar in _invalidEnding)
             {
