@@ -5,34 +5,27 @@ namespace CodeWithSaar
 {
     internal class TailingCharacterProcessor : IFileNameProcessor
     {
-        private readonly string _escapeChar;
-        private readonly bool _escapeEscaper;
-        private readonly string _invalidEnding;
-        private readonly List<(string encodedEnding, char origin)> _encodedTrails;
+        private readonly ITailingCharacterProcessorOptions _options;
+        private readonly List<(string encodedEnding, char origin)> _encodingMapping;
 
         public TailingCharacterProcessor(
             ITailingCharacterProcessorOptions options)
         {
-            _escapeEscaper = options.EscapeEscaper;
-            _invalidEnding = options.InvalidCharacters;
-            _escapeChar = options.Escaper;
+            _options = options ?? throw new System.ArgumentNullException(nameof(options));
 
-            _encodedTrails = new List<(string, char)>();
-            foreach (char invalidEndingChar in _invalidEnding)
+            _encodingMapping = new List<(string, char)>();
+            foreach (char invalidEndingChar in _options.InvalidCharacters)
             {
-                _encodedTrails.Add((Encode(invalidEndingChar), invalidEndingChar));
+                _encodingMapping.Add((Encode(invalidEndingChar), invalidEndingChar));
             }
         }
 
         public string Encode(string fileName)
         {
-            if (_escapeEscaper)
-            {
-                fileName = PreEncode(fileName);
-            }
+            fileName = PreEncode(fileName);
 
             char tail = fileName[fileName.Length - 1];
-            (string encodedString, char _) = _encodedTrails.FirstOrDefault(p => p.origin == tail);
+            (string encodedString, char _) = _encodingMapping.FirstOrDefault(p => p.origin == tail);
             if (!string.IsNullOrEmpty(encodedString))
             {
                 fileName = fileName.Substring(0, fileName.Length - 1) + encodedString;
@@ -44,7 +37,7 @@ namespace CodeWithSaar
         {
             string decoded = fileName;
 
-            foreach ((string encodedEnding, char originChar) in _encodedTrails)
+            foreach ((string encodedEnding, char originChar) in _encodingMapping)
             {
                 if (fileName.EndsWith(encodedEnding))
                 {
@@ -56,18 +49,18 @@ namespace CodeWithSaar
 
         private string Encode(char input)
         {
-            return _escapeChar + ((short)input).ToString("X4");
+            return _options.Escaper + ((short)input).ToString("X4");
         }
 
         private string PreEncode(string fileName)
         {
-            if (!_escapeEscaper)
+            if (!_options.EscapeEscaper)
             {
                 return fileName;
             }
 
             // Escape the escape character by doubling itself
-            return fileName.Replace(_escapeChar.ToString(), _escapeChar.ToString() + _escapeChar);
+            return fileName.Replace(_options.Escaper, _options.Escaper + _options.Escaper);
         }
 
         /// <summary>
@@ -75,11 +68,11 @@ namespace CodeWithSaar
         /// </summary>
         private string PostDecode(string fileName)
         {
-            if (!_escapeEscaper)
+            if (!_options.EscapeEscaper)
             {
                 return fileName;
             }
-            return fileName.Replace(_escapeChar.ToString() + _escapeChar, _escapeChar.ToString());
+            return fileName.Replace(_options.Escaper + _options.Escaper, _options.Escaper);
         }
     }
 }
