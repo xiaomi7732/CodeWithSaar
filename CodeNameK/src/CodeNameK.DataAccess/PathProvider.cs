@@ -52,7 +52,7 @@ internal class PathProvider : IRemotePathProvider, ILocalPathProvider
     bool IRemotePathProvider.TryGetDataPointInfo(string remotePath, string remoteStoreBasePath, out DataPointPathInfo? pathInfo)
     {
         pathInfo = null;
-        if(!TryGetValidFileExtension(remotePath, out _))
+        if (!TryGetValidFileExtension(remotePath, out _))
         {
             return false;
         }
@@ -74,7 +74,7 @@ internal class PathProvider : IRemotePathProvider, ILocalPathProvider
         }
 
         return Path.Combine(
-            localStoreBasePath,
+            localStoreBasePath ?? string.Empty,
             ((ILocalPathProvider)this).GetDirectoryName(dataPointInfo.Category),
             dataPointInfo.YearFolder.ToString("D4"),
             dataPointInfo.MonthFolder.ToString("D2"),

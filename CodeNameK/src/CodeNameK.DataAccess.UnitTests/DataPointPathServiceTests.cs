@@ -1,7 +1,6 @@
 
 using System;
 using CodeNameK.DAL.Interfaces;
-using CodeNameK.DAL.OneDrive;
 using CodeNameK.DataContracts;
 using Xunit;
 
@@ -27,10 +26,8 @@ namespace CodeNameK.DAL.UnitTests
             };
 
             ILocalPathProvider target = new PathProvider();
-            string actual = target.GetRelativePath(dataPoint, null);
-
+            string actual = target.GetLocalPath(dataPoint, null).Replace("\\", "/");
             string expected = $"{category}/{utcNow.Year}/{utcNow.Month:00}/{dataPointId:D}.dpt";
-
             Assert.Equal(expected, actual);
         }
 
@@ -52,9 +49,8 @@ namespace CodeNameK.DAL.UnitTests
                 },
             };
 
-            DataPointPathService target = new DataPointPathService();
-            
-            string actual = target.GetRelativePath(dataPoint, basePath).Replace("\\", "/"); // Normalize separator for various OS.
+            ILocalPathProvider target = new PathProvider();
+            string actual = target.GetLocalPath(dataPoint, basePath).Replace("\\", "/"); // Normalize separator for various OS.
             string expected = $"{basePath}/{category}/{utcNow.Year}/{utcNow.Month:00}/{dataPointId:D}.dpt";
             
             Assert.Equal(expected, actual);
