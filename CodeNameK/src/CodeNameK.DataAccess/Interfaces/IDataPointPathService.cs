@@ -1,7 +1,9 @@
+using System;
 using CodeNameK.DataContracts;
 
 namespace CodeNameK.DAL
 {
+    [Obsolete("Use ILocalPathProvider instead.", error: true)]
     public interface IDataPointPathService
     {
         /// <summary>

@@ -116,6 +116,7 @@
                     <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.ColumnSpan="3">
                         <Button Command="{Binding SelectedDataPoint.AddPointCommand}" CommandParameter="{Binding}">_Add</Button>
                         <Button Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}">_Delete</Button>
+                        <Button Command="{Binding SyncUpCommand}">[Debug] _Sync up</Button>
                     </StackPanel>
                 </Grid>
             </GroupBox>

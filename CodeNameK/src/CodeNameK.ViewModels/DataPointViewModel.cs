@@ -12,7 +12,6 @@ namespace CodeNameK.ViewModels
     public class DataPointViewModel : ViewModelBase
     {
         private readonly IDataPoint _dataPointBiz;
-        private readonly ErrorRevealer _errorRevealer;
         private readonly ILogger _logger;
         private DataPoint _model;
 
@@ -20,10 +19,10 @@ namespace CodeNameK.ViewModels
             IDataPoint dataPointBiz,
             ErrorRevealer errorRevealer,
             ILogger<DataPointViewModel> logger)
+            :base(errorRevealer)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
-            _errorRevealer = errorRevealer ?? throw new ArgumentNullException(nameof(errorRevealer));
             _model = new DataPoint();
             AddPointCommand = new RelayCommand(AddPoint);
             DeletePointCommand = new RelayCommand(DeletePoint);

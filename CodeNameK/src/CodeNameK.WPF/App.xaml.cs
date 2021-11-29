@@ -35,9 +35,9 @@ namespace CodeNameK.WPF
                 builder.AddDebug();
             });
 
-            services.RegisterDataAccess(configurationRoot);
+            services.RegisterDataAccessModule(configurationRoot);
             services.AddOptions<LocalStoreOptions>().Bind(configurationRoot.GetSection(LocalStoreOptions.SectionName));
-            services.RegisterBiz(configurationRoot);
+            services.RegisterBizModule(configurationRoot);
             services.RegisterViewModels(configurationRoot);
 
             services.AddSingleton<MainWindow>();

@@ -11,7 +11,7 @@ namespace CodeNameK.DAL.Interfaces
         /// <summary>
         /// Creates a data point and persistents it.
         /// </summary>
-        Task<DataPointInfo> AddPointAsync(DataPoint newPoint, CancellationToken cancellationToken);
+        Task<DataPointPathInfo> AddPointAsync(DataPoint newPoint, CancellationToken cancellationToken);
 
         /// <summary>
         /// Gets a collection of data points for a given category, year and month.

@@ -22,13 +22,13 @@ namespace CodeNameK.DAL
         private readonly string _baseDirectory;
         private readonly IDataWriter<DataPoint> _dataPointWriter;
         private readonly IDataReader<DataPoint> _dataPointReader;
-        private readonly IDataPointPathService _pathService;
+        private readonly ILocalPathProvider _localPathService;
         private readonly ILogger _logger;
 
         public DataRepo(
             IDataWriter<DataPoint> dataPointWriter,
             IDataReader<DataPoint> dataPointReader,
-            IDataPointPathService pathService,
+            ILocalPathProvider pathService,
             IOptions<LocalStoreOptions> options,
             ILogger<DataRepo> logger)
         {
@@ -48,7 +48,7 @@ namespace CodeNameK.DAL
 
             _dataPointWriter = dataPointWriter ?? throw new ArgumentNullException(nameof(dataPointWriter));
             _dataPointReader = dataPointReader ?? throw new ArgumentNullException(nameof(dataPointReader));
-            _pathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            _localPathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
         }
 
         public Task<string> AddCategoryAsync(Category category, CancellationToken cancellationToken)
@@ -58,39 +58,35 @@ namespace CodeNameK.DAL
                 throw new ArgumentNullException(nameof(category));
             }
 
-            string directoryName = _pathService.GetDirectoryName(category);
+            string directoryName = _localPathService.GetDirectoryName(category);
             Directory.CreateDirectory(Path.Combine(_baseDirectory, directoryName));
             return Task.FromResult(category.Id);
         }
 
-        public async Task<DataPointInfo> AddPointAsync(DataPoint newPoint, CancellationToken cancellationToken)
+        public async Task<DataPointPathInfo> AddPointAsync(DataPoint newPoint, CancellationToken cancellationToken)
         {
             if (newPoint is null)
             {
                 throw new ArgumentNullException(nameof(newPoint));
             }
 
-            string filePath = _pathService.GetRelativePath(newPoint, _baseDirectory);
+            string filePath = _localPathService.GetLocalPath(newPoint, _baseDirectory);
             await _dataPointWriter.WriteAsync(
                 newPoint,
                 filePath,
                 cancellationToken).ConfigureAwait(false);
-            return new DataPointInfo()
-            {
-                DataPointId = newPoint.Id,
-                PhysicalLocation = filePath,
-            };
+            return newPoint!;
         }
 
         public Task<bool> DeletePointAsync(DataPoint dataPoint, CancellationToken cancellationToken)
         {
-            string filePath = _pathService.GetRelativePath(dataPoint, _baseDirectory);
+            string filePath = _localPathService.GetLocalPath(dataPoint, _baseDirectory);
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException("Can't locate data point file.", filePath);
             }
 
-            string deleteMark = _pathService.GetDeletedMarkerFilePath(dataPoint, _baseDirectory);
+            string deleteMark = _localPathService.GetDeletedMarkerFilePath(dataPoint, _baseDirectory);
             if (File.Exists(deleteMark))
             {
                 throw new InvalidOperationException($"The target data point has already been deleted. Marking file: {deleteMark}");
@@ -114,7 +110,6 @@ namespace CodeNameK.DAL
                 Category category = new Category()
                 {
                     Id = FileUtility.Decode(item),
-                    Values = Enumerable.Empty<DataPoint>(),
                 };
                 return category;
             }))
@@ -134,7 +129,7 @@ namespace CodeNameK.DAL
                 throw new ArgumentNullException(nameof(category));
             }
 
-            string searchPrefix = Path.GetFullPath(Path.Combine(_baseDirectory, _pathService.GetDirectoryName(category)));
+            string searchPrefix = Path.GetFullPath(Path.Combine(_baseDirectory, _localPathService.GetDirectoryName(category)));
             if (year.HasValue)
             {
                 searchPrefix = Path.Combine(searchPrefix, year.Value.ToString("D4"));
@@ -162,7 +157,7 @@ namespace CodeNameK.DAL
                         continue;
                     }
                     dataPoint = dataPoint with { Category = category };
-                    string deletedMarkPath = _pathService.GetDeletedMarkerFilePath(dataPoint, _baseDirectory);
+                    string deletedMarkPath = _localPathService.GetDeletedMarkerFilePath(dataPoint!, _baseDirectory);
                     if (!File.Exists(deletedMarkPath))
                     {
                         yield return dataPoint;
@@ -173,19 +168,24 @@ namespace CodeNameK.DAL
 
         public async Task<bool> UpdatePointAsync(DataPoint originalPointLocator, DataPoint newPoint, CancellationToken cancellationToken)
         {
-            if (File.Exists(_pathService.GetDeletedMarkerFilePath(newPoint, _baseDirectory)))
+            if (originalPointLocator is null)
+            {
+                throw new ArgumentNullException(nameof(originalPointLocator));
+            }
+
+            if (File.Exists(_localPathService.GetDeletedMarkerFilePath(newPoint, _baseDirectory)))
             {
                 // The target point has been deleted already;
                 return false;
             }
 
-            string originalPointPath = _pathService.GetRelativePath(originalPointLocator, _baseDirectory);
+            string originalPointPath = _localPathService.GetLocalPath(originalPointLocator, _baseDirectory);
             if (!File.Exists(originalPointPath))
             {
                 throw new InvalidOperationException("Original point doesn't exist for updating.");
             }
 
-            DataPointInfo newPointHandle = await AddPointAsync(newPoint, cancellationToken).ConfigureAwait(false);
+            DataPointPathInfo newPointHandle = await AddPointAsync(newPoint, cancellationToken).ConfigureAwait(false);
             try
             {
                 await DeletePointAsync(originalPointLocator, cancellationToken).ConfigureAwait(false);
@@ -193,7 +193,7 @@ namespace CodeNameK.DAL
             catch
             {
                 // If delete fails, the newly added point should be removed to avoid duplicated data points.
-                _dataPointWriter.Delete(newPointHandle.PhysicalLocation);
+                _dataPointWriter.Delete(_localPathService.GetLocalPath(newPointHandle, _baseDirectory));
                 throw;
             }
 

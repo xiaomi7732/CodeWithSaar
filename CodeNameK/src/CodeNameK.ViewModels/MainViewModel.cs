@@ -29,6 +29,7 @@ namespace CodeNameK.ViewModels
     {
         private readonly ICategory _categoryBiz;
         private readonly IDataPoint _dataPointBiz;
+        private readonly ISync _syncService;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
         private ObservableCollection<Category> _categoryCollection = new ObservableCollection<Category>();
@@ -36,13 +37,17 @@ namespace CodeNameK.ViewModels
         public MainViewModel(
             ICategory categoryBiz,
             IDataPoint dataPointBiz,
+            ISync syncService,
             DataPointViewModel dataPointOperator,
+            ErrorRevealer errorRevealer,
             ILoggerFactory loggerFactory,
             ILogger<MainViewModel> logger)
+                : base(errorRevealer)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _categoryBiz = categoryBiz ?? throw new System.ArgumentNullException(nameof(categoryBiz));
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
+            _syncService = syncService ?? throw new ArgumentNullException(nameof(syncService));
             SelectedDataPoint = dataPointOperator ?? throw new ArgumentNullException(nameof(dataPointOperator));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
 
@@ -56,6 +61,7 @@ namespace CodeNameK.ViewModels
             };
 
             ResetZoomCommand = new RelayCommand(ResetZoom);
+            SyncUpCommand = new RelayCommand(SyncUpImp);
         }
 
         public ICollectionView CategoryCollectionView { get; }
@@ -240,6 +246,23 @@ namespace CodeNameK.ViewModels
                 UnitWidth = TimeSpan.FromDays(1).Ticks,
                 MinStep = TimeSpan.FromMinutes(5).Ticks,
             };
+        }
+
+        public ICommand SyncUpCommand { get; }
+        private async void SyncUpImp(object? parameters)
+        {
+            SynchronizationContext syncContext = SynchronizationContext.Current!;
+
+            try
+            {
+                int uploaded = await _syncService.SyncUp(new Progress<double>(), default).ConfigureAwait(false);
+                await syncContext;
+                MessageBox.Show($"{uploaded} files uploaded.", "Sync Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                _errorRevealer.Reveal(ex.Message, "Sync error");
+            }
         }
 
         private ICommand? _addCategoryCommand;

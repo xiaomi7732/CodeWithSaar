@@ -5,6 +5,7 @@ using CodeWithSaar;
 
 namespace CodeNameK.DAL
 {
+    [Obsolete("Use ILocalPathProvider instead.", error: true)]
     public class DataPointPathService : IDataPointPathService
     {
         public const string DataPointFileExtension = ".dpt";

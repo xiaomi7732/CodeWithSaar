@@ -1,15 +1,21 @@
 using System;
-using System.Text.Json.Serialization;
 
 namespace CodeNameK.DataContracts
 {
-    public record DataPoint
+    public record DataPoint : DataPointInfo
     {
-        public Guid Id { get; init; }
         public DateTime WhenUTC { get; init; }
         public double Value { get; init; }
 
-        [JsonIgnore]
-        public Category? Category { get; init; }
+        public static implicit operator DataPointPathInfo(DataPoint input)
+        {
+            return new DataPointPathInfo()
+            {
+                Id = input.Id,
+                Category = input.Category,
+                YearFolder = (ushort)input.WhenUTC.Year,
+                MonthFolder = (ushort)input.WhenUTC.Month,
+            };
+        }
     }
 }
