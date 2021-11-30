@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.DAL;
+using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace CodeNameK.Cli
 {
@@ -28,12 +33,15 @@ namespace CodeNameK.Cli
             DataPointOperator dataPointOperator = new DataPointOperator();
             IDataWriter<DataPoint> dataPointWriter = dataPointOperator;
             IDataReader<DataPoint> dataPointReader = dataPointOperator;
-            IDataPointPathService pathService = new DataPointPathService();
-
+            ILocalPathProvider pathService = new LocalPathProvider();
+            LocalStoreOptions localStoreOptions = new LocalStoreOptions(){
+                DataStorePath = "%userprofile%/.codeNameK/DebugData",
+            };
             DataRepo dataRepo = new DataRepo(
                 dataPointWriter,
                 dataPointReader,
                 pathService,
+                Options.Create<LocalStoreOptions>(localStoreOptions),
                 loggerFactory.CreateLogger<DataRepo>());
 
             Console.WriteLine("List all categories:");
@@ -166,7 +174,7 @@ namespace CodeNameK.Cli
                     };
 
                     await dataRepo.UpdatePointAsync(target, updateTo, default).ConfigureAwait(false);
-                    Console.WriteLine("DataPoint updated: {0} => {1}", pathService.GetRelativePath(target), pathService.GetRelativePath(updateTo));
+                    Console.WriteLine("DataPoint updated: {0} => {1}", pathService.GetLocalPath(target), pathService.GetLocalPath(updateTo));
                 }
             }
             else

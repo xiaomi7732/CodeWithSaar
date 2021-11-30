@@ -37,9 +37,8 @@ namespace CodeNameK.DAL
             services.AddScoped<IDataWriter<DataPoint>>(p => p.GetRequiredService<DataPointOperator>());
             services.AddScoped<IDataReader<DataPoint>>(p => p.GetRequiredService<DataPointOperator>());
 
-            services.AddScoped<PathProvider>();
-            services.AddScoped<ILocalPathProvider>(p => p.GetRequiredService<PathProvider>());
-            services.AddScoped<IRemotePathProvider>(p => p.GetRequiredService<PathProvider>());
+            services.AddScoped<ILocalPathProvider, LocalPathProvider>();
+            services.AddScoped<IRemotePathProvider, RemotePathProvider>();
 
             services.AddScoped<DataRepo>();
             services.AddScoped<ICategoryRepo>(p => p.GetRequiredService<DataRepo>());
