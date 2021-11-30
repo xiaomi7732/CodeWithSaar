@@ -4,7 +4,7 @@ namespace CodeWithSaar
     {
         public string InvalidCharacters => ". ";
 
-        public string Escaper => "%";
+        public string Escaper { get; init; } = "%";
 
         public bool EscapeEscaper { get; init; } = false;
     }

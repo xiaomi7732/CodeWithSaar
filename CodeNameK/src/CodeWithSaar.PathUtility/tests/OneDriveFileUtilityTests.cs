@@ -5,14 +5,14 @@ namespace CodeWithSaar.FileUtilityUnitTests
     public class OneDriveFileUtilityUnitTests
     {
         [Theory]
-        [InlineData("con", "%con")]
-        [InlineData("nul", "%nul")]
-        [InlineData("special * char", "special %002A char")]
-        [InlineData("*CON", "%002ACON")]
-        [InlineData("CON.TXT.con", "%CON.TXT.con")]
-        [InlineData(".", "%002E")]
-        [InlineData("No end with space ", "No end with space%0020")]
-        [InlineData(@"""", @"%0022")]
+        [InlineData("con", "_con")]
+        [InlineData("nul", "_nul")]
+        [InlineData("special * char", "special _002A char")]
+        [InlineData("*CON", "_002ACON")]
+        [InlineData("CON.TXT.con", "_CON.TXT.con")]
+        [InlineData(".", "_002E")]
+        [InlineData("No end with space ", "No end with space_0020")]
+        [InlineData(@"""", @"_0022")]
         public void ShouldHandleSimpleCase(string input, string encoded)
         {
             string origin = input;

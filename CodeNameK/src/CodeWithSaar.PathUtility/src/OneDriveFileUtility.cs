@@ -11,10 +11,10 @@ namespace CodeWithSaar
         };
 
         static IEnumerable<IFileNameProcessor> _processors = new List<IFileNameProcessor>(){
-            new ReservedCharacterProcessor(new ReservedCharacterProcessorOptions(){ InvalidCharacters = @"""*:<>?/\|" }),
-            new ReservedFileNameProcessor(new ReservedFilenameProcessorOptions() { ReservedFileNames = reservedFileNames, EscapeEscaper = false}),
-            new TailingCharacterProcessor(new TailingCharacterProcessorOptions() { EscapeEscaper = false } ),
-            new LeadingCharacterProcessor(new LeadingCharacterProcessorOptions(){ EscapeEscaper = false } ),
+            new ReservedCharacterProcessor(new ReservedCharacterProcessorOptions(){ InvalidCharacters = @"""*:<>?/\|", Escaper="_" }),
+            new ReservedFileNameProcessor(new ReservedFilenameProcessorOptions() { ReservedFileNames = reservedFileNames, EscapeEscaper = false, Escaper="_"}),
+            new TailingCharacterProcessor(new TailingCharacterProcessorOptions() { EscapeEscaper = false, Escaper="_" }),
+            new LeadingCharacterProcessor(new LeadingCharacterProcessorOptions(){ EscapeEscaper = false, Escaper="_" }),
         };
 
         public static string Encode(string fileName)

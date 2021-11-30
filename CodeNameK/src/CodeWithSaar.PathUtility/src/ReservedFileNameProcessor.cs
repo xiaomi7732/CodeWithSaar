@@ -91,7 +91,9 @@ namespace CodeWithSaar
         private string BuildDecoderPattern(StringBuilder patternBuilder)
         {
             patternBuilder.Clear();
-            patternBuilder.Append("^%((?:");
+            patternBuilder.Append("^");
+            patternBuilder.Append(_escapeChar);
+            patternBuilder.Append("((?:");
             foreach (string reservedName in _reservedNames)
             {
                 patternBuilder.AppendFormat("{0}|", reservedName);
