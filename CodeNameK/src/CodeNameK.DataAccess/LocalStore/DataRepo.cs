@@ -18,7 +18,6 @@ namespace CodeNameK.DAL
 {
     public class DataRepo : IDataPointRepo, ICategoryRepo
     {
-        private const string DataFolderName = "Data";
         private readonly string _baseDirectory;
         private readonly IDataWriter<DataPoint> _dataPointWriter;
         private readonly IDataReader<DataPoint> _dataPointReader;
@@ -33,16 +32,7 @@ namespace CodeNameK.DAL
             ILogger<DataRepo> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            string? localStorePath = options?.Value.DataStorePath;
-            if (string.IsNullOrEmpty(localStorePath))
-            {
-                string? exePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                _baseDirectory = string.IsNullOrEmpty(exePath) ? DataFolderName : Path.Combine(exePath, DataFolderName);
-            }
-            else
-            {
-                _baseDirectory = Environment.ExpandEnvironmentVariables(localStorePath);
-            }
+            _baseDirectory = options?.Value.DataStorePath ?? throw new ArgumentNullException(nameof(options.Value.DataStorePath));
             _logger.LogInformation("Local Store Path: {localStorePath}", _baseDirectory);
             Directory.CreateDirectory(_baseDirectory);
 

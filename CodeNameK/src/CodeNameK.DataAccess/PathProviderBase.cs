@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net;
 using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
 
@@ -29,6 +30,7 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
     public bool TryGetDataPointInfo(string path, string basePath, out DataPointPathInfo? pathInfo)
     {
         pathInfo = null;
+        path = DecodePath(path);
         if (!TryGetValidFileExtension(path, out _))
         {
             return false;
@@ -50,12 +52,14 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
             throw new ArgumentNullException(nameof(dataPointInfo.Category));
         }
 
-        return Path.Combine(
+        string fullPath = Path.Combine(
             localStoreBasePath ?? string.Empty,
             GetDirectoryName(dataPointInfo.Category),
             dataPointInfo.YearFolder.ToString("D4"),
             dataPointInfo.MonthFolder.ToString("D2"),
             Path.ChangeExtension(dataPointInfo.Id.ToString("D"), dataPointInfo.IsDeletionMark ? Constants.DeletedMarkerFileExtension : Constants.DataPointFileExtension));
+
+        return EncodePath(fullPath);
     }
 
     public string GetRemotePath(DataPointPathInfo dataPointInfo, string? remoteStoreBasePath = null) => GetLocalPath(dataPointInfo, remoteStoreBasePath);
@@ -101,5 +105,10 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
 
     protected abstract string EncodeCategory(string categoryName);
     protected abstract string DecodeCategory(string categoryName);
+
+    protected abstract string EncodePath(string path);
+    protected abstract string DecodePath(string path);
+
     public abstract string GetDeletedMarkerFilePath(DataPointPathInfo dataPoint, string? baseDirectory = null);
+    public abstract bool PhysicalFileExists(DataPointPathInfo dataPointPathInfo, string? localStoreBasePath = null);
 }

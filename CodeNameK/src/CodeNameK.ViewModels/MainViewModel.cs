@@ -62,6 +62,7 @@ namespace CodeNameK.ViewModels
 
             ResetZoomCommand = new RelayCommand(ResetZoom);
             SyncUpCommand = new RelayCommand(SyncUpImp);
+            SyncDownCommand = new RelayCommand(SyncDownImp);
         }
 
         public ICollectionView CategoryCollectionView { get; }
@@ -258,6 +259,23 @@ namespace CodeNameK.ViewModels
                 int uploaded = await _syncService.SyncUp(new Progress<double>(), default).ConfigureAwait(false);
                 await syncContext;
                 MessageBox.Show($"{uploaded} files uploaded.", "Sync Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                _errorRevealer.Reveal(ex.Message, "Sync error");
+            }
+        }
+
+        public ICommand SyncDownCommand { get; }
+        private async void SyncDownImp(object? parameters)
+        {
+            SynchronizationContext syncContext = SynchronizationContext.Current!;
+
+            try
+            {
+                int downloaded = await _syncService.SyncDown(new Progress<double>(), default).ConfigureAwait(false);
+                await syncContext;
+                MessageBox.Show($"{downloaded} files downloaded.", "Sync Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {

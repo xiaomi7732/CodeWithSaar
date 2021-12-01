@@ -15,4 +15,9 @@ public interface ILocalPathProvider
     /// Gets a relative path to the file marking a deleted data point.
     /// </summary>
     string GetDeletedMarkerFilePath(DataPointPathInfo dataPoint, string? baseDirectory = null);
+
+    /// <summary>
+    /// Check whether the physical file exists
+    /// </summary>
+    bool PhysicalFileExists(DataPointPathInfo dataPointPathInfo, string? localStoreBasePath = null);
 }
