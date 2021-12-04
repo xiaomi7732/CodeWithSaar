@@ -249,6 +249,36 @@ namespace CodeNameK.ViewModels
             };
         }
 
+        private double _syncProgress;
+
+        public double SyncProgress
+        {
+            get { return _syncProgress; }
+            set
+            {
+                if (_syncProgress != value)
+                {
+                    _syncProgress = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        private string _syncStateText;
+
+        public string SyncStateText
+        {
+            get { return _syncStateText; }
+            set
+            {
+                if (!string.Equals(_syncStateText, value, StringComparison.Ordinal))
+                {
+                    _syncStateText = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
         public ICommand SyncCommand { get; }
         private async void SyncImp(object? parameters)
         {
@@ -256,18 +286,27 @@ namespace CodeNameK.ViewModels
 
             try
             {
-                OperationResult<SyncStatistic> result = await _syncService.Sync(new Progress<double>(newValue =>
+                OperationResult<SyncStatistic> result = await _syncService.Sync(
+                    new Progress<SyncProgress>(newProgress =>
                 {
-                    _logger.LogInformation("New sync progress reported: {0:p}", newValue);
+                    _logger.LogInformation("New sync progress reported: [{text}]{value:p}", newProgress.DisplayText, newProgress.Value);
+                    Dispatch(() =>
+                    {
+                        SyncStateText = newProgress.DisplayText;
+                        SyncProgress = newProgress.Value;
+                        return 0;
+                    });
                 }), default).ConfigureAwait(false);
+                
                 await syncContext;
-
                 if (result.IsSuccess)
                 {
+                    SyncStateText = "Success";
                     MessageBox.Show($"{result.Entity.Uploaded} files uploaded, {result.Entity.Downloaded} files downloaded.", "Sync Success", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
+                    SyncStateText = "Fail";
                     _errorRevealer.Reveal(result.Reason, "Sync error");
                 }
             }

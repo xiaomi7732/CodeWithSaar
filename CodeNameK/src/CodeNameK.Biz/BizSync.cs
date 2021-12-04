@@ -34,28 +34,42 @@ namespace CodeNameK.BIZ
             _localStoreOptions = localStoreOptions?.Value ?? throw new ArgumentNullException(nameof(localStoreOptions));
         }
 
-        public async Task<OperationResult<SyncStatistic>> Sync(IProgress<double>? progress, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<SyncStatistic>> Sync(IProgress<SyncProgress>? progress, CancellationToken cancellationToken = default)
         {
             SyncStatistic result = default;
 
             List<DataPointPathInfo> remoteDataPoints = new List<DataPointPathInfo>();
             List<DataPointPathInfo> downloadTarget = new List<DataPointPathInfo>();
-            progress?.Report((double)5 / 100); // 5%
+            SyncProgress syncProgress = new SyncProgress() { DisplayText = "Get ready", Value = (double)5 / 100 };
+            progress?.Report(syncProgress); // 5%
+            bool reported = false;
             await foreach (DataPointPathInfo pathInfo in _oneDriveSync.ListAllDataPointsAsync(cancellationToken).ConfigureAwait(false))
             {
+                if (!reported)
+                {
+                    reported = true;
+                    syncProgress.DisplayText = "Discover remote data";
+                    syncProgress.Value = (double)10 / 100;
+                    progress?.Report(syncProgress);
+                }
+
                 remoteDataPoints.Add(pathInfo);
                 if (!_localPathProvider.PhysicalFileExists(pathInfo))
                 {
                     downloadTarget.Add(pathInfo);
                 }
             }
+
+            syncProgress.DisplayText = "Downloading data";
             double progressOffset = (double)40 / 100; // 40%
-            progress?.Report(progressOffset);
+            syncProgress.Value = progressOffset;
+            progress?.Report(syncProgress);
 
             double progressAllocation = (double)30 / 100; // 30%
             Progress<double> downloadProgress = new Progress<double>(newValue =>
             {
-                progress?.Report(newValue * progressAllocation + progressOffset);
+                syncProgress.Value = newValue * progressAllocation + progressOffset;
+                progress?.Report(syncProgress);
             });
 
             await foreach (DataPointPathInfo item in _oneDriveSync.DownSyncAsync(downloadTarget, progress: downloadProgress, cancellationToken).ConfigureAwait(false))
@@ -66,10 +80,13 @@ namespace CodeNameK.BIZ
                 }
                 _logger.LogTrace("Item downloaded.");
             }
-            
+
+            syncProgress.DisplayText = "Uploading data";
             progressOffset += progressAllocation;
-            Progress<double> uploadProgress = new Progress<double>(newValue => {
-                progress?.Report(newValue * progressAllocation + progressOffset);
+            Progress<double> uploadProgress = new Progress<double>(newValue =>
+            {
+                syncProgress.Value = newValue * progressAllocation + progressOffset;
+                progress?.Report(syncProgress);
             });
             IEnumerable<DataPointPathInfo> uploadTargets = _localPathProvider.ListAllDataPointPaths().Except(remoteDataPoints);
             await foreach (DataPointInfo uploaded in _oneDriveSync.UpSyncAsync(uploadTargets, uploadProgress, cancellationToken).ConfigureAwait(false))
@@ -80,7 +97,9 @@ namespace CodeNameK.BIZ
                 }
             }
 
-            progress?.Report(1);
+            syncProgress.DisplayText = "Done";
+            syncProgress.Value = 1;
+            progress?.Report(syncProgress);
             return new OperationResult<SyncStatistic>()
             {
                 IsSuccess = true,

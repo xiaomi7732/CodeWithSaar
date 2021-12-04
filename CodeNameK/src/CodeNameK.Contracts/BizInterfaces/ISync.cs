@@ -8,6 +8,6 @@ namespace CodeNameK.BIZ.Interfaces
 {
     public interface ISync
     {
-        Task<OperationResult<SyncStatistic>> Sync(IProgress<double>? progress, CancellationToken cancellationToken = default);
+        Task<OperationResult<SyncStatistic>> Sync(IProgress<SyncProgress>? progress, CancellationToken cancellationToken = default);
     }
 }

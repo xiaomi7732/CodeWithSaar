@@ -19,7 +19,10 @@
             <ColumnDefinition Width="200" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         <GroupBox Padding="8">
             <GroupBox.Header>
                 <TextBlock Text="{Binding CategoryHeader}" />
@@ -120,6 +123,15 @@
                     </StackPanel>
                 </Grid>
             </GroupBox>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0 8 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="1" Text="{Binding SyncStateText}" MinWidth="48" Margin="8 0 0 0" />
+            <ProgressBar Grid.Column="0" Maximum="1" Minimum="0" SmallChange="0.01" LargeChange="0.1" Value="{Binding SyncProgress}" VerticalAlignment="Center" Height="12" />
         </Grid>
     </Grid>
 </Window>
