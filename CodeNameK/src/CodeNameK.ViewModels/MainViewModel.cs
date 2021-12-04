@@ -1,16 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Input;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
 using CodeNameK.Contracts.DataContracts;
+using CodeNameK.Core.Utilities;
 using CodeNameK.DataContracts;
 using LiveChartsCore;
 using LiveChartsCore.Drawing;
@@ -23,6 +14,16 @@ using LiveChartsCore.SkiaSharpView.Drawing.Geometries.Segments;
 using LiveChartsCore.SkiaSharpView.Painting;
 using Microsoft.Extensions.Logging;
 using SkiaSharp;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Data;
+using System.Windows.Input;
 
 namespace CodeNameK.ViewModels
 {
@@ -113,14 +114,16 @@ namespace CodeNameK.ViewModels
             SynchronizationContext syncContext = SynchronizationContext.Current!;
             try
             {
-                foreach (var series in Series.OfType<LineSeries<DataPoint>>())
+                List<LineSeries<DataPoint>> existingSeries = Series.OfType<LineSeries<DataPoint>>().NullAsEmpty().ToList();
+                foreach (var series in existingSeries)
                 {
                     series.PointHovered -= SeriesPointHover;
                 }
-                Series.Clear();
 
                 if (string.IsNullOrEmpty(SelectedCategory?.Id))
                 {
+                    // No category, no data points.
+                    Series.Clear();
                     return;
                 }
 
@@ -136,37 +139,38 @@ namespace CodeNameK.ViewModels
 
                 await syncContext;
                 Series.Add(CreateNewSeries(dataPoints));
+                foreach (ISeries existItem in existingSeries)
+                {
+                    Series.Remove(existItem);
+                }
 
                 XAxes.Clear();
                 YAxes.Clear();
-                if (SelectedCategory != null)
+                if (_axesCache.ContainsKey(SelectedCategory))
                 {
-                    if (_axesCache.ContainsKey(SelectedCategory))
-                    {
-                        (ICartesianAxis xAxis, ICartesianAxis yAxis) = _axesCache[SelectedCategory];
-                        yAxis.MaxLimit = maxValue;
-                        yAxis.MinLimit = minValue;
-                        XAxes.Add(xAxis);
-                        YAxes.Add(yAxis);
-                    }
-                    else
-                    {
-                        Axis newXAxis = CreateNewXAxis();
-                        XAxes.Add(newXAxis);
+                    (ICartesianAxis xAxis, ICartesianAxis yAxis) = _axesCache[SelectedCategory];
+                    yAxis.MaxLimit = maxValue;
+                    yAxis.MinLimit = minValue;
+                    XAxes.Add(xAxis);
+                    YAxes.Add(yAxis);
+                }
+                else
+                {
+                    Axis newXAxis = CreateNewXAxis();
+                    XAxes.Add(newXAxis);
 
-                        Axis newYAxis = new Axis()
-                        {
-                            MaxLimit = maxValue,
-                            MinLimit = minValue,
-                        };
-                        YAxes.Add(newYAxis);
-                        _axesCache.Add(SelectedCategory, (newXAxis, newYAxis));
-                    }
+                    Axis newYAxis = new Axis()
+                    {
+                        MaxLimit = maxValue,
+                        MinLimit = minValue,
+                    };
+                    YAxes.Add(newYAxis);
+                    _axesCache.Add(SelectedCategory, (newXAxis, newYAxis));
                 }
             }
             catch (Exception ex)
             {
-                _errorRevealer.Reveal(ex.Message, $"Unexpected error in {nameof(UpdateSeriesAsync)}");
+                _errorRevealer.Reveal(ex, $"Unexpected error in {nameof(UpdateSeriesAsync)}");
             }
         }
 
