@@ -1,5 +1,5 @@
 using System;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using CodeNameK.BIZ.Interfaces;
@@ -19,7 +19,7 @@ namespace CodeNameK.ViewModels
             IDataPoint dataPointBiz,
             ErrorRevealer errorRevealer,
             ILogger<DataPointViewModel> logger)
-            :base(errorRevealer)
+            : base(errorRevealer)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
@@ -107,78 +107,80 @@ namespace CodeNameK.ViewModels
         }
 
         public ICommand AddPointCommand { get; }
-        private void AddPoint(object? parameter)
+        private async void AddPoint(object? parameter)
         {
+            SynchronizationContext syncContext = SynchronizationContext.Current!;
+
             if (!(parameter is MainViewModel mainViewModel))
             {
                 return;
             }
 
-            Category? targetCategory = mainViewModel.SelectedCategory;
-            DateTime whenUTC = IsCurrentDateTimeMode? DateTime.UtcNow : _model.WhenUTC;
-            DataPoint newItem = _model with {
-                Category = targetCategory,
-                WhenUTC = whenUTC,
-            };
-
-            _logger.LogInformation("Adding a data point into category: {category}", newItem.Category?.Id);
-            _ = Task.Run(async () =>
+            try
             {
-                try
+                Category? targetCategory = mainViewModel.SelectedCategory;
+                DateTime whenUTC = IsCurrentDateTimeMode ? DateTime.UtcNow : _model.WhenUTC;
+                DataPoint newItem = _model with
                 {
-                    OperationResult<DataPoint> addResult = await _dataPointBiz.AddAsync(newItem, default).ConfigureAwait(false);
-                    if (addResult.IsSuccess)
-                    {
-                        await mainViewModel.UpdateSeriesAsync().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        _errorRevealer.Reveal(addResult.Reason, "Failed adding a data point");
-                    }
-                }
-                catch (Exception ex)
+                    Category = targetCategory,
+                    WhenUTC = whenUTC,
+                };
+
+                _logger.LogInformation("Adding a data point into category: {category}", newItem.Category?.Id);
+                OperationResult<DataPoint> addResult = await _dataPointBiz.AddAsync(newItem, default).ConfigureAwait(false);
+
+                await syncContext;
+
+                if (addResult.IsSuccess)
                 {
-                    _errorRevealer.Reveal(ex.Message, "Unexpected exception.");
+                    await mainViewModel.UpdateSeriesAsync().ConfigureAwait(false);
                 }
-            });
+                else
+                {
+                    _errorRevealer.Reveal(addResult.Reason, "Failed adding a data point");
+                }
+            }
+            catch (Exception ex)
+            {
+                _errorRevealer.Reveal(ex.Message, "Unexpected error adding a data point");
+            }
         }
 
         public ICommand DeletePointCommand { get; }
-        private void DeletePoint(object? parameter)
+        private async void DeletePoint(object? parameter)
         {
-            if (!(parameter is MainViewModel mainViewModel))
+            SynchronizationContext syncContext = SynchronizationContext.Current!;
+            try
             {
-                _logger.LogWarning("Main view model is not specified.");
-                return;
-            }
-
-            _logger.LogInformation("Deleting a data point by id {id}.", _model.Id);
-
-            MessageBoxResult userChoice = MessageBox.Show($"Do you want to delete the data point: {_model.Value} at {_model.WhenUTC.ToLocalTime():f}?", "Delete", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
-            if (userChoice == MessageBoxResult.No)
-            {
-                return;
-            }
-
-            Task.Run(async () =>
-            {
-                try
+                if (!(parameter is MainViewModel mainViewModel))
                 {
-                    OperationResult<bool> result = await _dataPointBiz.DeleteAsync(_model, default).ConfigureAwait(false);
-                    if (result.IsSuccess)
-                    {
-                        await mainViewModel.UpdateSeriesAsync().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        _errorRevealer.Reveal(result.Reason, "Delete data point failed.");
-                    }
+                    _logger.LogWarning("Main view model is not specified.");
+                    return;
                 }
-                catch (Exception ex)
+
+                _logger.LogInformation("Deleting a data point by id {id}.", _model.Id);
+                MessageBoxResult userChoice = MessageBox.Show($"Do you want to delete the data point: {_model.Value} at {_model.WhenUTC.ToLocalTime():f}?", "Delete", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                if (userChoice == MessageBoxResult.No)
                 {
-                    _errorRevealer.Reveal(ex.Message, "Unexpected error");
+                    return;
                 }
-            });
+
+                OperationResult<bool> result = await _dataPointBiz.DeleteAsync(_model, default).ConfigureAwait(false);
+                
+                await syncContext;
+                if (result.IsSuccess)
+                {
+                    await mainViewModel.UpdateSeriesAsync().ConfigureAwait(false);
+                }
+                else
+                {
+                    _errorRevealer.Reveal(result.Reason, "Delete data point failed.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _errorRevealer.Reveal(ex.Message, "Unexpected error");
+            }
         }
     }
 }

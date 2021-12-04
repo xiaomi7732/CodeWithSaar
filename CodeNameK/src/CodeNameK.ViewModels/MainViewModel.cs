@@ -64,6 +64,7 @@ namespace CodeNameK.ViewModels
 
             ResetZoomCommand = new RelayCommand(ResetZoom);
             SyncCommand = new RelayCommand(SyncImp);
+            AddCategoryCommand = new RelayCommand(AddCategoryImp, CanAddCategoryImp);
         }
 
         public ICollectionView CategoryCollectionView { get; }
@@ -110,56 +111,62 @@ namespace CodeNameK.ViewModels
         public async Task UpdateSeriesAsync()
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
-
-            foreach (var series in Series.OfType<LineSeries<DataPoint>>())
+            try
             {
-                series.PointHovered -= SeriesPointHover;
-            }
-            Series.Clear();
-
-            if (string.IsNullOrEmpty(SelectedCategory?.Id))
-            {
-                return;
-            }
-
-            List<DataPoint> dataPoints = new List<DataPoint>();
-            await foreach (DataPoint dataPoint in _dataPointBiz.GetDataPoints(SelectedCategory, default).ConfigureAwait(false))
-            {
-                dataPoints.Add(dataPoint);
-            };
-            dataPoints.Sort(DatePointComparer.DateTimeComparer);
-            double maxValue = _chartAxisExpansion.ExpandUp(dataPoints.Max(point => point.Value));
-            double minValue = _chartAxisExpansion.ExpandDown(dataPoints.Min(point => point.Value));
-
-            await syncContext;
-
-            Series.Add(CreateNewSeries(dataPoints));
-
-            XAxes.Clear();
-            YAxes.Clear();
-            if (SelectedCategory != null)
-            {
-                if (_axesCache.ContainsKey(SelectedCategory))
+                foreach (var series in Series.OfType<LineSeries<DataPoint>>())
                 {
-                    (ICartesianAxis xAxis, ICartesianAxis yAxis) = _axesCache[SelectedCategory];
-                    yAxis.MaxLimit = maxValue;
-                    yAxis.MinLimit = minValue;
-                    XAxes.Add(xAxis);
-                    YAxes.Add(yAxis);
+                    series.PointHovered -= SeriesPointHover;
                 }
-                else
-                {
-                    Axis newXAxis = CreateNewXAxis();
-                    XAxes.Add(newXAxis);
+                Series.Clear();
 
-                    Axis newYAxis = new Axis()
+                if (string.IsNullOrEmpty(SelectedCategory?.Id))
+                {
+                    return;
+                }
+
+                List<DataPoint> dataPoints = new List<DataPoint>();
+                await foreach (DataPoint dataPoint in _dataPointBiz.GetDataPoints(SelectedCategory, default).ConfigureAwait(false))
+                {
+                    dataPoints.Add(dataPoint);
+                };
+                dataPoints.Sort(DatePointComparer.DateTimeComparer);
+
+                double maxValue = _chartAxisExpansion.ExpandUp(dataPoints.Any() ? dataPoints.Max(point => point.Value) : 0);
+                double minValue = _chartAxisExpansion.ExpandDown(dataPoints.Any() ? dataPoints.Min(point => point.Value) : 0);
+
+                await syncContext;
+                Series.Add(CreateNewSeries(dataPoints));
+
+                XAxes.Clear();
+                YAxes.Clear();
+                if (SelectedCategory != null)
+                {
+                    if (_axesCache.ContainsKey(SelectedCategory))
                     {
-                        MaxLimit = maxValue,
-                        MinLimit = minValue,
-                    };
-                    YAxes.Add(newYAxis);
-                    _axesCache.Add(SelectedCategory, (newXAxis, newYAxis));
+                        (ICartesianAxis xAxis, ICartesianAxis yAxis) = _axesCache[SelectedCategory];
+                        yAxis.MaxLimit = maxValue;
+                        yAxis.MinLimit = minValue;
+                        XAxes.Add(xAxis);
+                        YAxes.Add(yAxis);
+                    }
+                    else
+                    {
+                        Axis newXAxis = CreateNewXAxis();
+                        XAxes.Add(newXAxis);
+
+                        Axis newYAxis = new Axis()
+                        {
+                            MaxLimit = maxValue,
+                            MinLimit = minValue,
+                        };
+                        YAxes.Add(newYAxis);
+                        _axesCache.Add(SelectedCategory, (newXAxis, newYAxis));
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                _errorRevealer.Reveal(ex.Message, $"Unexpected error in {nameof(UpdateSeriesAsync)}");
             }
         }
 
@@ -302,6 +309,10 @@ namespace CodeNameK.ViewModels
                     SyncStateText = "Fail";
                     _errorRevealer.Reveal(result.Reason, "Sync error");
                 }
+
+                // Post sync
+                InitializeCategoryCollection();
+                await UpdateSeriesAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -310,50 +321,37 @@ namespace CodeNameK.ViewModels
             }
         }
 
-        private ICommand? _addCategoryCommand;
-        public ICommand AddCategoryCommand
+        public ICommand AddCategoryCommand { get; }
+        private async void AddCategoryImp(object? parameter)
         {
-            get
+            SynchronizationContext syncContext = SynchronizationContext.Current!;
+            try
             {
-                if (_addCategoryCommand is null)
+                if (string.IsNullOrEmpty(CategoryText))
                 {
-                    _addCategoryCommand = new RelayCommand(p =>
-                    {
-                        if (string.IsNullOrEmpty(CategoryText))
-                        {
-                            _ = Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                MessageBox.Show("Can't add a category without a name. Please input a name.", "Failed Creating Category", MessageBoxButton.OK, MessageBoxImage.Error);
-                                return 0;
-                            });
-                            return;
-                        }
-
-                        Task.Run(async () =>
-                        {
-                            OperationResult<Category> createCategoryResult = await _categoryBiz.AddCategoryAsync(new Category() { Id = CategoryText }, default);
-                            if (!createCategoryResult.IsSuccess)
-                            {
-                                Application.Current.Dispatcher.Invoke(() =>
-                                {
-                                    MessageBox.Show($"Failed creating a category. Details: {createCategoryResult.Reason}", "Failed Creating Category", MessageBoxButton.OK, MessageBoxImage.Error);
-                                    CategoryText = string.Empty;
-                                });
-                                return;
-                            }
-
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                _categoryCollection.Add(createCategoryResult!);
-                                MessageBox.Show($"Category {createCategoryResult.Entity?.Id} is created!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                                CategoryText = string.Empty;
-                            });
-                        });
-                    }, p => !string.IsNullOrEmpty(CategoryText));
+                    MessageBox.Show("Can't add a category without a name. Please input a name.", "Failed Creating Category", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
-                return _addCategoryCommand;
+                OperationResult<Category> createCategoryResult = await _categoryBiz.AddCategoryAsync(new Category() { Id = CategoryText }, default).ConfigureAwait(false);
+
+                await syncContext;
+                if (!createCategoryResult.IsSuccess)
+                {
+                    MessageBox.Show($"Failed creating a category. Details: {createCategoryResult.Reason}", "Failed Creating Category", MessageBoxButton.OK, MessageBoxImage.Error);
+                    CategoryText = string.Empty;
+                    return;
+                }
+
+                _categoryCollection.Add(createCategoryResult!);
+                MessageBox.Show($"Category {createCategoryResult.Entity?.Id} is created!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                CategoryText = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                _errorRevealer.Reveal(ex.Message, "Unexpected error!");
             }
         }
+        private bool CanAddCategoryImp(object? parameter) => !string.IsNullOrEmpty(CategoryText);
 
         public ICommand ResetZoomCommand { get; }
         private void ResetZoom(object? parameter)
@@ -374,6 +372,10 @@ namespace CodeNameK.ViewModels
         {
             foreach (Category category in _categoryBiz.GetAllCategories().OrderBy(c => c.Id, StringComparer.InvariantCultureIgnoreCase))
             {
+                if (_categoryCollection.Contains(category))
+                {
+                    continue;
+                }
                 _categoryCollection.Add(category);
             }
         }
