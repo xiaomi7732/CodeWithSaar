@@ -8,10 +8,10 @@ using CodeWithSaar;
 namespace CodeNameK.DAL;
 internal class RemotePathProvider : PathProviderBase, IRemotePathProvider
 {
-    public override string GetDeletedMarkerFilePath(DataPointPathInfo dataPoint, string? baseDirectory = null)
-        => throw new InvalidOperationException("Unsupported operation on remote store.");
+    // TODO: Make this into an option. Hardcode for now.
+    public override string BasePath => "Data";
 
-    public override bool PhysicalFileExists(DataPointPathInfo dataPointPathInfo, string? localStoreBasePath = null)
+    public override bool PhysicalFileExists(DataPointPathInfo dataPointPathInfo)
         => throw new NotImplementedException();
 
     protected override string DecodeCategory(string categoryName) => OneDriveFileUtility.Decode(categoryName);

@@ -11,21 +11,16 @@ namespace CodeNameK.DAL
     internal class LocalPathProvider : PathProviderBase, ILocalPathProvider
     {
         private readonly LocalStoreOptions _options;
+        public override string BasePath => _options.DataStorePath;
 
         public LocalPathProvider(IOptions<LocalStoreOptions> options)
         {
             _options = options?.Value ?? throw new System.ArgumentNullException(nameof(options));
         }
 
-        public override string GetDeletedMarkerFilePath(DataPointPathInfo dataPoint, string? baseDirectory = null)
+        public override bool PhysicalFileExists(DataPointPathInfo dataPointPathInfo)
         {
-            string dataPointPath = GetLocalPath(dataPoint, baseDirectory);
-            return Path.ChangeExtension(dataPointPath, Constants.DeletedMarkerFileExtension);
-        }
-
-        public override bool PhysicalFileExists(DataPointPathInfo dataPointPathInfo, string? localStoreBasePath = null)
-        {
-            string dataPointPath = GetLocalPath(dataPointPathInfo, localStoreBasePath);
+            string dataPointPath = GetLocalPath(dataPointPathInfo);
             return File.Exists(dataPointPath);
         }
 
@@ -44,7 +39,7 @@ namespace CodeNameK.DAL
 
             foreach (string filePath in Directory.EnumerateFiles(_options.DataStorePath, "*", new EnumerationOptions() { RecurseSubdirectories = true }))
             {
-                if (!TryGetDataPointInfo(filePath, _options.DataStorePath, out DataPointPathInfo? pathInfo))
+                if (!TryGetDataPointInfo(filePath, out DataPointPathInfo? pathInfo))
                 {
                     continue;
                 }

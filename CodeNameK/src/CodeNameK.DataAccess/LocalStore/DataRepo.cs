@@ -2,23 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
 using CodeWithSaar;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace CodeNameK.DAL
 {
     public class DataRepo : IDataPointRepo, ICategoryRepo
     {
-        private readonly string _baseDirectory;
         private readonly IDataWriter<DataPoint> _dataPointWriter;
         private readonly IDataReader<DataPoint> _dataPointReader;
         private readonly ILocalPathProvider _localPathService;
@@ -28,14 +24,9 @@ namespace CodeNameK.DAL
             IDataWriter<DataPoint> dataPointWriter,
             IDataReader<DataPoint> dataPointReader,
             ILocalPathProvider pathService,
-            IOptions<LocalStoreOptions> options,
             ILogger<DataRepo> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _baseDirectory = options?.Value.DataStorePath ?? throw new ArgumentNullException(nameof(options.Value.DataStorePath));
-            _logger.LogInformation("Local Store Path: {localStorePath}", _baseDirectory);
-            Directory.CreateDirectory(_baseDirectory);
-
             _dataPointWriter = dataPointWriter ?? throw new ArgumentNullException(nameof(dataPointWriter));
             _dataPointReader = dataPointReader ?? throw new ArgumentNullException(nameof(dataPointReader));
             _localPathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
@@ -49,7 +40,8 @@ namespace CodeNameK.DAL
             }
 
             string directoryName = _localPathService.GetDirectoryName(category);
-            Directory.CreateDirectory(Path.Combine(_baseDirectory, directoryName));
+
+            Directory.CreateDirectory(Path.Combine(_localPathService.BasePath, directoryName));
             return Task.FromResult(category.Id);
         }
 
@@ -60,7 +52,7 @@ namespace CodeNameK.DAL
                 throw new ArgumentNullException(nameof(newPoint));
             }
 
-            string filePath = _localPathService.GetLocalPath(newPoint, _baseDirectory);
+            string filePath = _localPathService.GetLocalPath(newPoint);
             await _dataPointWriter.WriteAsync(
                 newPoint,
                 filePath,
@@ -70,13 +62,13 @@ namespace CodeNameK.DAL
 
         public Task<bool> DeletePointAsync(DataPoint dataPoint, CancellationToken cancellationToken)
         {
-            string filePath = _localPathService.GetLocalPath(dataPoint, _baseDirectory);
+            string filePath = _localPathService.GetLocalPath(dataPoint);
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException("Can't locate data point file.", filePath);
             }
 
-            string deleteMark = _localPathService.GetDeletedMarkerFilePath(dataPoint, _baseDirectory);
+            string deleteMark = _localPathService.GetDeletedMarkerFilePath(dataPoint);
             if (File.Exists(deleteMark))
             {
                 throw new InvalidOperationException($"The target data point has already been deleted. Marking file: {deleteMark}");
@@ -88,13 +80,13 @@ namespace CodeNameK.DAL
 
         public IEnumerable<Category> GetAllCategories()
         {
-            if (!Directory.Exists(_baseDirectory))
+            if (!Directory.Exists(_localPathService.BasePath))
             {
                 // Target folder doesn't exist;
                 yield break;
             }
 
-            IEnumerable<string> categoryEnum = Directory.EnumerateDirectories(_baseDirectory).Select(item => Path.GetFileName(item));
+            IEnumerable<string> categoryEnum = Directory.EnumerateDirectories(_localPathService.BasePath).Select(item => Path.GetFileName(item));
             foreach (Category category in categoryEnum.Select(item =>
             {
                 Category category = new Category()
@@ -119,7 +111,7 @@ namespace CodeNameK.DAL
                 throw new ArgumentNullException(nameof(category));
             }
 
-            string searchPrefix = Path.GetFullPath(Path.Combine(_baseDirectory, _localPathService.GetDirectoryName(category)));
+            string searchPrefix = Path.GetFullPath(Path.Combine(_localPathService.BasePath, _localPathService.GetDirectoryName(category)));
             if (year.HasValue)
             {
                 searchPrefix = Path.Combine(searchPrefix, year.Value.ToString("D4"));
@@ -147,7 +139,7 @@ namespace CodeNameK.DAL
                         continue;
                     }
                     dataPoint = dataPoint with { Category = category };
-                    string deletedMarkPath = _localPathService.GetDeletedMarkerFilePath(dataPoint!, _baseDirectory);
+                    string deletedMarkPath = _localPathService.GetDeletedMarkerFilePath(dataPoint!);
                     if (!File.Exists(deletedMarkPath))
                     {
                         yield return dataPoint;
@@ -163,13 +155,13 @@ namespace CodeNameK.DAL
                 throw new ArgumentNullException(nameof(originalPointLocator));
             }
 
-            if (File.Exists(_localPathService.GetDeletedMarkerFilePath(newPoint, _baseDirectory)))
+            if (File.Exists(_localPathService.GetDeletedMarkerFilePath(newPoint)))
             {
                 // The target point has been deleted already;
                 return false;
             }
 
-            string originalPointPath = _localPathService.GetLocalPath(originalPointLocator, _baseDirectory);
+            string originalPointPath = _localPathService.GetLocalPath(originalPointLocator);
             if (!File.Exists(originalPointPath))
             {
                 throw new InvalidOperationException("Original point doesn't exist for updating.");
@@ -183,7 +175,7 @@ namespace CodeNameK.DAL
             catch
             {
                 // If delete fails, the newly added point should be removed to avoid duplicated data points.
-                _dataPointWriter.Delete(_localPathService.GetLocalPath(newPointHandle, _baseDirectory));
+                _dataPointWriter.Delete(_localPathService.GetLocalPath(newPointHandle));
                 throw;
             }
 

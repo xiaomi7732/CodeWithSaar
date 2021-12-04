@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
 
@@ -28,7 +27,7 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
     /// </summary>
     /// <param name="path">Relative path including the base path. For example: data/CategoryName/yyyy/MM/guid.dtp</param>
     /// <param name="basePath">The base path. For example: data.</param>
-    public bool TryGetDataPointInfo(string path, string basePath, out DataPointPathInfo? pathInfo)
+    public bool TryGetDataPointInfo(string path, out DataPointPathInfo? pathInfo)
     {
         pathInfo = null;
         path = DecodePath(path);
@@ -37,11 +36,11 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
             return false;
         }
 
-        pathInfo = GetDataPointInfo(path, basePath, DecodeCategory);
+        pathInfo = GetDataPointInfo(path, DecodeCategory);
         return true;
     }
 
-    public string GetLocalPath(DataPointPathInfo dataPointInfo, string? localStoreBasePath = null)
+    public string GetLocalPath(DataPointPathInfo dataPointInfo)
     {
         if (dataPointInfo is null)
         {
@@ -54,7 +53,7 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
         }
 
         string fullPath = Path.Combine(
-            localStoreBasePath ?? string.Empty,
+            BasePath,
             GetDirectoryName(dataPointInfo.Category),
             dataPointInfo.YearFolder.ToString("D4"),
             dataPointInfo.MonthFolder.ToString("D2"),
@@ -63,7 +62,7 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
         return EncodePath(fullPath);
     }
 
-    public string GetRemotePath(DataPointPathInfo dataPointInfo, string? remoteStoreBasePath = null) => GetLocalPath(dataPointInfo, remoteStoreBasePath);
+    public string GetRemotePath(DataPointPathInfo dataPointInfo) => GetLocalPath(dataPointInfo);
 
     /// <summary>
     /// Parse a file path into DataPointPathInfo object.
@@ -71,9 +70,9 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
     /// <param name="path">Relative path to a data point. For example: base/EncodedCategoryName/yyyy/MM/data-id-guid.ext</param>
     /// <param name="basePath">Base path. `data` for example.</param>
     /// <param name="decodeCategoryName">A delegate to decode category name for remote storage or local storage</param>
-    private DataPointPathInfo GetDataPointInfo(string path, string basePath, Func<string, string> decodeCategoryName)
+    private DataPointPathInfo GetDataPointInfo(string path, Func<string, string> decodeCategoryName)
     {
-        string relativePath = Path.GetRelativePath(basePath, path).Replace('\\', '/');
+        string relativePath = Path.GetRelativePath(BasePath, path).Replace('\\', '/');
         string[] tokens = relativePath.Split("/");
 
         string categoryId = decodeCategoryName(tokens[0]);
@@ -91,6 +90,20 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
             IsDeletionMark = string.Equals(fileNameExtension, Constants.DeletedMarkerFileExtension, StringComparison.OrdinalIgnoreCase),
         };
     }
+
+    /// <summary>
+    /// Gets deleted marker file path by data point.
+    /// </summary>
+    public string GetDeletedMarkerFilePath(DataPointPathInfo dataPoint)
+    {
+        string dataPointPath = GetLocalPath(dataPoint);
+        return Path.ChangeExtension(dataPointPath, Constants.DeletedMarkerFileExtension);
+    }
+
+    /// <summary>
+    /// Gets the base path. The base path might be differnet depends on whether it is a service of local or remote.
+    /// </summary>
+    public abstract string BasePath { get; }
 
     private bool TryGetValidFileExtension(string path, out string extension)
     {
@@ -110,8 +123,8 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
     protected abstract string EncodePath(string path);
     protected abstract string DecodePath(string path);
 
-    public abstract string GetDeletedMarkerFilePath(DataPointPathInfo dataPoint, string? baseDirectory = null);
-    public abstract bool PhysicalFileExists(DataPointPathInfo dataPointPathInfo, string? localStoreBasePath = null);
+    public abstract bool PhysicalFileExists(DataPointPathInfo dataPointPathInfo);
 
     public abstract IEnumerable<DataPointPathInfo> ListAllDataPointPaths();
+
 }

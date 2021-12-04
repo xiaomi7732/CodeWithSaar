@@ -5,39 +5,32 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.Core.Utilities;
 using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 
 namespace CodeNameK.DAL.OneDrive
 {
     public class OneDriveSync : IOneDriveSync
     {
-        private const string _remoteBasePath = "Data"; // root://AppRoot/Data
         private readonly GraphServiceClient _graphServiceClient;
 
         private readonly IRemotePathProvider _remotePathProvider;
         private readonly ILocalPathProvider _localPathProvider;
         private readonly ILogger _logger;
-        private readonly LocalStoreOptions _localStoreOptions;
 
         public OneDriveSync(
             GraphServiceClient graphServiceClient,
             IRemotePathProvider remotePathProvider,
             ILocalPathProvider localPathProvider,
-            IOptions<LocalStoreOptions> localStoreOptions,
-            ILogger<OneDriveSync> logger
-            )
+            ILogger<OneDriveSync> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _graphServiceClient = graphServiceClient ?? throw new ArgumentNullException(nameof(graphServiceClient));
             _remotePathProvider = remotePathProvider ?? throw new ArgumentNullException(nameof(remotePathProvider));
             _localPathProvider = localPathProvider ?? throw new ArgumentNullException(nameof(localPathProvider));
-            _localStoreOptions = localStoreOptions?.Value ?? throw new ArgumentNullException(nameof(localStoreOptions));
         }
 
         public async IAsyncEnumerable<DataPointPathInfo> DownSyncAsync(
@@ -52,8 +45,8 @@ namespace CodeNameK.DAL.OneDrive
             await dataList.ForEachAsync(10, async item =>
             {
                 if (await DownSyncAsync(
-                    remotePath: _remotePathProvider.GetRemotePath(item, _remoteBasePath),
-                    localPath: _localPathProvider.GetLocalPath(item, _localStoreOptions.DataStorePath),
+                    remotePath: _remotePathProvider.GetRemotePath(item),
+                    localPath: _localPathProvider.GetLocalPath(item),
                     cancellationToken).ConfigureAwait(false))
                 {
                     results.Add(item);
@@ -109,7 +102,7 @@ namespace CodeNameK.DAL.OneDrive
                         }
 
                         string remotePath = item.ParentReference.Path.Substring(appRootPathLength) + '/' + item.Name;
-                        if (_remotePathProvider.TryGetDataPointInfo(remotePath, _remoteBasePath, out DataPointPathInfo? pathInfo))
+                        if (_remotePathProvider.TryGetDataPointInfo(remotePath, out DataPointPathInfo? pathInfo))
                         {
                             yield return pathInfo!;
                         }
@@ -137,8 +130,8 @@ namespace CodeNameK.DAL.OneDrive
 
             foreach (DataPointPathInfo pathInfo in pathInfoList)
             {
-                string localPath = _localPathProvider.GetLocalPath(pathInfo, _localStoreOptions.DataStorePath);
-                string remotePath = _remotePathProvider.GetRemotePath(pathInfo, _remoteBasePath);
+                string localPath = _localPathProvider.GetLocalPath(pathInfo);
+                string remotePath = _remotePathProvider.GetRemotePath(pathInfo);
                 if (await UpSyncAsync(localPath, remotePath, cancellationToken))
                 {
                     yield return pathInfo;

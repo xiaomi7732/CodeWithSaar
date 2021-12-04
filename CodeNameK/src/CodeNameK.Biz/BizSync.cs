@@ -43,7 +43,7 @@ namespace CodeNameK.BIZ
             await foreach (DataPointPathInfo pathInfo in _oneDriveSync.ListAllDataPointsAsync(cancellationToken).ConfigureAwait(false))
             {
                 remoteDataPoints.Add(pathInfo);
-                if (!_localPathProvider.PhysicalFileExists(pathInfo, _localStoreOptions.DataStorePath))
+                if (!_localPathProvider.PhysicalFileExists(pathInfo))
                 {
                     downloadTarget.Add(pathInfo);
                 }
