@@ -1,4 +1,5 @@
 using CodeNameK.DataContracts;
+using System.Collections.Generic;
 
 namespace CodeNameK.DAL.Interfaces;
 public interface ILocalPathProvider
@@ -20,4 +21,9 @@ public interface ILocalPathProvider
     /// Check whether the physical file exists
     /// </summary>
     bool PhysicalFileExists(DataPointPathInfo dataPointPathInfo, string? localStoreBasePath = null);
+
+    /// <summary>
+    /// Gets all local data point path in a list.
+    /// </summary>
+    IEnumerable<DataPointPathInfo> ListAllDataPointPaths();
 }

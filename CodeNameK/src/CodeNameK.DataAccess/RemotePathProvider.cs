@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
@@ -18,5 +19,10 @@ internal class RemotePathProvider : PathProviderBase, IRemotePathProvider
 
     protected override string DecodePath(string path) => WebUtility.UrlDecode(path);
 
-    protected override string EncodePath(string path) => WebUtility.UrlEncode(path);
+    protected override string EncodePath(string path) => path;
+
+    public override IEnumerable<DataPointPathInfo> ListAllDataPointPaths()
+    {
+        throw new NotImplementedException();
+    }
 }

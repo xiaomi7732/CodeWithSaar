@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.DAL.Interfaces;
@@ -33,5 +34,22 @@ namespace CodeNameK.DAL
 
         protected override string DecodePath(string path) => path;
         protected override string EncodePath(string path) => path;
+
+        public override IEnumerable<DataPointPathInfo> ListAllDataPointPaths()
+        {
+            if (!Directory.Exists(_options.DataStorePath))
+            {
+                yield break;
+            }
+
+            foreach (string filePath in Directory.EnumerateFiles(_options.DataStorePath, "*", new EnumerationOptions() { RecurseSubdirectories = true }))
+            {
+                if (!TryGetDataPointInfo(filePath, _options.DataStorePath, out DataPointPathInfo? pathInfo))
+                {
+                    continue;
+                }
+                yield return pathInfo!;
+            }
+        }
     }
 }

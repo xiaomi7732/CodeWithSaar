@@ -10,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
+using CodeNameK.Contracts.DataContracts;
 using CodeNameK.DataContracts;
 using LiveChartsCore;
 using LiveChartsCore.Drawing;
@@ -61,8 +62,7 @@ namespace CodeNameK.ViewModels
             };
 
             ResetZoomCommand = new RelayCommand(ResetZoom);
-            SyncUpCommand = new RelayCommand(SyncUpImp);
-            SyncDownCommand = new RelayCommand(SyncDownImp);
+            SyncCommand = new RelayCommand(SyncImp);
         }
 
         public ICollectionView CategoryCollectionView { get; }
@@ -249,37 +249,29 @@ namespace CodeNameK.ViewModels
             };
         }
 
-        public ICommand SyncUpCommand { get; }
-        private async void SyncUpImp(object? parameters)
+        public ICommand SyncCommand { get; }
+        private async void SyncImp(object? parameters)
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
 
             try
             {
-                int uploaded = await _syncService.SyncUp(new Progress<double>(), default).ConfigureAwait(false);
+                OperationResult<SyncStatistic> result = await _syncService.Sync(new Progress<double>(), default).ConfigureAwait(false);
                 await syncContext;
-                MessageBox.Show($"{uploaded} files uploaded.", "Sync Success", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                if (result.IsSuccess)
+                {
+                    MessageBox.Show($"{result.Entity.Uploaded} files uploaded, {result.Entity.Downloaded} files downloaded.", "Sync Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _errorRevealer.Reveal(result.Reason, "Sync error");
+                }
             }
             catch (Exception ex)
             {
-                _errorRevealer.Reveal(ex.Message, "Sync error");
-            }
-        }
-
-        public ICommand SyncDownCommand { get; }
-        private async void SyncDownImp(object? parameters)
-        {
-            SynchronizationContext syncContext = SynchronizationContext.Current!;
-
-            try
-            {
-                int downloaded = await _syncService.SyncDown(new Progress<double>(), default).ConfigureAwait(false);
                 await syncContext;
-                MessageBox.Show($"{downloaded} files downloaded.", "Sync Success", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            catch (Exception ex)
-            {
-                _errorRevealer.Reveal(ex.Message, "Sync error");
+                _errorRevealer.Reveal(ex.Message, "Unexpected sync error");
             }
         }
 

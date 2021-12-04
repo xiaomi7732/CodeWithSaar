@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using CodeNameK.DAL.Interfaces;
@@ -111,4 +112,6 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
 
     public abstract string GetDeletedMarkerFilePath(DataPointPathInfo dataPoint, string? baseDirectory = null);
     public abstract bool PhysicalFileExists(DataPointPathInfo dataPointPathInfo, string? localStoreBasePath = null);
+
+    public abstract IEnumerable<DataPointPathInfo> ListAllDataPointPaths();
 }

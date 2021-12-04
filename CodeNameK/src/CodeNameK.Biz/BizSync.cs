@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CodeNameK.BIZ.Interfaces;
+using CodeNameK.Contracts;
 using CodeNameK.Contracts.CustomOptions;
+using CodeNameK.Contracts.DataContracts;
 using CodeNameK.DAL.Interfaces;
 using CodeNameK.DAL.OneDrive;
 using CodeNameK.DataContracts;
@@ -31,28 +34,45 @@ namespace CodeNameK.BIZ
             _localStoreOptions = localStoreOptions?.Value ?? throw new ArgumentNullException(nameof(localStoreOptions));
         }
 
-        public async Task<int> SyncDown(IProgress<double>? progress, CancellationToken cancellationToken = default)
+        public async Task<OperationResult<SyncStatistic>> Sync(IProgress<double>? progress, CancellationToken cancellationToken = default)
         {
+            SyncStatistic result = default;
+
+            List<DataPointPathInfo> remoteDataPoints = new List<DataPointPathInfo>();
             List<DataPointPathInfo> downloadTarget = new List<DataPointPathInfo>();
             await foreach (DataPointPathInfo pathInfo in _oneDriveSync.ListAllDataPointsAsync(cancellationToken).ConfigureAwait(false))
             {
+                remoteDataPoints.Add(pathInfo);
                 if (!_localPathProvider.PhysicalFileExists(pathInfo, _localStoreOptions.DataStorePath))
                 {
                     downloadTarget.Add(pathInfo);
                 }
             }
 
-            int downloaded = 0;
-            await foreach (DataPointPathInfo item in _oneDriveSync.DownSyncAsync(downloadTarget, progress: null, cancellationToken).ConfigureAwait(false))
+            Progress<double> downloadProgress = new Progress<double>();
+            await foreach (DataPointPathInfo item in _oneDriveSync.DownSyncAsync(downloadTarget, progress: downloadProgress, cancellationToken).ConfigureAwait(false))
             {
-                downloaded++;
+                if (item != null)
+                {
+                    result.Downloaded++;
+                }
+                _logger.LogTrace("Item downloaded.");
             }
-            return downloaded;
-        }
 
-        public Task<int> SyncUp(IProgress<double> progress, CancellationToken cancellationToken)
-        {
-            return _oneDriveSync.UpSyncAsync(progress, cancellationToken);
+            Progress<double> uploadProgress = new Progress<double>();
+            IEnumerable<DataPointPathInfo> uploadTargets = _localPathProvider.ListAllDataPointPaths().Except(remoteDataPoints);
+            await foreach (DataPointInfo uploaded in _oneDriveSync.UpSyncAsync(uploadTargets, uploadProgress, cancellationToken).ConfigureAwait(false))
+            {
+                if (uploaded != null)
+                {
+                    result.Uploaded++;
+                }
+            }
+
+            return new OperationResult<SyncStatistic>() { 
+                IsSuccess = true,
+                Entity = result,
+            };
         }
     }
 }
