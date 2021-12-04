@@ -256,7 +256,10 @@ namespace CodeNameK.ViewModels
 
             try
             {
-                OperationResult<SyncStatistic> result = await _syncService.Sync(new Progress<double>(), default).ConfigureAwait(false);
+                OperationResult<SyncStatistic> result = await _syncService.Sync(new Progress<double>(newValue =>
+                {
+                    _logger.LogInformation("New sync progress reported: {0:p}", newValue);
+                }), default).ConfigureAwait(false);
                 await syncContext;
 
                 if (result.IsSuccess)

@@ -40,6 +40,7 @@ namespace CodeNameK.BIZ
 
             List<DataPointPathInfo> remoteDataPoints = new List<DataPointPathInfo>();
             List<DataPointPathInfo> downloadTarget = new List<DataPointPathInfo>();
+            progress?.Report((double)5 / 100); // 5%
             await foreach (DataPointPathInfo pathInfo in _oneDriveSync.ListAllDataPointsAsync(cancellationToken).ConfigureAwait(false))
             {
                 remoteDataPoints.Add(pathInfo);
@@ -48,8 +49,15 @@ namespace CodeNameK.BIZ
                     downloadTarget.Add(pathInfo);
                 }
             }
+            double progressOffset = (double)40 / 100; // 40%
+            progress?.Report(progressOffset);
 
-            Progress<double> downloadProgress = new Progress<double>();
+            double progressAllocation = (double)30 / 100; // 30%
+            Progress<double> downloadProgress = new Progress<double>(newValue =>
+            {
+                progress?.Report(newValue * progressAllocation + progressOffset);
+            });
+
             await foreach (DataPointPathInfo item in _oneDriveSync.DownSyncAsync(downloadTarget, progress: downloadProgress, cancellationToken).ConfigureAwait(false))
             {
                 if (item != null)
@@ -58,8 +66,11 @@ namespace CodeNameK.BIZ
                 }
                 _logger.LogTrace("Item downloaded.");
             }
-
-            Progress<double> uploadProgress = new Progress<double>();
+            
+            progressOffset += progressAllocation;
+            Progress<double> uploadProgress = new Progress<double>(newValue => {
+                progress?.Report(newValue * progressAllocation + progressOffset);
+            });
             IEnumerable<DataPointPathInfo> uploadTargets = _localPathProvider.ListAllDataPointPaths().Except(remoteDataPoints);
             await foreach (DataPointInfo uploaded in _oneDriveSync.UpSyncAsync(uploadTargets, uploadProgress, cancellationToken).ConfigureAwait(false))
             {
@@ -69,7 +80,9 @@ namespace CodeNameK.BIZ
                 }
             }
 
-            return new OperationResult<SyncStatistic>() { 
+            progress?.Report(1);
+            return new OperationResult<SyncStatistic>()
+            {
                 IsSuccess = true,
                 Entity = result,
             };
