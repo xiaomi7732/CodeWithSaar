@@ -105,21 +105,6 @@ namespace CodeNameK.ViewModels
             }
         }
 
-        // This is a workaround since after Visible.Collapsed is set, the chart won't show.
-        private double chartWidth = 0;
-        public double ChartWidth
-        {
-            get { return chartWidth; }
-            set
-            {
-                if (chartWidth != value)
-                {
-                    chartWidth = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
         public DataPointViewModel SelectedDataPoint { get; }
 
         public async Task UpdateSeriesAsync()
@@ -131,7 +116,6 @@ namespace CodeNameK.ViewModels
                 series.PointHovered -= SeriesPointHover;
             }
             Series.Clear();
-            ChartWidth = 0;
 
             if (string.IsNullOrEmpty(SelectedCategory?.Id))
             {
@@ -148,7 +132,6 @@ namespace CodeNameK.ViewModels
             double minValue = _chartAxisExpansion.ExpandDown(dataPoints.Min(point => point.Value));
 
             await syncContext;
-            ChartWidth = double.NaN;
 
             Series.Add(CreateNewSeries(dataPoints));
 
@@ -378,10 +361,6 @@ namespace CodeNameK.ViewModels
             foreach (Axis x in XAxes)
             {
                 ResetZoom(x);
-            }
-            foreach (Axis y in YAxes)
-            {
-                ResetZoom(y);
             }
         }
 

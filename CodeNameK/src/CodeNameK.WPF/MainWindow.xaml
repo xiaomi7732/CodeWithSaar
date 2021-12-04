@@ -58,7 +58,7 @@
             </Grid>
         </GroupBox>
         <!-- Chart container -->
-        <Grid Grid.Column="1" Margin="32,32,32,0" Width="{Binding ChartWidth}">
+        <Grid Grid.Column="1" Margin="32,32,32,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />

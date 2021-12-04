@@ -6,8 +6,8 @@ namespace CodeNameK.Biz.UnitTests
     public class BizChartAxisExpansionTests
     {
         [Theory]
-        [InlineData(20, 21)]
-        [InlineData(-20, -19)]
+        [InlineData(20, 22)]
+        [InlineData(-20, -18)]
         public void TestRoughExpandUp(double input, long expected)
         {
             BizChartAxisExpansion target = new BizChartAxisExpansion();
@@ -16,8 +16,8 @@ namespace CodeNameK.Biz.UnitTests
         }
 
         [Theory]
-        [InlineData(20, 19)]
-        [InlineData(-20, -21)]
+        [InlineData(20, 18)]
+        [InlineData(-20, -22)]
         public void TestRoughExpandDown(double input, long expected)
         {
             BizChartAxisExpansion target = new BizChartAxisExpansion();
