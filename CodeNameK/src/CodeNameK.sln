@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.ViewModels", "Cod
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.WPF", "CodeNameK.WPF\CodeNameK.WPF.csproj", "{5C2270C3-8BDE-44DB-9165-650B03120E9B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.Biz.UnitTests", "CodeNameK.Biz.UnitTests\CodeNameK.Biz.UnitTests.csproj", "{7DA51B73-355D-405C-BC98-781B466529E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -114,5 +116,17 @@ Global
 		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Release|x64.Build.0 = Release|Any CPU
 		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Release|x86.ActiveCfg = Release|Any CPU
 		{5C2270C3-8BDE-44DB-9165-650B03120E9B}.Release|x86.Build.0 = Release|Any CPU
+		{7DA51B73-355D-405C-BC98-781B466529E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DA51B73-355D-405C-BC98-781B466529E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DA51B73-355D-405C-BC98-781B466529E3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7DA51B73-355D-405C-BC98-781B466529E3}.Debug|x64.Build.0 = Debug|Any CPU
+		{7DA51B73-355D-405C-BC98-781B466529E3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7DA51B73-355D-405C-BC98-781B466529E3}.Debug|x86.Build.0 = Debug|Any CPU
+		{7DA51B73-355D-405C-BC98-781B466529E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DA51B73-355D-405C-BC98-781B466529E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DA51B73-355D-405C-BC98-781B466529E3}.Release|x64.ActiveCfg = Release|Any CPU
+		{7DA51B73-355D-405C-BC98-781B466529E3}.Release|x64.Build.0 = Release|Any CPU
+		{7DA51B73-355D-405C-BC98-781B466529E3}.Release|x86.ActiveCfg = Release|Any CPU
+		{7DA51B73-355D-405C-BC98-781B466529E3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

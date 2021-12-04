@@ -10,6 +10,7 @@ public static class BizRegister
         services.AddScoped<ICategory, BizCategory>();
         services.AddScoped<IDataPoint, BizDataPoint>();
         services.AddScoped<ISync, BizSync>();
+        services.AddTransient<IChartAxisExpansion, BizChartAxisExpansion>();
         return services;
     }
 }

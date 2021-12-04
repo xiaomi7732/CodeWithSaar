@@ -31,7 +31,7 @@ namespace CodeNameK.ViewModels
         private readonly ICategory _categoryBiz;
         private readonly IDataPoint _dataPointBiz;
         private readonly ISync _syncService;
-        private readonly ILoggerFactory _loggerFactory;
+        private readonly IChartAxisExpansion _chartAxisExpansion;
         private readonly ILogger _logger;
         private ObservableCollection<Category> _categoryCollection = new ObservableCollection<Category>();
 
@@ -39,9 +39,9 @@ namespace CodeNameK.ViewModels
             ICategory categoryBiz,
             IDataPoint dataPointBiz,
             ISync syncService,
+            IChartAxisExpansion chartAxisExpansion,
             DataPointViewModel dataPointOperator,
             ErrorRevealer errorRevealer,
-            ILoggerFactory loggerFactory,
             ILogger<MainViewModel> logger)
                 : base(errorRevealer)
         {
@@ -49,8 +49,8 @@ namespace CodeNameK.ViewModels
             _categoryBiz = categoryBiz ?? throw new System.ArgumentNullException(nameof(categoryBiz));
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
             _syncService = syncService ?? throw new ArgumentNullException(nameof(syncService));
+            _chartAxisExpansion = chartAxisExpansion ?? throw new ArgumentNullException(nameof(chartAxisExpansion));
             SelectedDataPoint = dataPointOperator ?? throw new ArgumentNullException(nameof(dataPointOperator));
-            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
 
             InitializeCategoryCollection();
             CategoryCollectionView = CollectionViewSource.GetDefaultView(_categoryCollection);
@@ -60,6 +60,7 @@ namespace CodeNameK.ViewModels
             {
                 RaisePropertyChanged(nameof(CategoryHeader));
             };
+            _syncStateText = String.Empty;
 
             ResetZoomCommand = new RelayCommand(ResetZoom);
             SyncCommand = new RelayCommand(SyncImp);
@@ -143,6 +144,8 @@ namespace CodeNameK.ViewModels
                 dataPoints.Add(dataPoint);
             };
             dataPoints.Sort(DatePointComparer.DateTimeComparer);
+            double maxValue = _chartAxisExpansion.ExpandUp(dataPoints.Max(point => point.Value));
+            double minValue = _chartAxisExpansion.ExpandDown(dataPoints.Min(point => point.Value));
 
             await syncContext;
             ChartWidth = double.NaN;
@@ -156,6 +159,8 @@ namespace CodeNameK.ViewModels
                 if (_axesCache.ContainsKey(SelectedCategory))
                 {
                     (ICartesianAxis xAxis, ICartesianAxis yAxis) = _axesCache[SelectedCategory];
+                    yAxis.MaxLimit = maxValue;
+                    yAxis.MinLimit = minValue;
                     XAxes.Add(xAxis);
                     YAxes.Add(yAxis);
                 }
@@ -163,7 +168,12 @@ namespace CodeNameK.ViewModels
                 {
                     Axis newXAxis = CreateNewXAxis();
                     XAxes.Add(newXAxis);
-                    Axis newYAxis = new Axis();
+
+                    Axis newYAxis = new Axis()
+                    {
+                        MaxLimit = maxValue,
+                        MinLimit = minValue,
+                    };
                     YAxes.Add(newYAxis);
                     _axesCache.Add(SelectedCategory, (newXAxis, newYAxis));
                 }
@@ -297,7 +307,7 @@ namespace CodeNameK.ViewModels
                         return 0;
                     });
                 }), default).ConfigureAwait(false);
-                
+
                 await syncContext;
                 if (result.IsSuccess)
                 {
