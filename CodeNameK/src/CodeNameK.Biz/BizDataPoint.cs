@@ -20,8 +20,11 @@ internal class BizDataPoint : IDataPoint
 
     public async Task<OperationResult<DataPoint>> AddAsync(DataPoint newPoint, CancellationToken cancellationToken)
     {
-        // Business logic: new datapoint shall have a new guid
-        newPoint = newPoint with { Id = Guid.NewGuid() };
+        // Business logic: new datapoint shall have a new guid when not specified.
+        if(newPoint.Id == Guid.Empty)
+        {
+            newPoint = newPoint with { Id = Guid.NewGuid() };
+        }
 
         // Business logic: WhenUTC will be specified using current date time if not specificed.
         if (newPoint.WhenUTC == default)
@@ -96,9 +99,41 @@ internal class BizDataPoint : IDataPoint
         };
     }
 
-    public Task<OperationResult<DataPoint>> Update(DataPoint oldDataPoint, DataPoint newDataPoint, CancellationToken cancellationToken)
+    public async Task<OperationResult<DataPoint>> Update(DataPoint oldDataPoint, DataPoint newDataPoint, CancellationToken cancellationToken)
     {
-        throw new System.NotImplementedException();
+        // Business Logic: Category can't be null for either data points
+        if (string.IsNullOrEmpty(oldDataPoint.Category?.Id))
+        {
+            return CreateFailure("Existing datapoint category can't be null");
+        }
+        if (string.IsNullOrEmpty(newDataPoint.Category?.Id))
+        {
+            return CreateFailure("New datapoint category can't be null");
+        }
+
+        // Business logic: Can't move an empty data point
+        if (oldDataPoint.Id == Guid.Empty)
+        {
+            return CreateFailure("Can't move an empty data point.");
+        }
+
+        // Business logic: WhenUTC will be specified using current date time if not specificed.
+        if (newDataPoint.WhenUTC == default)
+        {
+            newDataPoint = newDataPoint with { WhenUTC = DateTime.UtcNow };
+        }
+
+        // Business logic: Create a new guid for the new datapoint
+        if (newDataPoint.Id == Guid.Empty)
+        {
+            newDataPoint = newDataPoint with { Id = Guid.NewGuid() };
+        }
+
+        if (await _dataPointRepo.UpdatePointAsync(oldDataPoint, newDataPoint, cancellationToken).ConfigureAwait(false))
+        {
+            return CreateSuccess(newDataPoint);
+        }
+        return CreateFailure("Data access operation failed.");
     }
 
     public async IAsyncEnumerable<DataPoint> GetDataPoints(Category category, [EnumeratorCancellation] CancellationToken cancellationToken)
@@ -113,5 +148,30 @@ internal class BizDataPoint : IDataPoint
         {
             yield return dataPoint;
         }
+    }
+
+    private OperationResult<DataPoint> CreateFailure(string reason)
+    {
+        if (string.IsNullOrEmpty(reason))
+        {
+            throw new ArgumentException($"'{nameof(reason)}' cannot be null or empty.", nameof(reason));
+        }
+
+        return new OperationResult<DataPoint>()
+        {
+            Entity = null,
+            IsSuccess = false,
+            Reason = reason,
+        };
+    }
+
+    private OperationResult<DataPoint> CreateSuccess(DataPoint entity, string? reason = null)
+    {
+        return new OperationResult<DataPoint>
+        {
+            Entity = entity,
+            IsSuccess = true,
+            Reason = reason ?? string.Empty,
+        };
     }
 }
