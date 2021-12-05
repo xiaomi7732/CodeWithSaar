@@ -3,49 +3,51 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
+using CodeNameK.BIZ;
+using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.DAL;
-using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace CodeNameK.Cli
 {
-    class Program
+    sealed class Program
     {
-        private static ILogger? _logger;
+        private readonly ICategory _categoryService;
+        private readonly IDataPoint _datapointService;
+        private readonly ISync _syncService;
+        private readonly ILogger _logger;
+        private static CancellationTokenSource? _cancellationTokenSource = new CancellationTokenSource();
+
+        public Program(
+            ICategory categoryService,
+            IDataPoint datapointService,
+            ISync syncService,
+            ILogger<Program> logger)
+        {
+            _categoryService = categoryService;
+            _datapointService = datapointService;
+            _syncService = syncService;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
 
         static async Task Main(string[] args)
         {
-            ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddSimpleConsole(opt =>
-                {
-                    opt.TimestampFormat = "[yyyyMMdd HH:mm:ss]";
-                    opt.SingleLine = true;
-                });
-            });
-            _logger = loggerFactory.CreateLogger<Program>();
-            _logger.LogInformation("Logger is ready.");
+            IServiceProvider serviceProvider = Bootstrap();
+            Program program = serviceProvider.GetRequiredService<Program>();
+            await program.RunAsync(_cancellationTokenSource?.Token?? default);
+        }
 
-            DataPointOperator dataPointOperator = new DataPointOperator();
-            IDataWriter<DataPoint> dataPointWriter = dataPointOperator;
-            IDataReader<DataPoint> dataPointReader = dataPointOperator;
-            ILocalPathProvider pathService = new LocalPathProvider();
-            LocalStoreOptions localStoreOptions = new LocalStoreOptions(){
-                DataStorePath = "%userprofile%/.codeNameK/DebugData",
-            };
-            DataRepo dataRepo = new DataRepo(
-                dataPointWriter,
-                dataPointReader,
-                pathService,
-                Options.Create<LocalStoreOptions>(localStoreOptions),
-                loggerFactory.CreateLogger<DataRepo>());
-
+        private async Task RunAsync(CancellationToken cancellationToke = default)
+        {
             Console.WriteLine("List all categories:");
-            List<Category> categories = dataRepo.GetAllCategories().OrderBy(c => c.Id, StringComparer.InvariantCultureIgnoreCase).ToList();
+            List<Category> categories = _categoryService.GetAllCategories().OrderBy(c => c.Id, StringComparer.InvariantCultureIgnoreCase).ToList();
             PrintCategories(categories);
             Console.WriteLine("Pick a category for the next operation:");
             string? pickedCategoryName = Console.ReadLine();
@@ -60,7 +62,7 @@ namespace CodeNameK.Cli
                 Console.WriteLine("No category matched the picked named of: {0}, creating one.", pickedCategoryName);
                 category = new Category() { Id = pickedCategoryName };
                 Console.WriteLine($"Adding a category: {category.Id}");
-                await dataRepo.AddCategoryAsync(category, cancellationToken: default);
+                await _categoryService.AddCategoryAsync(category, cancellationToken: default);
                 categories.Add(category);
             }
 
@@ -69,7 +71,7 @@ namespace CodeNameK.Cli
             Console.WriteLine("Listing all data points:");
             // Load all data points
             List<DataPoint> dataPoints = new List<DataPoint>();
-            await foreach (DataPoint dot in dataRepo.GetPointsAsync(category, null, null, cancellationToken: default))
+            await foreach (DataPoint dot in _datapointService.GetDataPoints(category, cancellationToke))
             {
                 dataPoints.Add(dot);
             }
@@ -94,7 +96,7 @@ namespace CodeNameK.Cli
                 Value = dataValue.Value,
                 Category = category,
             };
-            DataPointInfo newPointHandle = await dataRepo.AddPointAsync(dataPoint, cancellationToken: default).ConfigureAwait(false);
+            DataPoint? newPointHandle = await _datapointService.AddAsync(dataPoint, cancellationToken: default).ConfigureAwait(false);
             dataPoints.Add(dataPoint);
             Console.WriteLine("Added a point: {0:D}", newPointHandle);
 
@@ -111,7 +113,7 @@ namespace CodeNameK.Cli
                 DataPoint? target = dataPoints.FirstOrDefault(dot => dot.Id == dotGuid);
                 if (target != null)
                 {
-                    bool deleted = await dataRepo.DeletePointAsync(target, cancellationToken: default).ConfigureAwait(false);
+                    bool deleted = await _datapointService.DeleteAsync(target, cancellationToken: default).ConfigureAwait(false);
                     Console.WriteLine("Delete result: {0}", deleted);
                 }
                 else
@@ -173,8 +175,8 @@ namespace CodeNameK.Cli
                         Category = newCategory,
                     };
 
-                    await dataRepo.UpdatePointAsync(target, updateTo, default).ConfigureAwait(false);
-                    Console.WriteLine("DataPoint updated: {0} => {1}", pathService.GetLocalPath(target), pathService.GetLocalPath(updateTo));
+                    await _datapointService.Update(target, updateTo, cancellationToke).ConfigureAwait(false);
+                    Console.WriteLine("DataPoint updated: {0} => {1}", (DataPointPathInfo)target, (DataPointPathInfo)updateTo);
                 }
             }
             else
@@ -212,6 +214,38 @@ namespace CodeNameK.Cli
         {
             Console.WriteLine("- " + dot.ToString());
             // Console.WriteLine("- {0} Local DateTime: {1:yyyy-MM-dd HH:mm:ss} (UTC: {4:o}), Value: {2} Is Deleted: {3}", dot.Id, dot.WhenUTC.ToLocalTime(), dot.Value, dot.IsDeleted, dot.WhenUTC);
+        }
+
+        private static IServiceProvider Bootstrap()
+        {
+            string assemblyDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+
+            IConfiguration configuration = new ConfigurationBuilder().AddJsonFile(Path.Combine(assemblyDirectory, "appsettings.jsonc"), optional: false).Build();
+
+            IServiceCollection services = new ServiceCollection();
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.AddConfiguration(configuration.GetSection("Logging"));
+                loggingBuilder.AddSimpleConsole(opt =>
+                {
+                    opt.TimestampFormat = "[yyyyMMdd HH:mm:ss]";
+                    opt.SingleLine = true;
+                });
+            });
+            services.TryAddSingleton<IConfiguration>(p => configuration);
+
+            ConfigureServices(services, configuration);
+
+            return services.BuildServiceProvider();
+        }
+
+        private static void ConfigureServices(IServiceCollection services, IConfiguration configurationRoot)
+        {
+            services.AddOptions<LocalStoreOptions>().Bind(configurationRoot.GetSection(LocalStoreOptions.SectionName));
+            services.RegisterDataAccessModule(configurationRoot);
+            services.RegisterBizModule(configurationRoot);
+
+            services.AddSingleton<Program>();
         }
     }
 }
