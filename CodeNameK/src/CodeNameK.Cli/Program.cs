@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CodeNameK.BIZ;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts.CustomOptions;
+using CodeNameK.Contracts.DataContracts;
 using CodeNameK.DAL;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Configuration;
@@ -41,7 +42,7 @@ namespace CodeNameK.Cli
         {
             IServiceProvider serviceProvider = Bootstrap();
             Program program = serviceProvider.GetRequiredService<Program>();
-            await program.RunAsync(_cancellationTokenSource?.Token?? default);
+            await program.RunAsync(_cancellationTokenSource?.Token ?? default);
         }
 
         private async Task RunAsync(CancellationToken cancellationToke = default)
@@ -181,8 +182,26 @@ namespace CodeNameK.Cli
             }
             else
             {
-                Console.WriteLine("No deletion. Invalid guid.");
+                Console.WriteLine("No update. Invalid guid.");
             }
+
+            // Sync
+            Console.WriteLine("Now it is time to sync the changes to remote. Press any key to continue ... or Ctrl + C to break");
+            Console.ReadKey(intercept: true);
+            try
+            {
+                Progress<SyncProgress> progress = new Progress<SyncProgress>(DisplayProgress);
+                await _syncService.Sync(progress, cancellationToke).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: {0}", ex);
+            }
+        }
+
+        private void DisplayProgress(SyncProgress progress)
+        {
+            Console.WriteLine("[{0}]{1:p}", progress.DisplayText, progress.Value);
         }
 
         private static void PrintCategories(IEnumerable<Category> categories)
