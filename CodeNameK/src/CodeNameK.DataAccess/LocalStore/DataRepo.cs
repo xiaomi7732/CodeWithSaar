@@ -164,7 +164,7 @@ namespace CodeNameK.DAL
             string originalPointPath = _localPathService.GetLocalPath(originalPointLocator);
             if (!File.Exists(originalPointPath))
             {
-                throw new InvalidOperationException("Original point doesn't exist for updating.");
+                throw new InvalidOperationException($"Original point doesn't exist for updating. Path: {originalPointPath}");
             }
 
             DataPointPathInfo newPointHandle = await AddPointAsync(newPoint, cancellationToken).ConfigureAwait(false);
