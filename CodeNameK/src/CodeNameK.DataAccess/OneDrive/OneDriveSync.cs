@@ -5,10 +5,13 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Identity;
+using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.Core.Utilities;
 using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 
 namespace CodeNameK.DAL.OneDrive
@@ -19,18 +22,21 @@ namespace CodeNameK.DAL.OneDrive
 
         private readonly IRemotePathProvider _remotePathProvider;
         private readonly ILocalPathProvider _localPathProvider;
+        private readonly MSALAppOptions<OneDriveSync> _graphAPIOptions;
         private readonly ILogger _logger;
 
         public OneDriveSync(
-            GraphServiceClient graphServiceClient,
             IRemotePathProvider remotePathProvider,
             ILocalPathProvider localPathProvider,
+            IOptions<MSALAppOptions<OneDriveSync>> graphAPIOptions,
             ILogger<OneDriveSync> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _graphServiceClient = graphServiceClient ?? throw new ArgumentNullException(nameof(graphServiceClient));
             _remotePathProvider = remotePathProvider ?? throw new ArgumentNullException(nameof(remotePathProvider));
             _localPathProvider = localPathProvider ?? throw new ArgumentNullException(nameof(localPathProvider));
+            _graphAPIOptions = graphAPIOptions?.Value ?? throw new ArgumentNullException(nameof(graphAPIOptions));
+
+            _graphServiceClient = CreateGraphServiceClient(_graphAPIOptions);
         }
 
         public async IAsyncEnumerable<DataPointPathInfo> DownSyncAsync(
@@ -60,9 +66,6 @@ namespace CodeNameK.DAL.OneDrive
                 yield return item;
             }
         }
-
-
-
 
         public async IAsyncEnumerable<DataPointPathInfo> ListAllDataPointsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
         {
@@ -139,6 +142,21 @@ namespace CodeNameK.DAL.OneDrive
 
                 TryUpdateProgress(progress, ++processed, pathInfoList.Count);
             }
+        }
+
+        private GraphServiceClient CreateGraphServiceClient(MSALAppOptions<OneDriveSync> graphAPIOptions)
+        {
+            InteractiveBrowserCredentialOptions options = new InteractiveBrowserCredentialOptions
+            {
+                TenantId = graphAPIOptions.TenantId,
+                ClientId = graphAPIOptions.ClientId,
+                AuthorityHost = AzureAuthorityHosts.AzurePublicCloud,
+                RedirectUri = new Uri(graphAPIOptions.RedirectUri),
+            };
+            InteractiveBrowserCredential credential = new InteractiveBrowserCredential(options);
+            GraphServiceClient graphClient = new GraphServiceClient(credential, graphAPIOptions.Scopes);
+
+            return graphClient;
         }
 
         private void TryUpdateProgress(IProgress<double>? progress, int current, int total)
