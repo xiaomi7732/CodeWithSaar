@@ -71,6 +71,9 @@
                 <Button ToolTip="Use mouse scroller to zoom in. Click here to reset zoom." Command="{Binding ResetZoomCommand}">_Reset Zoom</Button>
             </Grid>
             <lvc:CartesianChart Grid.Row="1" Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="X">
+                <lvc:CartesianChart.InputBindings>
+                    <MouseBinding Command="{Binding PickPointCommand}" MouseAction="LeftClick" />
+                </lvc:CartesianChart.InputBindings>
                 <lvc:CartesianChart.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Delete" Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}"
