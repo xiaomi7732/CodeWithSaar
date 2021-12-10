@@ -76,6 +76,7 @@
                 </lvc:CartesianChart.InputBindings>
                 <lvc:CartesianChart.ContextMenu>
                     <ContextMenu>
+                        <MenuItem Header="Select" Command="{Binding PickPointCommand}"></MenuItem>
                         <MenuItem Header="Delete" Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}"
                                   IsEnabled="{Binding SelectedDataPoint, TargetNullValue=False}">
                         </MenuItem>
