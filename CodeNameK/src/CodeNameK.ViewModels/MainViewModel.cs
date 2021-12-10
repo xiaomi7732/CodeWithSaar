@@ -66,6 +66,7 @@ namespace CodeNameK.ViewModels
             ResetZoomCommand = new RelayCommand(ResetZoom);
             SyncCommand = new RelayCommand(SyncImp);
             AddCategoryCommand = new RelayCommand(AddCategoryImp, CanAddCategoryImp);
+            PickPointCommand = new RelayCommand(PickPointImp);
         }
 
         public ICollectionView CategoryCollectionView { get; }
@@ -107,6 +108,7 @@ namespace CodeNameK.ViewModels
             }
         }
 
+        private DataPoint? _hoverPoint;
         public DataPointViewModel SelectedDataPoint { get; }
 
         public async Task UpdateSeriesAsync()
@@ -211,11 +213,7 @@ namespace CodeNameK.ViewModels
             {
                 return;
             }
-            Dispatch<int>(() =>
-            {
-                SelectedDataPoint.SetModel(point.Model);
-                return int.MaxValue;
-            });
+            _hoverPoint = point.Model;
         }
 
         string FormatToolTip(TypedChartPoint<DataPoint, LineBezierVisualPoint<SkiaSharpDrawingContext, CircleGeometry, CubicBezierSegment, SKPath>, LabelGeometry, SkiaSharpDrawingContext> point)
@@ -251,6 +249,12 @@ namespace CodeNameK.ViewModels
                 UnitWidth = TimeSpan.FromDays(1).Ticks,
                 MinStep = TimeSpan.FromMinutes(5).Ticks,
             };
+        }
+
+        public ICommand PickPointCommand { get; }
+        private void PickPointImp(object? parameter)
+        {
+            SelectedDataPoint.SetModel(_hoverPoint);
         }
 
         private double _syncProgress;

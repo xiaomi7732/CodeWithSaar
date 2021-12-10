@@ -28,7 +28,7 @@ namespace CodeNameK.ViewModels
             DeletePointCommand = new RelayCommand(DeletePoint);
         }
 
-        public void SetModel(DataPoint newModel)
+        public void SetModel(DataPoint? newModel)
         {
             if (_model != newModel)
             {
