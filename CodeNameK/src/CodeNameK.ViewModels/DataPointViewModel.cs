@@ -13,7 +13,7 @@ namespace CodeNameK.ViewModels
     {
         private readonly IDataPoint _dataPointBiz;
         private readonly ILogger _logger;
-        private DataPoint _model;
+        private DataPoint? _model;
 
         public DataPointViewModel(
             IDataPoint dataPointBiz,
@@ -43,10 +43,16 @@ namespace CodeNameK.ViewModels
         {
             get
             {
+                if (_model is null)
+                {
+                    return DateTime.UtcNow.ToLocalTime();
+                }
                 return _model.WhenUTC.ToLocalTime();
             }
             set
             {
+                _model = _model ?? new DataPoint();
+
                 DateTime utc = value.Add(TimeSpan).ToUniversalTime();
                 if (_model.WhenUTC != utc)
                 {
@@ -60,14 +66,14 @@ namespace CodeNameK.ViewModels
         {
             get
             {
-                DateTime localDateTime = _model.WhenUTC.ToLocalTime();
+                DateTime localDateTime = WhenLocal;
                 return localDateTime - localDateTime.Date;
             }
             set
             {
                 if (TimeSpan != value)
                 {
-                    TimeSpan newTimeSpan = value;
+                    _model = _model ?? new DataPoint();
                     _model = _model with
                     {
                         WhenUTC = WhenLocal.Add(value).ToUniversalTime(),
@@ -80,10 +86,15 @@ namespace CodeNameK.ViewModels
         {
             get
             {
+                if (_model is null)
+                {
+                    return 0;
+                }
                 return _model.Value;
             }
             set
             {
+                _model = _model ?? new DataPoint();
                 if (_model.Value != value)
                 {
                     _model = _model with { Value = value };
@@ -166,7 +177,7 @@ namespace CodeNameK.ViewModels
                 }
 
                 OperationResult<bool> result = await _dataPointBiz.DeleteAsync(_model, default).ConfigureAwait(false);
-                
+
                 await syncContext;
                 if (result.IsSuccess)
                 {
