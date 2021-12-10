@@ -20,7 +20,11 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <!--Primary area-->
             <RowDefinition />
+            <!--Progress bar-->
+            <RowDefinition Height="Auto" />
+            <!--Status Bar-->
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <GroupBox Padding="8">
@@ -67,12 +71,25 @@
             </Grid.RowDefinitions>
             <Grid HorizontalAlignment="Right">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Button ToolTip="Use mouse scroller to zoom in. Click here to reset zoom." Command="{Binding ResetZoomCommand}">_Reset Zoom</Button>
+                <TextBlock Margin="0 0 8 0" VerticalAlignment="Center">
+                    <Bold>Tips</Bold>
+                    <TextBlock.ToolTip>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock><Bold>Mouse wheel</Bold> to zoom in/out.</TextBlock>
+                            <TextBlock><Bold>Click down + move</Bold> to move the chart.</TextBlock>
+                            <TextBlock><Bold>Ctrl+Click</Bold> to pick a point.</TextBlock>
+                            <TextBlock><Bold>Right click</Bold> for context menu.</TextBlock>
+                        </StackPanel>
+                    </TextBlock.ToolTip>
+                </TextBlock>
+                <Button Grid.Column="1" ToolTip="Use mouse scroller to zoom in. Click here to reset zoom." Command="{Binding ResetZoomCommand}">_Reset Zoom</Button>
             </Grid>
             <lvc:CartesianChart Grid.Row="1" Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="X">
                 <lvc:CartesianChart.InputBindings>
-                    <MouseBinding Command="{Binding PickPointCommand}" MouseAction="LeftClick" />
+                    <MouseBinding Command="{Binding PickPointCommand}" Gesture="Control+LeftClick" />
                 </lvc:CartesianChart.InputBindings>
                 <lvc:CartesianChart.ContextMenu>
                     <ContextMenu>

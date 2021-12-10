@@ -20,11 +20,10 @@ internal class BizDataPoint : IDataPoint
 
     public async Task<OperationResult<DataPoint>> AddAsync(DataPoint newPoint, CancellationToken cancellationToken)
     {
-        // Business logic: new datapoint shall have a new guid when not specified.
-        if(newPoint.Id == Guid.Empty)
-        {
-            newPoint = newPoint with { Id = Guid.NewGuid() };
-        }
+        // Business logic: new datapoint shall have a new guid.
+        newPoint = newPoint with {
+            Id = Guid.NewGuid(),
+        };
 
         // Business logic: WhenUTC will be specified using current date time if not specificed.
         if (newPoint.WhenUTC == default)

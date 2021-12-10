@@ -255,6 +255,7 @@ namespace CodeNameK.ViewModels
         private void PickPointImp(object? parameter)
         {
             SelectedDataPoint.SetModel(_hoverPoint);
+            SelectedDataPoint.IsCurrentDateTimeMode = false;
         }
 
         private double _syncProgress;
