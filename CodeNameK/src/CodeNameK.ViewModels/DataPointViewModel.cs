@@ -51,7 +51,7 @@ namespace CodeNameK.ViewModels
             }
             set
             {
-                _model = _model ?? new DataPoint();
+                _model ??= new DataPoint();
 
                 DateTime utc = value.Add(TimeSpan).ToUniversalTime();
                 if (_model.WhenUTC != utc)
@@ -73,7 +73,7 @@ namespace CodeNameK.ViewModels
             {
                 if (TimeSpan != value)
                 {
-                    _model = _model ?? new DataPoint();
+                    _model ??= new DataPoint();
                     _model = _model with
                     {
                         WhenUTC = WhenLocal.Add(value).ToUniversalTime(),
