@@ -81,7 +81,7 @@ namespace CodeNameK.ViewModels
         public List<DateRangeItemViewModel> DateRangeOptions { get; } = new List<DateRangeItemViewModel>()
         {
             new DateRangeItemViewModel() { DisplayName = "All", Value = int.MinValue },
-            new DateRangeItemViewModel() { DisplayName = "Today's", Value = 1 },
+            new DateRangeItemViewModel() { DisplayName = "Today", Value = 1 },
             new DateRangeItemViewModel() { DisplayName = "Last 3 days", Value = 3 },
             new DateRangeItemViewModel() { DisplayName = "Last 7 days", Value = 7 },
             new DateRangeItemViewModel() { DisplayName = "This week", Value = 8 },

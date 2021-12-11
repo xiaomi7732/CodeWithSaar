@@ -15,7 +15,7 @@ internal class BizDataPoint : IDataPoint
 
     public BizDataPoint(IDataPointRepo dataPointRepo)
     {
-        _dataPointRepo = dataPointRepo ?? throw new System.ArgumentNullException(nameof(dataPointRepo));
+        _dataPointRepo = dataPointRepo ?? throw new ArgumentNullException(nameof(dataPointRepo));
     }
 
     public async Task<OperationResult<DataPoint>> AddAsync(DataPoint newPoint, CancellationToken cancellationToken)

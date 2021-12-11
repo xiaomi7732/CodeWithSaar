@@ -7,7 +7,7 @@
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="CodeNameK" Height="600" Width="1024">
     <Window.Resources>
         <DataTemplate x:Key="categoryItemTemplate">
             <TextBlock Text="{Binding Id}" ToolTip="{Binding Id}" />
@@ -74,8 +74,10 @@
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
                     <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <ComboBox Grid.Row="0" Margin="0 0 8 0" ItemsSource="{Binding DateRangeOptions}" VerticalAlignment="Center"
+                <TextBlock Text="Date Range:" VerticalAlignment="Center" Margin="0 0 4 0" />
+                <ComboBox Grid.Column="1" Grid.Row="0" Margin="0 0 8 0" ItemsSource="{Binding DateRangeOptions}" VerticalAlignment="Center"
                           SelectedValue="{Binding SelectedDateRangeOption}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -83,8 +85,8 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <Button Grid.Column="1" ToolTip="Use mouse scroller to zoom in. Click here to reset zoom." Command="{Binding ResetZoomCommand}">_Reset Zoom</Button>
-                <TextBlock Grid.Column="2" Margin="0 0 8 0" VerticalAlignment="Center">
+                <Button Grid.Column="2" ToolTip="Use mouse scroller to zoom in. Click here to reset zoom." Command="{Binding ResetZoomCommand}">_Reset Zoom</Button>
+                <TextBlock Grid.Column="3" Margin="0 0 8 0" VerticalAlignment="Center">
                     <Bold>> Tips</Bold>
                     <TextBlock.ToolTip>
                         <StackPanel Orientation="Vertical">

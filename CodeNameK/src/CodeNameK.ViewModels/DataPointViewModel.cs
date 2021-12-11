@@ -13,7 +13,7 @@ namespace CodeNameK.ViewModels
     {
         private readonly IDataPoint _dataPointBiz;
         private readonly ILogger _logger;
-        private DataPoint? _model;
+        private DataPoint _model;
 
         public DataPointViewModel(
             IDataPoint dataPointBiz,
@@ -30,13 +30,18 @@ namespace CodeNameK.ViewModels
 
         public void SetModel(DataPoint? newModel)
         {
+            if (newModel is null)
+            {
+                newModel = new DataPoint();
+            }
+
             if (_model != newModel)
             {
                 _model = newModel;
+                RaisePropertyChanged(nameof(WhenLocal));
+                RaisePropertyChanged(nameof(TimeSpan));
+                RaisePropertyChanged(nameof(Value));
             }
-            RaisePropertyChanged(nameof(WhenLocal));
-            RaisePropertyChanged(nameof(TimeSpan));
-            RaisePropertyChanged(nameof(Value));
         }
 
         public DateTime WhenLocal
