@@ -1,7 +1,6 @@
-﻿using CodeNameK.BIZ;
-using Xunit;
+﻿using Xunit;
 
-namespace CodeNameK.Biz.UnitTests
+namespace CodeNameK.BIZ.UnitTests
 {
     public class BizChartAxisExpansionTests
     {
