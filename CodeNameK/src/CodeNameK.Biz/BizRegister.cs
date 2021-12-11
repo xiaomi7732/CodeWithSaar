@@ -11,6 +11,7 @@ public static class BizRegister
         services.AddScoped<IDataPoint, BizDataPoint>();
         services.AddScoped<ISync, BizSync>();
         services.AddTransient<IChartAxisExpansion, BizChartAxisExpansion>();
+        services.AddTransient<IDateRangeService, BizDateRangeService>();
         return services;
     }
 }
