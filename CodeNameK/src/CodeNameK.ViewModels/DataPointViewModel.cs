@@ -23,7 +23,7 @@ namespace CodeNameK.ViewModels
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
-            _model = new DataPoint();
+            _model = CreateDefaultModel();
             AddPointCommand = new RelayCommand(AddPoint);
             DeletePointCommand = new RelayCommand(DeletePoint);
         }
@@ -32,7 +32,7 @@ namespace CodeNameK.ViewModels
         {
             if (newModel is null)
             {
-                newModel = new DataPoint();
+                newModel = CreateDefaultModel();
             }
 
             if (_model != newModel)
@@ -197,6 +197,13 @@ namespace CodeNameK.ViewModels
             {
                 _errorRevealer.Reveal(ex.Message, "Unexpected error");
             }
+        }
+
+        private DataPoint CreateDefaultModel()
+        {
+            return new DataPoint() { 
+                WhenUTC = DateTime.Today,
+            };
         }
     }
 }
