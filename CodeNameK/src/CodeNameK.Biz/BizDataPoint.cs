@@ -21,7 +21,8 @@ internal class BizDataPoint : IDataPoint
     public async Task<OperationResult<DataPoint>> AddAsync(DataPoint newPoint, CancellationToken cancellationToken)
     {
         // Business logic: new datapoint shall have a new guid.
-        newPoint = newPoint with {
+        newPoint = newPoint with
+        {
             Id = Guid.NewGuid(),
         };
 
@@ -43,7 +44,6 @@ internal class BizDataPoint : IDataPoint
         }
 
         // Business logic: no duplicated data point
-        // TODO: Add the logic
         await foreach (DataPoint conflictCandidate in _dataPointRepo.GetPointsAsync(newPoint.Category, newPoint.WhenUTC.Year, newPoint.WhenUTC.Month, cancellationToken))
         {
             if (conflictCandidate.WhenUTC == newPoint.WhenUTC && conflictCandidate.Value == newPoint.Value)
@@ -135,7 +135,11 @@ internal class BizDataPoint : IDataPoint
         return CreateFailure("Data access operation failed.");
     }
 
-    public async IAsyncEnumerable<DataPoint> GetDataPoints(Category category, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<DataPoint> GetDataPoints(
+        Category category,
+        DateTime? startDateTimeUtc = null,
+        DateTime? endDateTimeUtc = null,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         // Business Logic: category.id can't be null.
         if (string.IsNullOrEmpty(category.Id))
@@ -145,6 +149,18 @@ internal class BizDataPoint : IDataPoint
 
         await foreach (DataPoint dataPoint in _dataPointRepo.GetPointsAsync(category, year: null, month: null, cancellationToken).ConfigureAwait(false))
         {
+            // Do not return data less than startDateTime when specified.
+            if (startDateTimeUtc != null && dataPoint.WhenUTC < startDateTimeUtc)
+            {
+                continue;
+            }
+
+            // Do NOT return data great than endDateTime when specified.
+            if (endDateTimeUtc != null && dataPoint.WhenUTC > endDateTimeUtc)
+            {
+                continue;
+            }
+
             yield return dataPoint;
         }
     }

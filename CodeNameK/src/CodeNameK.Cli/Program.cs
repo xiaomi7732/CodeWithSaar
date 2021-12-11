@@ -45,7 +45,7 @@ namespace CodeNameK.Cli
             await program.RunAsync(_cancellationTokenSource?.Token ?? default);
         }
 
-        private async Task RunAsync(CancellationToken cancellationToke = default)
+        private async Task RunAsync(CancellationToken cancellationToken = default)
         {
             Console.WriteLine("List all categories:");
             List<Category> categories = _categoryService.GetAllCategories().OrderBy(c => c.Id, StringComparer.InvariantCultureIgnoreCase).ToList();
@@ -72,7 +72,7 @@ namespace CodeNameK.Cli
             Console.WriteLine("Listing all data points:");
             // Load all data points
             List<DataPoint> dataPoints = new List<DataPoint>();
-            await foreach (DataPoint dot in _datapointService.GetDataPoints(category, cancellationToke))
+            await foreach (DataPoint dot in _datapointService.GetDataPoints(category, cancellationToken: cancellationToken))
             {
                 dataPoints.Add(dot);
             }
@@ -98,7 +98,7 @@ namespace CodeNameK.Cli
                 Category = category,
             };
             dataPoint = await _datapointService.AddAsync(dataPoint, cancellationToken: default).ConfigureAwait(false);
-            if(dataPoint is null)
+            if (dataPoint is null)
             {
                 Console.WriteLine("Data point creation failed.");
                 return;
@@ -181,7 +181,7 @@ namespace CodeNameK.Cli
                         Category = newCategory,
                     };
 
-                    await _datapointService.Update(target, updateTo, cancellationToke).ConfigureAwait(false);
+                    await _datapointService.Update(target, updateTo, cancellationToken).ConfigureAwait(false);
                     Console.WriteLine("DataPoint updated: {0} => {1}", (DataPointPathInfo)target, (DataPointPathInfo)updateTo);
                 }
             }
@@ -196,7 +196,7 @@ namespace CodeNameK.Cli
             try
             {
                 Progress<SyncProgress> progress = new Progress<SyncProgress>(DisplayProgress);
-                await _syncService.Sync(progress, cancellationToke).ConfigureAwait(false);
+                await _syncService.Sync(progress, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
