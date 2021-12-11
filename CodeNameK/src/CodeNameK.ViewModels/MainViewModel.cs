@@ -32,6 +32,7 @@ namespace CodeNameK.ViewModels
         private readonly ICategory _categoryBiz;
         private readonly IDataPoint _dataPointBiz;
         private readonly ISync _syncService;
+        private readonly IDateRangeService _dateRangeService;
         private readonly IChartAxisExpansion _chartAxisExpansion;
         private readonly ILogger _logger;
         private ObservableCollection<Category> _categoryCollection = new ObservableCollection<Category>();
@@ -40,6 +41,7 @@ namespace CodeNameK.ViewModels
             ICategory categoryBiz,
             IDataPoint dataPointBiz,
             ISync syncService,
+            IDateRangeService dateRangeService,
             IChartAxisExpansion chartAxisExpansion,
             DataPointViewModel dataPointOperator,
             ErrorRevealer errorRevealer,
@@ -50,6 +52,7 @@ namespace CodeNameK.ViewModels
             _categoryBiz = categoryBiz ?? throw new System.ArgumentNullException(nameof(categoryBiz));
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
             _syncService = syncService ?? throw new ArgumentNullException(nameof(syncService));
+            _dateRangeService = dateRangeService ?? throw new ArgumentNullException(nameof(dateRangeService));
             _chartAxisExpansion = chartAxisExpansion ?? throw new ArgumentNullException(nameof(chartAxisExpansion));
             SelectedDataPoint = dataPointOperator ?? throw new ArgumentNullException(nameof(dataPointOperator));
 
@@ -67,9 +70,23 @@ namespace CodeNameK.ViewModels
             SyncCommand = new RelayCommand(SyncImp);
             AddCategoryCommand = new RelayCommand(AddCategoryImp, CanAddCategoryImp);
             PickPointCommand = new RelayCommand(PickPointImp);
+            TodayOnlyCommand = new RelayCommand(TodayOnlyImp);
+
+            SelectedDateRangeOption = DateRangeOptions.First();
+            _selectedDateRangeOption = SelectedDateRangeOption;
         }
 
         public ICollectionView CategoryCollectionView { get; }
+
+        public List<DateRangeItemViewModel> DateRangeOptions { get; } = new List<DateRangeItemViewModel>()
+        {
+            new DateRangeItemViewModel() { DisplayName = "All", Value = int.MinValue },
+            new DateRangeItemViewModel() { DisplayName = "Today's", Value = 1 },
+            new DateRangeItemViewModel() { DisplayName = "Last 3 days", Value = 3 },
+            new DateRangeItemViewModel() { DisplayName = "Last 7 days", Value = 7 },
+            new DateRangeItemViewModel() { DisplayName = "This week", Value = 8 },
+            new DateRangeItemViewModel() { DisplayName = "This month", Value = 30 },
+        };
 
         public string CategoryHeader => $"Category ({CategoryCollectionView.Cast<object>().Count()})";
 
@@ -103,15 +120,60 @@ namespace CodeNameK.ViewModels
                 {
                     _selectedCategory = value;
                     RaisePropertyChanged();
-                    _ = UpdateSeriesAsync();
+                    _ = UpdateSeriesAsync(default);
                 }
             }
+        }
+
+        private DateRangeItemViewModel _selectedDateRangeOption;
+        public DateRangeItemViewModel SelectedDateRangeOption
+        {
+            get { return _selectedDateRangeOption; }
+            set
+            {
+                if (_selectedDateRangeOption != value)
+                {
+                    _selectedDateRangeOption = value;
+                    ApplyNewDateRangeAsync();
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+        private DateTime _startDateRange = default;
+        /// <summary>
+        /// Gets or sets the start date range time in local time.
+        /// </summary>
+        /// <value></value>
+        public DateTime StartDateRange
+        {
+            get { return _startDateRange; }
+            set
+            {
+                if (_startDateRange != value)
+                {
+                    _startDateRange = value;
+                    RaisePropertyChanged();
+                }
+
+            }
+        }
+
+        private DateTime _endDateRange = default;
+        /// <summary>
+        /// Gets or sets the end date range time in form of local time.
+        /// </summary>
+        /// <value></value>
+        public DateTime EndDateRange
+        {
+            get { return _endDateRange; }
+            set { _endDateRange = value; }
         }
 
         private DataPoint? _hoverPoint;
         public DataPointViewModel SelectedDataPoint { get; }
 
-        public async Task UpdateSeriesAsync()
+        public async Task UpdateSeriesAsync(CancellationToken cancellationToken)
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
             try
@@ -130,7 +192,11 @@ namespace CodeNameK.ViewModels
                 }
 
                 List<DataPoint> dataPoints = new List<DataPoint>();
-                await foreach (DataPoint dataPoint in _dataPointBiz.GetDataPoints(SelectedCategory, default).ConfigureAwait(false))
+                await foreach (DataPoint dataPoint in _dataPointBiz.GetDataPoints(
+                    SelectedCategory,
+                    StartDateRange == default ? null : StartDateRange.ToUniversalTime(),
+                    EndDateRange == default ? null : EndDateRange.ToUniversalTime(),
+                    cancellationToken).ConfigureAwait(false))
                 {
                     dataPoints.Add(dataPoint);
                 };
@@ -321,7 +387,7 @@ namespace CodeNameK.ViewModels
 
                 // Post sync
                 InitializeCategoryCollection();
-                await UpdateSeriesAsync().ConfigureAwait(false);
+                await UpdateSeriesAsync(default).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -362,6 +428,21 @@ namespace CodeNameK.ViewModels
         }
         private bool CanAddCategoryImp(object? parameter) => !string.IsNullOrEmpty(CategoryText);
 
+        public ICommand TodayOnlyCommand { get; }
+        private async void TodayOnlyImp(object? parameter)
+        {
+            try
+            {
+                StartDateRange = DateTime.Today;
+                EndDateRange = DateTime.Today.AddDays(1);
+                await UpdateSeriesAsync(default).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _errorRevealer.Reveal(ex.Message, "Failed applying Toady filter.");
+            }
+        }
+
         public ICommand ResetZoomCommand { get; }
         private void ResetZoom(object? parameter)
         {
@@ -401,6 +482,46 @@ namespace CodeNameK.ViewModels
                 return categoryObj.Id.Contains(CategoryText, StringComparison.OrdinalIgnoreCase);
             }
             return false;
+        }
+
+        private async void ApplyNewDateRangeAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                // Show all
+                DateTime startAt = default;
+                DateTime endAt = default;
+
+                switch (SelectedDateRangeOption.Value)
+                {
+                    case int.MinValue:
+                        break;
+                    case 1:
+                    case 3:
+                    case 7:
+                        (startAt, endAt) = _dateRangeService.GetLastNDays((uint)SelectedDateRangeOption.Value);
+                        break;
+                    case 8:
+                        (startAt, endAt) = _dateRangeService.GetThisWeek();
+                        break;
+                    case 30:
+                        (startAt, endAt) = _dateRangeService.GetThisMonth();
+                        break;
+                    default:
+                        _errorRevealer.Reveal("Unrecognized date time range. Will use the default range.", "Error");
+                        SelectedDateRangeOption = DateRangeOptions.First();
+                        return;
+                }
+
+                StartDateRange = startAt;
+                EndDateRange = endAt;
+
+                await UpdateSeriesAsync(default).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _errorRevealer.Reveal(ex.Message, "Unexpected error applying date range filer.");
+            }
         }
     }
 }

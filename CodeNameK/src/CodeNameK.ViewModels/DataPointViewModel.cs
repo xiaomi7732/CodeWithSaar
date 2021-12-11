@@ -144,7 +144,7 @@ namespace CodeNameK.ViewModels
 
                 if (addResult.IsSuccess)
                 {
-                    await mainViewModel.UpdateSeriesAsync().ConfigureAwait(false);
+                    await mainViewModel.UpdateSeriesAsync(default).ConfigureAwait(false);
                 }
                 else
                 {
@@ -181,7 +181,7 @@ namespace CodeNameK.ViewModels
                 await syncContext;
                 if (result.IsSuccess)
                 {
-                    await mainViewModel.UpdateSeriesAsync().ConfigureAwait(false);
+                    await mainViewModel.UpdateSeriesAsync(default).ConfigureAwait(false);
                 }
                 else
                 {
