@@ -101,6 +101,7 @@
             <lvc:CartesianChart Grid.Row="1" Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="X">
                 <lvc:CartesianChart.InputBindings>
                     <MouseBinding Command="{Binding PickPointCommand}" Gesture="Control+LeftClick" />
+                    <MouseBinding Command="{Binding PickPointCommand}" Gesture="RightClick" />
                 </lvc:CartesianChart.InputBindings>
                 <lvc:CartesianChart.ContextMenu>
                     <ContextMenu>
