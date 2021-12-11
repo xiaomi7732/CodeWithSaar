@@ -90,16 +90,21 @@ namespace CodeNameK.Cli
                 }
             }
             Console.WriteLine("New value accepted: {0}", dataValue.Value);
-            DataPoint dataPoint = new DataPoint()
+            DataPoint? dataPoint = new DataPoint()
             {
                 Id = Guid.NewGuid(),
                 WhenUTC = DateTime.UtcNow,
                 Value = dataValue.Value,
                 Category = category,
             };
-            DataPoint? newPointHandle = await _datapointService.AddAsync(dataPoint, cancellationToken: default).ConfigureAwait(false);
+            dataPoint = await _datapointService.AddAsync(dataPoint, cancellationToken: default).ConfigureAwait(false);
+            if(dataPoint is null)
+            {
+                Console.WriteLine("Data point creation failed.");
+                return;
+            }
             dataPoints.Add(dataPoint);
-            Console.WriteLine("Added a point: {0:D}", newPointHandle);
+            Console.WriteLine("Added a point: {0:D}", (DataPointPathInfo)dataPoint);
 
             if (!dataPoints.Any())
             {
