@@ -47,6 +47,24 @@ namespace CodeNameK.Cli
 
         private async Task RunAsync(CancellationToken cancellationToken = default)
         {
+            Console.WriteLine("Welcome to CodeNameK!");
+
+            Console.Write("Do you want to start a sync with your OneDrive (Y/n)?");
+            string? isSync;
+            isSync = Console.ReadLine();
+            if (string.Equals(isSync, "y", StringComparison.OrdinalIgnoreCase) || string.Equals(isSync, "yes", StringComparison.OrdinalIgnoreCase))
+            {
+                try
+                {
+                    Progress<SyncProgress> progress = new Progress<SyncProgress>(DisplayProgress);
+                    await _syncService.Sync(progress, cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: {0}", ex);
+                }
+            }
+
             Console.WriteLine("List all categories:");
             List<Category> categories = _categoryService.GetAllCategories().OrderBy(c => c.Id, StringComparer.InvariantCultureIgnoreCase).ToList();
             PrintCategories(categories);
