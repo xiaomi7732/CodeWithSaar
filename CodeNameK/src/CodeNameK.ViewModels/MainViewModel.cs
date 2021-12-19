@@ -74,6 +74,7 @@ namespace CodeNameK.ViewModels
             AddCategoryCommand = new RelayCommand(AddCategoryImp, CanAddCategoryImp);
             PickPointCommand = new RelayCommand(PickPointImp);
             TodayOnlyCommand = new RelayCommand(TodayOnlyImp);
+            ExitCommand = new RelayCommand(ExitImp);
 
             SelectedDateRangeOption = DateRangeOptions.First();
             _selectedDateRangeOption = SelectedDateRangeOption;
@@ -455,6 +456,17 @@ namespace CodeNameK.ViewModels
             {
                 ResetZoom(x);
             }
+        }
+
+        public ICommand ExitCommand { get; }
+        private void ExitImp(object? parameter)
+        {
+            MessageBoxResult userChoice = MessageBox.Show("Do you want to quit the application?", "Closing", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            if (userChoice == MessageBoxResult.No)
+            {
+                return;
+            }
+            Application.Current.MainWindow.Close();
         }
 
         private async void RequestInitialSync()

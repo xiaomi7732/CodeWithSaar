@@ -14,157 +14,166 @@
         </DataTemplate>
         <local:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     </Window.Resources>
-    <Grid Margin="16">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <!--Primary area-->
-            <RowDefinition />
-            <!--Progress bar-->
-            <RowDefinition Height="Auto" />
-            <!--Status Bar-->
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <GroupBox Padding="8">
-            <GroupBox.Header>
-                <TextBlock Text="{Binding CategoryHeader}" />
-            </GroupBox.Header>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_Application">
+                <MenuItem Header="_Sync" Command="{Binding SyncCommand}" />
+                <Separator />
+                <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
+            </MenuItem>
+        </Menu>
+        <Grid DockPanel.Dock="Bottom" Margin="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <!--Primary area-->
+                <RowDefinition />
+                <!--Progress bar-->
+                <RowDefinition Height="Auto" />
+                <!--Status Bar-->
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <GroupBox Padding="8">
+                <GroupBox.Header>
+                    <TextBlock Text="{Binding CategoryHeader}" />
+                </GroupBox.Header>
 
-            <Grid>
-                <Grid.RowDefinitions>
-                    <!--TextBox-->
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <!--ListView-->
-                    <RowDefinition Height="*"></RowDefinition>
-                    <!--Status-->
-                    <RowDefinition Height="Auto"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBox Text="{Binding CategoryText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                        <TextBox.InputBindings>
-                            <KeyBinding Command="{Binding AddCategoryCommand}" Key="Return"></KeyBinding>
-                        </TextBox.InputBindings>
-                    </TextBox>
-                    <Button Grid.Column="1" Width="48" Margin="4 0 0 0" Command="{Binding AddCategoryCommand}" VerticalAlignment="Center" Height="24">+</Button>
-                </Grid>
-                <ListView Grid.Row="1"
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <!--TextBox-->
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <!--ListView-->
+                        <RowDefinition Height="*"></RowDefinition>
+                        <!--Status-->
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding CategoryText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Command="{Binding AddCategoryCommand}" Key="Return"></KeyBinding>
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <Button Grid.Column="1" Width="48" Margin="4 0 0 0" Command="{Binding AddCategoryCommand}" VerticalAlignment="Center" Height="24">+</Button>
+                    </Grid>
+                    <ListView Grid.Row="1"
                           ItemsSource="{Binding CategoryCollectionView, Mode=OneWay}"
                           ItemTemplate="{StaticResource ResourceKey=categoryItemTemplate}"
                           SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"/>
-                <TextBlock Grid.Row="2" Text="{Binding CategoryCount}" />
-            </Grid>
-        </GroupBox>
-        <!-- Chart container -->
-        <Grid Grid.Column="1" Margin="32,32,32,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <!-- Selected dataPoint -->
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid HorizontalAlignment="Right">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Date Range:" VerticalAlignment="Center" Margin="0 0 4 0" />
-                <ComboBox Grid.Column="1" Grid.Row="0" Margin="0 0 8 0" ItemsSource="{Binding DateRangeOptions}" VerticalAlignment="Center"
-                          SelectedValue="{Binding SelectedDateRangeOption}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding DisplayName}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-                <Button Grid.Column="2" ToolTip="Use mouse scroller to zoom in. Click here to reset zoom." Command="{Binding ResetZoomCommand}">_Reset Zoom</Button>
-                <TextBlock Grid.Column="3" Margin="0 0 8 0" VerticalAlignment="Center">
-                    <Bold>> Tips</Bold>
-                    <TextBlock.ToolTip>
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock><Bold>Mouse wheel</Bold> to zoom in/out.</TextBlock>
-                            <TextBlock><Bold>Click down + move</Bold> to move the chart.</TextBlock>
-                            <TextBlock><Bold>Ctrl+Click</Bold> to pick a point.</TextBlock>
-                            <TextBlock><Bold>Right click</Bold> for context menu.</TextBlock>
-                        </StackPanel>
-                    </TextBlock.ToolTip>
-                </TextBlock>
-            </Grid>
-            <lvc:CartesianChart Grid.Row="1" Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="X">
-                <lvc:CartesianChart.InputBindings>
-                    <MouseBinding Command="{Binding PickPointCommand}" Gesture="Control+LeftClick" />
-                    <MouseBinding Command="{Binding PickPointCommand}" Gesture="RightClick" />
-                </lvc:CartesianChart.InputBindings>
-                <lvc:CartesianChart.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Select" Command="{Binding PickPointCommand}"></MenuItem>
-                        <MenuItem Header="Delete" Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}"
-                                  IsEnabled="{Binding SelectedDataPoint, TargetNullValue=False}">
-                        </MenuItem>
-                        <MenuItem Header="Reset Zoom" Command="{Binding ResetZoomCommand}" />
-                    </ContextMenu>
-                </lvc:CartesianChart.ContextMenu>
-            </lvc:CartesianChart>
-            <GroupBox Grid.Row="2" Padding="8">
-                <GroupBox.Header>
-                    <TextBlock Text="Add Data Point" />
-                </GroupBox.Header>
-                <Grid>
+                    <TextBlock Grid.Row="2" Text="{Binding CategoryCount}" />
+                </Grid>
+            </GroupBox>
+            <!-- Chart container -->
+            <Grid Grid.Column="1" Margin="32,32,32,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <!-- Selected dataPoint -->
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid HorizontalAlignment="Right">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <RadioButton
+                    <TextBlock Text="Date Range:" VerticalAlignment="Center" Margin="0 0 4 0" />
+                    <ComboBox Grid.Column="1" Grid.Row="0" Margin="0 0 8 0" ItemsSource="{Binding DateRangeOptions}" VerticalAlignment="Center"
+                          SelectedValue="{Binding SelectedDateRangeOption}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DisplayName}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Grid.Column="2" ToolTip="Use mouse scroller to zoom in. Click here to reset zoom." Command="{Binding ResetZoomCommand}">_Reset Zoom</Button>
+                    <TextBlock Grid.Column="3" Margin="0 0 8 0" VerticalAlignment="Center">
+                    <Bold>> Tips</Bold>
+                        <TextBlock.ToolTip>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock><Bold>Mouse wheel</Bold> to zoom in/out.</TextBlock>
+                                <TextBlock><Bold>Click down + move</Bold> to move the chart.</TextBlock>
+                                <TextBlock><Bold>Ctrl+Click</Bold> to pick a point.</TextBlock>
+                                <TextBlock><Bold>Right click</Bold> for context menu.</TextBlock>
+                            </StackPanel>
+                        </TextBlock.ToolTip>
+                </TextBlock>
+                </Grid>
+                <lvc:CartesianChart Grid.Row="1" Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="X">
+                    <lvc:CartesianChart.InputBindings>
+                        <MouseBinding Command="{Binding PickPointCommand}" Gesture="Control+LeftClick" />
+                        <MouseBinding Command="{Binding PickPointCommand}" Gesture="RightClick" />
+                    </lvc:CartesianChart.InputBindings>
+                    <lvc:CartesianChart.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Select" Command="{Binding PickPointCommand}"></MenuItem>
+                            <MenuItem Header="Delete" Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}"
+                                  IsEnabled="{Binding SelectedDataPoint, TargetNullValue=False}">
+                            </MenuItem>
+                            <MenuItem Header="Reset Zoom" Command="{Binding ResetZoomCommand}" />
+                        </ContextMenu>
+                    </lvc:CartesianChart.ContextMenu>
+                </lvc:CartesianChart>
+                <GroupBox Grid.Row="2" Padding="8">
+                    <GroupBox.Header>
+                        <TextBlock Text="Add Data Point" />
+                    </GroupBox.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <RadioButton
                         GroupName="DateMode" Grid.ColumnSpan="3" 
                         VerticalAlignment="Center"
                         IsChecked="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Mode=TwoWay}">Use Current Datetime</RadioButton>
-                    <!--Date Time-->
-                    <RadioButton
+                        <!--Date Time-->
+                        <RadioButton
                         IsChecked="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Converter={StaticResource InverseBooleanConverter}}"
                         GroupName="DateMode" Grid.Row="1" VerticalAlignment="Center">
-                        Specify:
-                    </RadioButton>
-                    <DatePicker Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" SelectedDateFormat="Long"
+                            Specify:
+                        </RadioButton>
+                        <DatePicker Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" SelectedDateFormat="Long"
                                 SelectedDate="{Binding SelectedDataPoint.WhenLocal, Mode=TwoWay}"
                                 IsEnabled="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Converter={StaticResource InverseBooleanConverter}}"/>
-                    <TextBox Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Text="{Binding SelectedDataPoint.TimeSpan, Mode=TwoWay}"
+                        <TextBox Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" Text="{Binding SelectedDataPoint.TimeSpan, Mode=TwoWay}"
                              Margin="4 4 0 4" MinWidth="120" IsEnabled="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Converter={StaticResource InverseBooleanConverter}}" />
 
-                    <!--Value-->
-                    <TextBlock Text="Value:" Grid.Row="2" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2"
+                        <!--Value-->
+                        <TextBlock Text="Value:" Grid.Row="2" VerticalAlignment="Center" />
+                        <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2"
                              Text="{Binding SelectedDataPoint.Value, Mode=TwoWay}"/>
-                    <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.ColumnSpan="3">
-                        <Button Command="{Binding SelectedDataPoint.AddPointCommand}" CommandParameter="{Binding}">_Add</Button>
-                        <Button Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}">_Delete</Button>
-                        <Button Command="{Binding SyncCommand}">[Debug] _Sync</Button>
-                    </StackPanel>
-                </Grid>
-            </GroupBox>
+                        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.ColumnSpan="3">
+                            <Button Command="{Binding SelectedDataPoint.AddPointCommand}" CommandParameter="{Binding}">_Add</Button>
+                            <Button Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}">_Delete</Button>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+
+            <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0 8 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="1" Text="{Binding SyncStateText}" MinWidth="48" Margin="8 0 0 0" />
+                <ProgressBar Grid.Column="0" Maximum="1" Minimum="0" SmallChange="0.01" LargeChange="0.1" Value="{Binding SyncProgress}" VerticalAlignment="Center" Height="12" />
+            </Grid>
         </Grid>
 
-        <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0 8 0 0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="1" Text="{Binding SyncStateText}" MinWidth="48" Margin="8 0 0 0" />
-            <ProgressBar Grid.Column="0" Maximum="1" Minimum="0" SmallChange="0.01" LargeChange="0.1" Value="{Binding SyncProgress}" VerticalAlignment="Center" Height="12" />
-        </Grid>
-    </Grid>
+    </DockPanel>
 </Window>
