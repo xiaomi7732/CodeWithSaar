@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using CodeNameK.BIZ;
 using CodeNameK.Contracts.CustomOptions;
+using CodeNameK.Core.Utilities;
 using CodeNameK.DAL;
 using CodeNameK.ViewModels;
 using Microsoft.Extensions.Configuration;
@@ -39,6 +40,8 @@ namespace CodeNameK.WPF
             services.AddOptions<LocalStoreOptions>().Bind(configurationRoot.GetSection(LocalStoreOptions.SectionName));
             services.RegisterBizModule(configurationRoot);
             services.RegisterViewModels(configurationRoot);
+
+            services.AddHttpClient<InternetAvailability>();
 
             services.AddSingleton<MainWindow>();
             services.AddSingleton<DataPointViewModel>(); // DataPoint operator

@@ -34,7 +34,9 @@ namespace CodeNameK.ViewModels
         private readonly ISync _syncService;
         private readonly IDateRangeService _dateRangeService;
         private readonly IChartAxisExpansion _chartAxisExpansion;
+        private readonly InternetAvailability _internetAvailability;
         private readonly ILogger _logger;
+        private bool _initialSyncRequested;
         private ObservableCollection<Category> _categoryCollection = new ObservableCollection<Category>();
 
         public MainViewModel(
@@ -44,6 +46,7 @@ namespace CodeNameK.ViewModels
             IDateRangeService dateRangeService,
             IChartAxisExpansion chartAxisExpansion,
             DataPointViewModel dataPointOperator,
+            InternetAvailability internetAvailability,
             ErrorRevealer errorRevealer,
             ILogger<MainViewModel> logger)
                 : base(errorRevealer)
@@ -54,8 +57,8 @@ namespace CodeNameK.ViewModels
             _syncService = syncService ?? throw new ArgumentNullException(nameof(syncService));
             _dateRangeService = dateRangeService ?? throw new ArgumentNullException(nameof(dateRangeService));
             _chartAxisExpansion = chartAxisExpansion ?? throw new ArgumentNullException(nameof(chartAxisExpansion));
+            _internetAvailability = internetAvailability ?? throw new ArgumentNullException(nameof(internetAvailability));
             SelectedDataPoint = dataPointOperator ?? throw new ArgumentNullException(nameof(dataPointOperator));
-
             InitializeCategoryCollection();
             CategoryCollectionView = CollectionViewSource.GetDefaultView(_categoryCollection);
             CategoryCollectionView.SortDescriptions.Add(new SortDescription(nameof(Category.Id), ListSortDirection.Ascending));
@@ -74,6 +77,8 @@ namespace CodeNameK.ViewModels
 
             SelectedDateRangeOption = DateRangeOptions.First();
             _selectedDateRangeOption = SelectedDateRangeOption;
+
+            RequestInitialSync();
         }
 
         public ICollectionView CategoryCollectionView { get; }
@@ -451,6 +456,47 @@ namespace CodeNameK.ViewModels
                 ResetZoom(x);
             }
         }
+
+        private async void RequestInitialSync()
+        {
+            try
+            {
+
+                if (_initialSyncRequested)
+                {
+                    return;
+                }
+
+                _initialSyncRequested = true;
+                SynchronizationContext uiThread = Dispatch<SynchronizationContext>(() =>
+                {
+                    SynchronizationContext syncContext = SynchronizationContext.Current!;
+                    return syncContext;
+                });
+
+                if (await _internetAvailability.IsInternetAvailableAsync())
+                {
+                    await uiThread;
+                    MessageBoxResult syncChoice = MessageBox.Show("You have internet access. Do you want to start a data synchronization immediately?", "Sync", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                    if (syncChoice == MessageBoxResult.No)
+                    {
+                        return;
+                    }
+
+                    SyncImp(null);
+                }
+                else
+                {
+                    await uiThread;
+                    MessageBox.Show("There is no internet connection, skip initial syncing.", "No internet", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                _errorRevealer.Reveal(ex.Message, $"Unexpected error {nameof(RequestInitialSync)}");
+            }
+        }
+
 
         private void ResetZoom(Axis axis)
         {
