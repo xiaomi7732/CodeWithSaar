@@ -13,8 +13,11 @@ namespace CodeNameK.ViewModels
     {
         private readonly IDataPoint _dataPointBiz;
         private readonly ILogger _logger;
-        private DataPoint _model;
+        private Guid _id;
 
+        /// <summary>
+        /// View Model for a data point.
+        /// </summary>
         public DataPointViewModel(
             IDataPoint dataPointBiz,
             ErrorRevealer errorRevealer,
@@ -23,92 +26,92 @@ namespace CodeNameK.ViewModels
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
-            _model = CreateDefaultModel();
+            LocalDate = DateTime.Today;
             AddPointCommand = new RelayCommand(AddPoint);
             DeletePointCommand = new RelayCommand(DeletePoint);
         }
 
+        /// <summary>
+        /// Sets the values of the view model by a model
+        /// </summary>
+        /// <param name="newModel"></param>
         public void SetModel(DataPoint? newModel)
         {
-            if (newModel is null)
-            {
-                newModel = CreateDefaultModel();
-            }
+            newModel ??= CreateDefaultModel();
+            _id = newModel.Id;
 
-            if (_model != newModel)
-            {
-                _model = newModel;
-                RaisePropertyChanged(nameof(WhenLocal));
-                RaisePropertyChanged(nameof(TimeSpan));
-                RaisePropertyChanged(nameof(Value));
-            }
+            DateTime utcDateTime = newModel.WhenUTC;
+            DateTime localDateTime = utcDateTime.ToLocalTime();
+
+            LocalDate = localDateTime.Date;
+            TimeSpan = localDateTime - LocalDate;
+            Value = newModel.Value;
         }
 
-        public DateTime WhenLocal
+        private DateTime _localDate;
+        /// <summary>
+        /// Gets or sets the local date - only the date potion;
+        /// </summary>
+        public DateTime LocalDate
         {
             get
             {
-                if (_model is null)
-                {
-                    return DateTime.UtcNow.ToLocalTime();
-                }
-                return _model.WhenUTC.ToLocalTime();
+                return _localDate;
             }
             set
             {
-                _model ??= new DataPoint();
-
-                DateTime utc = value.Add(TimeSpan).ToUniversalTime();
-                if (_model.WhenUTC != utc)
+                if (_localDate != value)
                 {
-                    _model = _model with { WhenUTC = utc };
+                    _localDate = value;
                     RaisePropertyChanged();
                 }
             }
         }
 
+        private TimeSpan _timeSpan;
+        /// <summary>
+        /// Gets or sets the local time offset to the <see cref="LocalDate"/>.
+        /// </summary>
         public TimeSpan TimeSpan
         {
             get
             {
-                DateTime localDateTime = WhenLocal;
-                return localDateTime - localDateTime.Date;
+                return _timeSpan;
             }
             set
             {
-                if (TimeSpan != value)
+                if (_timeSpan != value)
                 {
-                    _model ??= new DataPoint();
-                    _model = _model with
-                    {
-                        WhenUTC = WhenLocal.Add(value).ToUniversalTime(),
-                    };
+                    _timeSpan = value;
+                    RaisePropertyChanged();
                 }
             }
         }
 
+        private double _value;
+        /// <summary>
+        /// Gets or sets the value for the data point
+        /// </summary>
         public double Value
         {
             get
             {
-                if (_model is null)
-                {
-                    return 0;
-                }
-                return _model.Value;
+                return _value;
             }
             set
             {
-                _model = _model ?? new DataPoint();
-                if (_model.Value != value)
+                if (_value != value)
                 {
-                    _model = _model with { Value = value };
+                    _value = value;
                     RaisePropertyChanged();
                 }
             }
         }
 
         private bool _isCurrentDateTimeMode = true;
+        /// <summary>
+        /// Gets or sets the value to determine which value to use for creating a datapoint.
+        /// </summary>
         public bool IsCurrentDateTimeMode
         {
             get { return _isCurrentDateTimeMode; }
@@ -122,6 +125,9 @@ namespace CodeNameK.ViewModels
             }
         }
 
+        /// <summary>
+        /// Add a data point command.
+        /// </summary>
         public ICommand AddPointCommand { get; }
         private async void AddPoint(object? parameter)
         {
@@ -135,12 +141,11 @@ namespace CodeNameK.ViewModels
             try
             {
                 Category? targetCategory = mainViewModel.SelectedCategory;
-                DateTime whenUTC = IsCurrentDateTimeMode ? DateTime.UtcNow : _model.WhenUTC;
-                DataPoint newItem = _model with
+                if (targetCategory == null)
                 {
-                    Category = targetCategory,
-                    WhenUTC = whenUTC,
-                };
+                    throw new InvalidOperationException("No selected category!");
+                }
+                DataPoint newItem = BuildDataPoint(targetCategory);
 
                 _logger.LogInformation("Adding a data point into category: {category}", newItem.Category?.Id);
                 OperationResult<DataPoint> addResult = await _dataPointBiz.AddAsync(newItem, default).ConfigureAwait(false);
@@ -162,6 +167,9 @@ namespace CodeNameK.ViewModels
             }
         }
 
+        /// <summary>
+        /// Delete a datapoint command
+        /// </summary>
         public ICommand DeletePointCommand { get; }
         private async void DeletePoint(object? parameter)
         {
@@ -174,14 +182,14 @@ namespace CodeNameK.ViewModels
                     return;
                 }
 
-                _logger.LogInformation("Deleting a data point by id {id}.", _model.Id);
-                MessageBoxResult userChoice = MessageBox.Show($"Do you want to delete the data point: {_model.Value} at {_model.WhenUTC.ToLocalTime():f}?", "Delete", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                _logger.LogInformation("Deleting a data point by id {id}.", _id);
+                MessageBoxResult userChoice = MessageBox.Show($"Do you want to delete the data point: {Value} at {BuildWhenUTC().ToLocalTime():f}?", "Delete", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
                 if (userChoice == MessageBoxResult.No)
                 {
                     return;
                 }
 
-                OperationResult<bool> result = await _dataPointBiz.DeleteAsync(_model, default).ConfigureAwait(false);
+                OperationResult<bool> result = await _dataPointBiz.DeleteAsync(BuildDataPoint(mainViewModel.SelectedCategory!), default).ConfigureAwait(false);
 
                 await syncContext;
                 if (result.IsSuccess)
@@ -199,11 +207,43 @@ namespace CodeNameK.ViewModels
             }
         }
 
+        /// <summary>
+        /// Creates a default datapoint model with current date time.
+        /// </summary>
         private DataPoint CreateDefaultModel()
         {
-            return new DataPoint() { 
-                WhenUTC = DateTime.Today,
+            return new DataPoint()
+            {
+                WhenUTC = DateTime.UtcNow,
+                Value = 0,
             };
+        }
+
+        /// <summary>
+        /// Builds a data point by current view model
+        /// </summary>
+        private DataPoint BuildDataPoint(Category category)
+        {
+            if (category is null)
+            {
+                throw new ArgumentNullException(nameof(category));
+            }
+
+            return new DataPoint()
+            {
+                Id = _id,
+                Category = category,
+                WhenUTC = BuildWhenUTC(),
+                Value = this.Value,
+            };
+        }
+
+        /// <summary>
+        /// Builds Date Time in UTC by LocalDate + TimeSpan
+        /// </summary>
+        private DateTime BuildWhenUTC()
+        {
+            return LocalDate.Add(TimeSpan).ToUniversalTime();
         }
     }
 }
