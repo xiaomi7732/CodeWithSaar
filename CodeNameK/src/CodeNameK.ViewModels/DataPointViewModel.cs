@@ -233,7 +233,7 @@ namespace CodeNameK.ViewModels
             {
                 Id = _id,
                 Category = category,
-                WhenUTC = BuildWhenUTC(),
+                WhenUTC = IsCurrentDateTimeMode ? DateTime.UtcNow : BuildWhenUTC(),
                 Value = this.Value,
             };
         }
