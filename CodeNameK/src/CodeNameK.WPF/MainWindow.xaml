@@ -22,7 +22,16 @@
                 <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
             </MenuItem>
         </Menu>
-        <Grid DockPanel.Dock="Bottom" Margin="16">
+        <!--Status bar-->
+        <StatusBar DockPanel.Dock="Bottom"  Grid.Row="2" Grid.ColumnSpan="2">
+            <StatusBarItem>
+                <TextBlock Text="Data Folder: " />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Grid.Column="1" Text="{Binding DataFolderPath}" />
+            </StatusBarItem>
+        </StatusBar>
+        <Grid Margin="16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200" />
                 <ColumnDefinition Width="*" />
@@ -174,15 +183,7 @@
                 <ProgressBar Grid.Column="0" Maximum="1" Minimum="0" SmallChange="0.01" LargeChange="0.1" Value="{Binding SyncProgress}" VerticalAlignment="Center" Height="12" />
             </Grid>
 
-            <!--Status bar-->
-            <Grid Grid.Row="2" Grid.ColumnSpan="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Data Folder: " />
-                <TextBlock Grid.Column="1" Text="{Binding DataFolderPath}" />
-            </Grid>
+
         </Grid>
     </DockPanel>
 </Window>
