@@ -75,7 +75,7 @@ namespace CodeNameK.ViewModels
             {
                 RaisePropertyChanged(nameof(CategoryHeader));
             };
-            _syncStateText = String.Empty;
+            _syncStateText = "No sync.";
 
 
             _dataFolderPath = localStoreOptions.Value.DataStorePath.Replace('/', '\\');

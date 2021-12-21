@@ -28,13 +28,21 @@
                 <TextBlock Text="Data Folder: " />
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Grid.Column="1" Text="{Binding DataFolderPath}" />
+                <TextBlock Text="{Binding DataFolderPath}" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="Sync Status:" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding SyncStateText}" />
             </StatusBarItem>
         </StatusBar>
+        <!--Main Area-->
         <Grid Margin="16">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition MinWidth="200" Width="*" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="5*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <!--Primary area-->
@@ -44,7 +52,7 @@
                 <!--Status Bar-->
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <GroupBox Padding="8">
+            <GroupBox Padding="8" Margin="0 0 8 0">
                 <GroupBox.Header>
                     <TextBlock Text="{Binding CategoryHeader}" />
                 </GroupBox.Header>
@@ -78,8 +86,10 @@
                     <TextBlock Grid.Row="2" Text="{Binding CategoryCount}" />
                 </Grid>
             </GroupBox>
+
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
             <!-- Chart container -->
-            <Grid Grid.Column="1" Margin="32,32,32,0">
+            <Grid Grid.Column="2" Margin="32,32,32,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -174,16 +184,10 @@
                 </GroupBox>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="0 8 0 0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="1" Text="{Binding SyncStateText}" MinWidth="48" Margin="8 0 0 0" />
+            <!--Sync progress-->
+            <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="0 8 0 0">
                 <ProgressBar Grid.Column="0" Maximum="1" Minimum="0" SmallChange="0.01" LargeChange="0.1" Value="{Binding SyncProgress}" VerticalAlignment="Center" Height="12" />
             </Grid>
-
-
         </Grid>
     </DockPanel>
 </Window>
