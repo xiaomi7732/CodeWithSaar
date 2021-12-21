@@ -1,5 +1,6 @@
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
+using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.Contracts.DataContracts;
 using CodeNameK.Core.Utilities;
 using CodeNameK.DataContracts;
@@ -13,6 +14,7 @@ using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
 using LiveChartsCore.SkiaSharpView.Drawing.Geometries.Segments;
 using LiveChartsCore.SkiaSharpView.Painting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -48,9 +50,15 @@ namespace CodeNameK.ViewModels
             DataPointViewModel dataPointOperator,
             InternetAvailability internetAvailability,
             ErrorRevealer errorRevealer,
+            IOptions<LocalStoreOptions> localStoreOptions,
             ILogger<MainViewModel> logger)
                 : base(errorRevealer)
         {
+            if (localStoreOptions?.Value is null)
+            {
+                throw new ArgumentNullException(nameof(localStoreOptions));
+            }
+
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _categoryBiz = categoryBiz ?? throw new System.ArgumentNullException(nameof(categoryBiz));
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
@@ -68,6 +76,9 @@ namespace CodeNameK.ViewModels
                 RaisePropertyChanged(nameof(CategoryHeader));
             };
             _syncStateText = String.Empty;
+
+
+            _dataFolderPath = localStoreOptions.Value.DataStorePath.Replace('/', '\\');
 
             ResetZoomCommand = new RelayCommand(ResetZoom);
             SyncCommand = new RelayCommand(SyncImp);
@@ -174,6 +185,20 @@ namespace CodeNameK.ViewModels
         {
             get { return _endDateRange; }
             set { _endDateRange = value; }
+        }
+
+        private string _dataFolderPath;
+
+        public string DataFolderPath
+        {
+            get { return _dataFolderPath; }
+            set {
+                if (!string.Equals(value, _dataFolderPath))
+                {
+                    _dataFolderPath = value;
+                    RaisePropertyChanged();
+                }
+            }
         }
 
         private DataPoint? _hoverPoint;
@@ -288,7 +313,7 @@ namespace CodeNameK.ViewModels
             _hoverPoint = point.Model;
         }
 
-        string FormatToolTip(TypedChartPoint<DataPoint, LineBezierVisualPoint<SkiaSharpDrawingContext, CircleGeometry, CubicBezierSegment, SKPath>, LabelGeometry, SkiaSharpDrawingContext> point)
+        private string FormatToolTip(TypedChartPoint<DataPoint, LineBezierVisualPoint<SkiaSharpDrawingContext, CircleGeometry, CubicBezierSegment, SKPath>, LabelGeometry, SkiaSharpDrawingContext> point)
         {
             return string.Format($"{point?.Model?.WhenUTC.ToLocalTime():g}" + Environment.NewLine + $"{point?.PrimaryValue:N2}");
         }
