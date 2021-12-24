@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace CodeNameK.ViewModels
 {
-    public class RelayCommand : ICommand
+    internal class RelayCommand : ICommand
     {
         private Action<object?> _execute;
         private Func<object?, bool>? _canExecute;

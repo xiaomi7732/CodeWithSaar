@@ -5,6 +5,8 @@ namespace CodeNameK.ViewModels
 {
     public class ErrorRevealer
     {
+        private string? _defaultTitle;
+
         public void Reveal(string message, string title)
         {
             Application.Current.Dispatcher.Invoke<int>(() =>
@@ -21,6 +23,17 @@ namespace CodeNameK.ViewModels
             message += Environment.NewLine + ex.StackTrace;
 #endif
             Reveal(message, title);
+        }
+
+        public void Reveal(Exception ex)
+            => Reveal(ex, _defaultTitle ?? "Unexpected error");
+
+        public static ErrorRevealer WithTitle(string title)
+        {
+            ErrorRevealer newInstance = new ErrorRevealer() {
+                _defaultTitle = title,
+            };
+            return newInstance;
         }
     }
 }

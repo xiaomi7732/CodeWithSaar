@@ -81,16 +81,19 @@ namespace CodeNameK.ViewModels
             _dataFolderPath = localStoreOptions.Value.DataStorePath.Replace('/', '\\');
 
             ResetZoomCommand = new RelayCommand(ResetZoom);
-            SyncCommand = new RelayCommand(SyncImp);
-            AddCategoryCommand = new RelayCommand(AddCategoryImp, CanAddCategoryImp);
+            SyncCommand = new AsyncRelayCommand(SyncImpAsync, canExecute: null, exceptionCallback: ErrorRevealer.WithTitle($"Unhandled Exception Invoking {nameof(SyncCommand)}").Reveal);
+            AddCategoryCommand = new AsyncRelayCommand(AddCategoryImpAsync, CanAddCategoryImp, exceptionCallback: ErrorRevealer.WithTitle($"Unhandled Exception Invoking {nameof(AddCategoryCommand)}").Reveal);
             PickPointCommand = new RelayCommand(PickPointImp);
-            TodayOnlyCommand = new RelayCommand(TodayOnlyImp);
+            TodayOnlyCommand = new AsyncRelayCommand(TodayOnlyImpAsync, canExecute: null, exceptionCallback: ErrorRevealer.WithTitle($"Unhandled exception invoking {TodayOnlyCommand}").Reveal);
             ExitCommand = new RelayCommand(ExitImp);
 
             SelectedDateRangeOption = DateRangeOptions.First();
             _selectedDateRangeOption = SelectedDateRangeOption;
 
-            RequestInitialSync();
+            RequestInitialSync().FireWithExceptionHandler(ex =>
+            {
+                _errorRevealer.Reveal(ex, $"Unexpected error {nameof(RequestInitialSync)}");
+            });
         }
 
         public ICollectionView CategoryCollectionView { get; }
@@ -192,7 +195,8 @@ namespace CodeNameK.ViewModels
         public string DataFolderPath
         {
             get { return _dataFolderPath; }
-            set {
+            set
+            {
                 if (!string.Equals(value, _dataFolderPath))
                 {
                     _dataFolderPath = value;
@@ -386,92 +390,70 @@ namespace CodeNameK.ViewModels
         }
 
         public ICommand SyncCommand { get; }
-        private async void SyncImp(object? parameters)
+        private async Task SyncImpAsync(object? parameters)
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
 
-            try
+            OperationResult<SyncStatistic> result = await _syncService.Sync(
+                new Progress<SyncProgress>(newProgress =>
             {
-                OperationResult<SyncStatistic> result = await _syncService.Sync(
-                    new Progress<SyncProgress>(newProgress =>
+                _logger.LogInformation("New sync progress reported: [{text}]{value:p}", newProgress.DisplayText, newProgress.Value);
+                Dispatch(() =>
                 {
-                    _logger.LogInformation("New sync progress reported: [{text}]{value:p}", newProgress.DisplayText, newProgress.Value);
-                    Dispatch(() =>
-                    {
-                        SyncStateText = newProgress.DisplayText;
-                        SyncProgress = newProgress.Value;
-                        return 0;
-                    });
-                }), default).ConfigureAwait(false);
+                    SyncStateText = newProgress.DisplayText;
+                    SyncProgress = newProgress.Value;
+                    return 0;
+                });
+            }), default).ConfigureAwait(false);
 
-                await syncContext;
-                if (result.IsSuccess)
-                {
-                    SyncStateText = "Success";
-                    MessageBox.Show($"{result.Entity.Uploaded} files uploaded, {result.Entity.Downloaded} files downloaded.", "Sync Success", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    SyncStateText = "Fail";
-                    _errorRevealer.Reveal(result.Reason, "Sync error");
-                }
-
-                // Post sync
-                InitializeCategoryCollection();
-                await UpdateSeriesAsync(default).ConfigureAwait(false);
-            }
-            catch (Exception ex)
+            await syncContext;
+            if (result.IsSuccess)
             {
-                await syncContext;
-                _errorRevealer.Reveal(ex.Message, "Unexpected sync error");
+                SyncStateText = "Success";
+                MessageBox.Show($"{result.Entity.Uploaded} files uploaded, {result.Entity.Downloaded} files downloaded.", "Sync Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
+            else
+            {
+                SyncStateText = "Fail";
+                _errorRevealer.Reveal(result.Reason, "Sync error");
+            }
+
+            // Post sync
+            InitializeCategoryCollection();
+            await UpdateSeriesAsync(default).ConfigureAwait(false);
         }
 
         public ICommand AddCategoryCommand { get; }
-        private async void AddCategoryImp(object? parameter)
+        private async Task AddCategoryImpAsync(object? parameter)
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
-            try
+            if (string.IsNullOrEmpty(CategoryText))
             {
-                if (string.IsNullOrEmpty(CategoryText))
-                {
-                    MessageBox.Show("Can't add a category without a name. Please input a name.", "Failed Creating Category", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-                OperationResult<Category> createCategoryResult = await _categoryBiz.AddCategoryAsync(new Category() { Id = CategoryText }, default).ConfigureAwait(false);
+                MessageBox.Show("Can't add a category without a name. Please input a name.", "Failed Creating Category", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            OperationResult<Category> createCategoryResult = await _categoryBiz.AddCategoryAsync(new Category() { Id = CategoryText }, default).ConfigureAwait(false);
 
-                await syncContext;
-                if (!createCategoryResult.IsSuccess)
-                {
-                    MessageBox.Show($"Failed creating a category. Details: {createCategoryResult.Reason}", "Failed Creating Category", MessageBoxButton.OK, MessageBoxImage.Error);
-                    CategoryText = string.Empty;
-                    return;
-                }
-
-                _categoryCollection.Add(createCategoryResult!);
-                MessageBox.Show($"Category {createCategoryResult.Entity?.Id} is created!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            await syncContext;
+            if (!createCategoryResult.IsSuccess)
+            {
+                MessageBox.Show($"Failed creating a category. Details: {createCategoryResult.Reason}", "Failed Creating Category", MessageBoxButton.OK, MessageBoxImage.Error);
                 CategoryText = string.Empty;
+                return;
             }
-            catch (Exception ex)
-            {
-                _errorRevealer.Reveal(ex.Message, "Unexpected error!");
-            }
+
+            _categoryCollection.Add(createCategoryResult!);
+            MessageBox.Show($"Category {createCategoryResult.Entity?.Id} is created!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            CategoryText = string.Empty;
         }
         private bool CanAddCategoryImp(object? parameter) => !string.IsNullOrEmpty(CategoryText);
 
         public ICommand TodayOnlyCommand { get; }
-        private async void TodayOnlyImp(object? parameter)
+        private async Task TodayOnlyImpAsync(object? parameter)
         {
-            try
-            {
-                StartDateRange = DateTime.Today;
-                EndDateRange = DateTime.Today.AddDays(1);
-                await UpdateSeriesAsync(default).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                _errorRevealer.Reveal(ex.Message, "Failed applying Toady filter.");
-            }
+            StartDateRange = DateTime.Today;
+            EndDateRange = DateTime.Today.AddDays(1);
+            await UpdateSeriesAsync(default).ConfigureAwait(false);
         }
 
         public ICommand ResetZoomCommand { get; }
@@ -494,43 +476,35 @@ namespace CodeNameK.ViewModels
             Application.Current.MainWindow.Close();
         }
 
-        private async void RequestInitialSync()
+        private async Task RequestInitialSync()
         {
-            try
+            if (_initialSyncRequested)
             {
+                return;
+            }
 
-                if (_initialSyncRequested)
+            _initialSyncRequested = true;
+            SynchronizationContext uiThread = Dispatch<SynchronizationContext>(() =>
+            {
+                SynchronizationContext syncContext = SynchronizationContext.Current!;
+                return syncContext;
+            });
+
+            if (await _internetAvailability.IsInternetAvailableAsync())
+            {
+                await uiThread;
+                MessageBoxResult syncChoice = MessageBox.Show("You have internet access. Do you want to start a data synchronization immediately?", "Sync", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                if (syncChoice == MessageBoxResult.No)
                 {
                     return;
                 }
 
-                _initialSyncRequested = true;
-                SynchronizationContext uiThread = Dispatch<SynchronizationContext>(() =>
-                {
-                    SynchronizationContext syncContext = SynchronizationContext.Current!;
-                    return syncContext;
-                });
-
-                if (await _internetAvailability.IsInternetAvailableAsync())
-                {
-                    await uiThread;
-                    MessageBoxResult syncChoice = MessageBox.Show("You have internet access. Do you want to start a data synchronization immediately?", "Sync", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
-                    if (syncChoice == MessageBoxResult.No)
-                    {
-                        return;
-                    }
-
-                    SyncImp(null);
-                }
-                else
-                {
-                    await uiThread;
-                    MessageBox.Show("There is no internet connection, skip initial syncing.", "No internet", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
+                await SyncImpAsync(null).ConfigureAwait(false);
             }
-            catch (Exception ex)
+            else
             {
-                _errorRevealer.Reveal(ex.Message, $"Unexpected error {nameof(RequestInitialSync)}");
+                await uiThread;
+                MessageBox.Show("There is no internet connection, skip initial syncing.", "No internet", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 

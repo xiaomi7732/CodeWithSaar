@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using CodeNameK.BIZ.Interfaces;
@@ -27,8 +28,9 @@ namespace CodeNameK.ViewModels
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
             LocalDate = DateTime.Today;
-            AddPointCommand = new RelayCommand(AddPoint);
-            DeletePointCommand = new RelayCommand(DeletePoint);
+
+            AddPointCommand = new AsyncRelayCommand(AddPointAsync, exceptionCallback: ErrorRevealer.WithTitle($"Unexpected error invoking {nameof(AddPointCommand)}").Reveal);
+            DeletePointCommand = new AsyncRelayCommand(DeletePointAsync, exceptionCallback: ErrorRevealer.WithTitle($"Unexpected error invoking {nameof(AsyncRelayCommand)}").Reveal);
         }
 
         /// <summary>
@@ -129,7 +131,7 @@ namespace CodeNameK.ViewModels
         /// Add a data point command.
         /// </summary>
         public ICommand AddPointCommand { get; }
-        private async void AddPoint(object? parameter)
+        private async Task AddPointAsync(object? parameter)
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
 
@@ -138,32 +140,25 @@ namespace CodeNameK.ViewModels
                 return;
             }
 
-            try
+            Category? targetCategory = mainViewModel.SelectedCategory;
+            if (targetCategory == null)
             {
-                Category? targetCategory = mainViewModel.SelectedCategory;
-                if (targetCategory == null)
-                {
-                    throw new InvalidOperationException("No selected category!");
-                }
-                DataPoint newItem = BuildDataPoint(targetCategory);
-
-                _logger.LogInformation("Adding a data point into category: {category}", newItem.Category?.Id);
-                OperationResult<DataPoint> addResult = await _dataPointBiz.AddAsync(newItem, default).ConfigureAwait(false);
-
-                await syncContext;
-
-                if (addResult.IsSuccess)
-                {
-                    await mainViewModel.UpdateSeriesAsync(default).ConfigureAwait(false);
-                }
-                else
-                {
-                    _errorRevealer.Reveal(addResult.Reason, "Failed adding a data point");
-                }
+                throw new InvalidOperationException("No selected category!");
             }
-            catch (Exception ex)
+            DataPoint newItem = BuildDataPoint(targetCategory);
+
+            _logger.LogInformation("Adding a data point into category: {category}", newItem.Category?.Id);
+            OperationResult<DataPoint> addResult = await _dataPointBiz.AddAsync(newItem, default).ConfigureAwait(false);
+
+            await syncContext;
+
+            if (addResult.IsSuccess)
             {
-                _errorRevealer.Reveal(ex.Message, "Unexpected error adding a data point");
+                await mainViewModel.UpdateSeriesAsync(default).ConfigureAwait(false);
+            }
+            else
+            {
+                _errorRevealer.Reveal(addResult.Reason, "Failed adding a data point");
             }
         }
 
@@ -171,39 +166,32 @@ namespace CodeNameK.ViewModels
         /// Delete a datapoint command
         /// </summary>
         public ICommand DeletePointCommand { get; }
-        private async void DeletePoint(object? parameter)
+        private async Task DeletePointAsync(object? parameter)
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
-            try
+            if (!(parameter is MainViewModel mainViewModel))
             {
-                if (!(parameter is MainViewModel mainViewModel))
-                {
-                    _logger.LogWarning("Main view model is not specified.");
-                    return;
-                }
-
-                _logger.LogInformation("Deleting a data point by id {id}.", _id);
-                MessageBoxResult userChoice = MessageBox.Show($"Do you want to delete the data point: {Value} at {BuildWhenUTC().ToLocalTime():f}?", "Delete", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
-                if (userChoice == MessageBoxResult.No)
-                {
-                    return;
-                }
-
-                OperationResult<bool> result = await _dataPointBiz.DeleteAsync(BuildDataPoint(mainViewModel.SelectedCategory!), default).ConfigureAwait(false);
-
-                await syncContext;
-                if (result.IsSuccess)
-                {
-                    await mainViewModel.UpdateSeriesAsync(default).ConfigureAwait(false);
-                }
-                else
-                {
-                    _errorRevealer.Reveal(result.Reason, "Delete data point failed.");
-                }
+                _logger.LogWarning("Main view model is not specified.");
+                return;
             }
-            catch (Exception ex)
+
+            _logger.LogInformation("Deleting a data point by id {id}.", _id);
+            MessageBoxResult userChoice = MessageBox.Show($"Do you want to delete the data point: {Value} at {BuildWhenUTC().ToLocalTime():f}?", "Delete", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+            if (userChoice == MessageBoxResult.No)
             {
-                _errorRevealer.Reveal(ex.Message, "Unexpected error");
+                return;
+            }
+
+            OperationResult<bool> result = await _dataPointBiz.DeleteAsync(BuildDataPoint(mainViewModel.SelectedCategory!), default).ConfigureAwait(false);
+
+            await syncContext;
+            if (result.IsSuccess)
+            {
+                await mainViewModel.UpdateSeriesAsync(default).ConfigureAwait(false);
+            }
+            else
+            {
+                _errorRevealer.Reveal(result.Reason, "Delete data point failed.");
             }
         }
 
