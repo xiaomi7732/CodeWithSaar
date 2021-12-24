@@ -49,7 +49,7 @@ namespace CodeNameK.ViewModels
             IChartAxisExpansion chartAxisExpansion,
             DataPointViewModel dataPointOperator,
             InternetAvailability internetAvailability,
-            ErrorRevealer errorRevealer,
+            IErrorRevealerFactory errorRevealer,
             IOptions<LocalStoreOptions> localStoreOptions,
             ILogger<MainViewModel> logger)
                 : base(errorRevealer)
@@ -81,10 +81,10 @@ namespace CodeNameK.ViewModels
             _dataFolderPath = localStoreOptions.Value.DataStorePath.Replace('/', '\\');
 
             ResetZoomCommand = new RelayCommand(ResetZoom);
-            SyncCommand = new AsyncRelayCommand(SyncImpAsync, canExecute: null, exceptionCallback: ErrorRevealer.WithTitle($"Unhandled Exception Invoking {nameof(SyncCommand)}").Reveal);
-            AddCategoryCommand = new AsyncRelayCommand(AddCategoryImpAsync, CanAddCategoryImp, exceptionCallback: ErrorRevealer.WithTitle($"Unhandled Exception Invoking {nameof(AddCategoryCommand)}").Reveal);
+            SyncCommand = new AsyncRelayCommand(SyncImpAsync, canExecute: null, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(SyncCommand)}").Reveal);
+            AddCategoryCommand = new AsyncRelayCommand(AddCategoryImpAsync, CanAddCategoryImp, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(AddCategoryCommand)}").Reveal);
             PickPointCommand = new RelayCommand(PickPointImp);
-            TodayOnlyCommand = new AsyncRelayCommand(TodayOnlyImpAsync, canExecute: null, exceptionCallback: ErrorRevealer.WithTitle($"Unhandled exception invoking {TodayOnlyCommand}").Reveal);
+            TodayOnlyCommand = new AsyncRelayCommand(TodayOnlyImpAsync, canExecute: null, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled exception invoking {TodayOnlyCommand}").Reveal);
             ExitCommand = new RelayCommand(ExitImp);
 
             SelectedDateRangeOption = DateRangeOptions.First();
@@ -92,7 +92,7 @@ namespace CodeNameK.ViewModels
 
             RequestInitialSync().FireWithExceptionHandler(ex =>
             {
-                _errorRevealer.Reveal(ex, $"Unexpected error {nameof(RequestInitialSync)}");
+                _errorRevealerFactory.CreateInstance(string.Empty).Reveal(ex, $"Unexpected error {nameof(RequestInitialSync)}");
             });
         }
 
@@ -154,7 +154,7 @@ namespace CodeNameK.ViewModels
                 if (_selectedDateRangeOption != value)
                 {
                     _selectedDateRangeOption = value;
-                    ApplyNewDateRangeAsync();
+                    ApplyNewDateRangeAsync().FireWithExceptionHandler(_errorRevealerFactory.CreateInstance($"Unexpected error applying new date range").Reveal);
                     RaisePropertyChanged();
                 }
             }
@@ -211,69 +211,62 @@ namespace CodeNameK.ViewModels
         public async Task UpdateSeriesAsync(CancellationToken cancellationToken)
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
-            try
+            List<LineSeries<DataPoint>> existingSeries = Series.OfType<LineSeries<DataPoint>>().NullAsEmpty().ToList();
+            foreach (var series in existingSeries)
             {
-                List<LineSeries<DataPoint>> existingSeries = Series.OfType<LineSeries<DataPoint>>().NullAsEmpty().ToList();
-                foreach (var series in existingSeries)
-                {
-                    series.PointHovered -= SeriesPointHover;
-                }
-
-                if (string.IsNullOrEmpty(SelectedCategory?.Id))
-                {
-                    // No category, no data points.
-                    Series.Clear();
-                    return;
-                }
-
-                List<DataPoint> dataPoints = new List<DataPoint>();
-                await foreach (DataPoint dataPoint in _dataPointBiz.GetDataPoints(
-                    SelectedCategory,
-                    StartDateRange == default ? null : StartDateRange.ToUniversalTime(),
-                    EndDateRange == default ? null : EndDateRange.ToUniversalTime(),
-                    cancellationToken).ConfigureAwait(false))
-                {
-                    dataPoints.Add(dataPoint);
-                };
-                dataPoints.Sort(DatePointComparer.DateTimeComparer);
-
-                double maxValue = _chartAxisExpansion.ExpandUp(dataPoints.Any() ? dataPoints.Max(point => point.Value) : 0);
-                double minValue = _chartAxisExpansion.ExpandDown(dataPoints.Any() ? dataPoints.Min(point => point.Value) : 0);
-
-                await syncContext;
-                Series.Add(CreateNewSeries(dataPoints));
-                foreach (ISeries existItem in existingSeries)
-                {
-                    Series.Remove(existItem);
-                }
-
-                XAxes.Clear();
-                YAxes.Clear();
-                if (_axesCache.ContainsKey(SelectedCategory))
-                {
-                    (ICartesianAxis xAxis, ICartesianAxis yAxis) = _axesCache[SelectedCategory];
-                    yAxis.MaxLimit = maxValue;
-                    yAxis.MinLimit = minValue;
-                    XAxes.Add(xAxis);
-                    YAxes.Add(yAxis);
-                }
-                else
-                {
-                    Axis newXAxis = CreateNewXAxis();
-                    XAxes.Add(newXAxis);
-
-                    Axis newYAxis = new Axis()
-                    {
-                        MaxLimit = maxValue,
-                        MinLimit = minValue,
-                    };
-                    YAxes.Add(newYAxis);
-                    _axesCache.Add(SelectedCategory, (newXAxis, newYAxis));
-                }
+                series.PointHovered -= SeriesPointHover;
             }
-            catch (Exception ex)
+
+            if (string.IsNullOrEmpty(SelectedCategory?.Id))
             {
-                _errorRevealer.Reveal(ex, $"Unexpected error in {nameof(UpdateSeriesAsync)}");
+                // No category, no data points.
+                Series.Clear();
+                return;
+            }
+
+            List<DataPoint> dataPoints = new List<DataPoint>();
+            await foreach (DataPoint dataPoint in _dataPointBiz.GetDataPoints(
+                SelectedCategory,
+                StartDateRange == default ? null : StartDateRange.ToUniversalTime(),
+                EndDateRange == default ? null : EndDateRange.ToUniversalTime(),
+                cancellationToken).ConfigureAwait(false))
+            {
+                dataPoints.Add(dataPoint);
+            };
+            dataPoints.Sort(DatePointComparer.DateTimeComparer);
+
+            double maxValue = _chartAxisExpansion.ExpandUp(dataPoints.Any() ? dataPoints.Max(point => point.Value) : 0);
+            double minValue = _chartAxisExpansion.ExpandDown(dataPoints.Any() ? dataPoints.Min(point => point.Value) : 0);
+
+            await syncContext;
+            Series.Add(CreateNewSeries(dataPoints));
+            foreach (ISeries existItem in existingSeries)
+            {
+                Series.Remove(existItem);
+            }
+
+            XAxes.Clear();
+            YAxes.Clear();
+            if (_axesCache.ContainsKey(SelectedCategory))
+            {
+                (ICartesianAxis xAxis, ICartesianAxis yAxis) = _axesCache[SelectedCategory];
+                yAxis.MaxLimit = maxValue;
+                yAxis.MinLimit = minValue;
+                XAxes.Add(xAxis);
+                YAxes.Add(yAxis);
+            }
+            else
+            {
+                Axis newXAxis = CreateNewXAxis();
+                XAxes.Add(newXAxis);
+
+                Axis newYAxis = new Axis()
+                {
+                    MaxLimit = maxValue,
+                    MinLimit = minValue,
+                };
+                YAxes.Add(newYAxis);
+                _axesCache.Add(SelectedCategory, (newXAxis, newYAxis));
             }
         }
 
@@ -415,7 +408,7 @@ namespace CodeNameK.ViewModels
             else
             {
                 SyncStateText = "Fail";
-                _errorRevealer.Reveal(result.Reason, "Sync error");
+                _errorRevealerFactory.CreateInstance(string.Empty).Reveal(result.Reason, "Sync error");
             }
 
             // Post sync
@@ -541,44 +534,37 @@ namespace CodeNameK.ViewModels
             return false;
         }
 
-        private async void ApplyNewDateRangeAsync(CancellationToken cancellationToken = default)
+        private async Task ApplyNewDateRangeAsync(CancellationToken cancellationToken = default)
         {
-            try
+            // Show all
+            DateTime startAt = default;
+            DateTime endAt = default;
+
+            switch (SelectedDateRangeOption.Value)
             {
-                // Show all
-                DateTime startAt = default;
-                DateTime endAt = default;
-
-                switch (SelectedDateRangeOption.Value)
-                {
-                    case int.MinValue:
-                        break;
-                    case 1:
-                    case 3:
-                    case 7:
-                        (startAt, endAt) = _dateRangeService.GetLastNDays((uint)SelectedDateRangeOption.Value);
-                        break;
-                    case 8:
-                        (startAt, endAt) = _dateRangeService.GetThisWeek();
-                        break;
-                    case 30:
-                        (startAt, endAt) = _dateRangeService.GetThisMonth();
-                        break;
-                    default:
-                        _errorRevealer.Reveal("Unrecognized date time range. Will use the default range.", "Error");
-                        SelectedDateRangeOption = DateRangeOptions.First();
-                        return;
-                }
-
-                StartDateRange = startAt;
-                EndDateRange = endAt;
-
-                await UpdateSeriesAsync(default).ConfigureAwait(false);
+                case int.MinValue:
+                    break;
+                case 1:
+                case 3:
+                case 7:
+                    (startAt, endAt) = _dateRangeService.GetLastNDays((uint)SelectedDateRangeOption.Value);
+                    break;
+                case 8:
+                    (startAt, endAt) = _dateRangeService.GetThisWeek();
+                    break;
+                case 30:
+                    (startAt, endAt) = _dateRangeService.GetThisMonth();
+                    break;
+                default:
+                    _errorRevealerFactory.CreateInstance(string.Empty).Reveal("Unrecognized date time range. Will use the default range.", "Error");
+                    SelectedDateRangeOption = DateRangeOptions.First();
+                    return;
             }
-            catch (Exception ex)
-            {
-                _errorRevealer.Reveal(ex.Message, "Unexpected error applying date range filer.");
-            }
+
+            StartDateRange = startAt;
+            EndDateRange = endAt;
+
+            await UpdateSeriesAsync(default).ConfigureAwait(false);
         }
     }
 }

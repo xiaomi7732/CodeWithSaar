@@ -44,8 +44,6 @@ namespace CodeNameK.WPF
             services.AddHttpClient<InternetAvailability>();
 
             services.AddSingleton<MainWindow>();
-            services.AddSingleton<DataPointViewModel>(); // DataPoint operator
-            services.AddTransient<ErrorRevealer>(); // Message box that will be automatically dispatched to UI thread.
         }
 
         protected void OnStartup(object sender, StartupEventArgs e)

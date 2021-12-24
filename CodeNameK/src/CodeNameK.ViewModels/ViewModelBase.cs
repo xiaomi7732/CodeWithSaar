@@ -7,11 +7,11 @@ namespace CodeNameK.ViewModels
 {
     public abstract class ViewModelBase : INotifyPropertyChanged
     {
-        protected readonly ErrorRevealer _errorRevealer;
+        protected readonly IErrorRevealerFactory _errorRevealerFactory;
 
-        public ViewModelBase(ErrorRevealer errorRevealer)
+        public ViewModelBase(IErrorRevealerFactory errorRevealerFactory)
         {
-            _errorRevealer = errorRevealer ?? throw new ArgumentNullException(nameof(errorRevealer));
+            _errorRevealerFactory = errorRevealerFactory ?? throw new ArgumentNullException(nameof(errorRevealerFactory));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

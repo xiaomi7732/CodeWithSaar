@@ -3,9 +3,13 @@ using System.Windows;
 
 namespace CodeNameK.ViewModels
 {
-    public class ErrorRevealer
+    internal class ErrorRevealer : IErrorRevealer
     {
-        private string? _defaultTitle;
+        private string _defaultTitle;
+        public ErrorRevealer(string defaultTitle)
+        {
+            _defaultTitle = string.IsNullOrEmpty(defaultTitle) ? "Unknown error" : defaultTitle;
+        }
 
         public void Reveal(string message, string title)
         {
@@ -20,20 +24,11 @@ namespace CodeNameK.ViewModels
         {
             string message = ex.Message;
 #if DEBUG
-            message += Environment.NewLine + ex.StackTrace;
+            message = ex.ToString();
 #endif
             Reveal(message, title);
         }
 
-        public void Reveal(Exception ex)
-            => Reveal(ex, _defaultTitle ?? "Unexpected error");
-
-        public static ErrorRevealer WithTitle(string title)
-        {
-            ErrorRevealer newInstance = new ErrorRevealer() {
-                _defaultTitle = title,
-            };
-            return newInstance;
-        }
+        public void Reveal(Exception ex) => Reveal(ex, _defaultTitle);
     }
 }

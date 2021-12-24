@@ -21,7 +21,7 @@ namespace CodeNameK.ViewModels
         /// </summary>
         public DataPointViewModel(
             IDataPoint dataPointBiz,
-            ErrorRevealer errorRevealer,
+            IErrorRevealerFactory errorRevealer,
             ILogger<DataPointViewModel> logger)
             : base(errorRevealer)
         {
@@ -29,8 +29,8 @@ namespace CodeNameK.ViewModels
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
             LocalDate = DateTime.Today;
 
-            AddPointCommand = new AsyncRelayCommand(AddPointAsync, exceptionCallback: ErrorRevealer.WithTitle($"Unexpected error invoking {nameof(AddPointCommand)}").Reveal);
-            DeletePointCommand = new AsyncRelayCommand(DeletePointAsync, exceptionCallback: ErrorRevealer.WithTitle($"Unexpected error invoking {nameof(AsyncRelayCommand)}").Reveal);
+            AddPointCommand = new AsyncRelayCommand(AddPointAsync, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unexpected error invoking {nameof(AddPointCommand)}").Reveal);
+            DeletePointCommand = new AsyncRelayCommand(DeletePointAsync, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unexpected error invoking {nameof(AsyncRelayCommand)}").Reveal);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace CodeNameK.ViewModels
             }
             else
             {
-                _errorRevealer.Reveal(addResult.Reason, "Failed adding a data point");
+                _errorRevealerFactory.CreateInstance(string.Empty).Reveal(addResult.Reason, "Failed adding a data point");
             }
         }
 
@@ -191,7 +191,7 @@ namespace CodeNameK.ViewModels
             }
             else
             {
-                _errorRevealer.Reveal(result.Reason, "Delete data point failed.");
+                _errorRevealerFactory.CreateInstance(string.Empty).Reveal(result.Reason, "Delete data point failed.");
             }
         }
 
