@@ -1,4 +1,6 @@
+using System.Threading.Channels;
 using CodeNameK.BIZ.Interfaces;
+using CodeNameK.DataContracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,6 +14,11 @@ public static class BizRegister
         services.AddScoped<ISync, BizSync>();
         services.AddTransient<IChartAxisExpansion, BizChartAxisExpansion>();
         services.AddTransient<IDateRangeService, BizDateRangeService>();
+
+        services.AddSingleton<Channel<DataPointPathInfo>>(p => Channel.CreateUnbounded<DataPointPathInfo>());
+        services.AddScoped<BackgroundSyncProgress>();
+        services.AddHostedService<DataPointUploaderBackgroundService>();
+
         return services;
     }
 }

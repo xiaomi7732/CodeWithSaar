@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
@@ -12,10 +13,14 @@ namespace CodeNameK.BIZ;
 internal class BizDataPoint : IDataPoint
 {
     private readonly IDataPointRepo _dataPointRepo;
+    private readonly Channel<DataPointPathInfo> _syncChannel;
 
-    public BizDataPoint(IDataPointRepo dataPointRepo)
+    public BizDataPoint(
+        IDataPointRepo dataPointRepo,
+        Channel<DataPointPathInfo> syncChannel)
     {
         _dataPointRepo = dataPointRepo ?? throw new ArgumentNullException(nameof(dataPointRepo));
+        _syncChannel = syncChannel ?? throw new ArgumentNullException(nameof(syncChannel));
     }
 
     public async Task<OperationResult<DataPoint>> AddAsync(DataPoint newPoint, CancellationToken cancellationToken)
@@ -58,6 +63,7 @@ internal class BizDataPoint : IDataPoint
         }
 
         DataPointInfo newDataPointInfo = await _dataPointRepo.AddPointAsync(newPoint, cancellationToken).ConfigureAwait(false);
+        await _syncChannel.Writer.WriteAsync(newPoint, cancellationToken);
         return new OperationResult<DataPoint>()
         {
             Entity = newPoint,
@@ -90,6 +96,10 @@ internal class BizDataPoint : IDataPoint
         }
 
         await _dataPointRepo.DeletePointAsync(dataPoint, cancellationToken).ConfigureAwait(false);
+        DataPointPathInfo dataPointPathInfo = dataPoint;
+        dataPointPathInfo = dataPointPathInfo with { IsDeletionMark = true };
+        await _syncChannel.Writer.WriteAsync(dataPointPathInfo);
+
         return new OperationResult<bool>()
         {
             Entity = true,
@@ -130,6 +140,13 @@ internal class BizDataPoint : IDataPoint
 
         if (await _dataPointRepo.UpdatePointAsync(oldDataPoint, newDataPoint, cancellationToken).ConfigureAwait(false))
         {
+            DataPointPathInfo deletedDataPoint = oldDataPoint;
+            deletedDataPoint = deletedDataPoint with { IsDeletionMark = true };
+            DataPointPathInfo newDataPointPath = newDataPoint;
+
+            await _syncChannel.Writer.WriteAsync(deletedDataPoint);
+            await _syncChannel.Writer.WriteAsync(newDataPointPath);
+
             return CreateSuccess(newDataPoint);
         }
         return CreateFailure("Data access operation failed.");

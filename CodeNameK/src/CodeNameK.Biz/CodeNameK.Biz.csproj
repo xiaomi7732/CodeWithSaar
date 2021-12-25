@@ -1,6 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+    <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CodeNameK.Contracts\CodeNameK.Contracts.csproj" />
     <ProjectReference Include="..\CodeNameK.DataAccess\CodeNameK.DataAccess.csproj" />
   </ItemGroup>

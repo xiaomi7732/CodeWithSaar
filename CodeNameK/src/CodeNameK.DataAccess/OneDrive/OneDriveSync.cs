@@ -145,15 +145,24 @@ namespace CodeNameK.DAL.OneDrive
 
             foreach (DataPointPathInfo pathInfo in pathInfoList)
             {
-                string localPath = _localPathProvider.GetLocalPath(pathInfo);
-                string remotePath = _remotePathProvider.GetRemotePath(pathInfo);
-                if (await UpSyncAsync(localPath, remotePath, cancellationToken))
-                {
-                    yield return pathInfo;
-                }
-
+                DataPointPathInfo? result = await UpSyncAsync(pathInfo, cancellationToken).ConfigureAwait(false);
                 TryUpdateProgress(progress, ++processed, pathInfoList.Count);
+                if (result != null)
+                {
+                    yield return result;
+                }
             }
+        }
+
+        public async Task<DataPointPathInfo?> UpSyncAsync(DataPointPathInfo pathInfo, CancellationToken cancellationToken = default)
+        {
+            string localPath = _localPathProvider.GetLocalPath(pathInfo);
+            string remotePath = _remotePathProvider.GetRemotePath(pathInfo);
+            if (await UpSyncAsync(localPath, remotePath, cancellationToken))
+            {
+                return pathInfo;
+            }
+            return null;
         }
 
         private GraphServiceClient CreateGraphServiceClient(MSALAppOptions<OneDriveSync> graphAPIOptions)

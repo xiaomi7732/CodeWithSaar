@@ -36,6 +36,9 @@
             <StatusBarItem>
                 <TextBlock Text="{Binding SyncStateText}" />
             </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding BGSyncStateText}" />
+            </StatusBarItem>
         </StatusBar>
         <!--Main Area-->
         <Grid Margin="16">

@@ -1,3 +1,4 @@
+using CodeNameK.BIZ;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
 using CodeNameK.Contracts.CustomOptions;
@@ -51,6 +52,7 @@ namespace CodeNameK.ViewModels
             DataPointViewModel dataPointOperator,
             InternetAvailability internetAvailability,
             IErrorRevealerFactory errorRevealer,
+            BackgroundSyncProgress backgroundSyncProgress,
             IOptions<LocalStoreOptions> localStoreOptions,
             ILogger<MainViewModel> logger)
                 : base(errorRevealer)
@@ -77,7 +79,7 @@ namespace CodeNameK.ViewModels
                 RaisePropertyChanged(nameof(CategoryHeader));
             };
             _syncStateText = "No sync.";
-
+            _bgSyncStateText = string.Empty;
 
             _dataFolderPath = localStoreOptions.Value.DataStorePath.Replace('/', '\\');
 
@@ -91,6 +93,7 @@ namespace CodeNameK.ViewModels
             SelectedDateRangeOption = DateRangeOptions.First();
             _selectedDateRangeOption = SelectedDateRangeOption;
 
+            backgroundSyncProgress.ProgressChanged += BackgroundSyncProgress_ProgressChanged;
             RequestInitialSync().FireWithExceptionHandler(OnSyncImpException);
         }
 
@@ -380,6 +383,22 @@ namespace CodeNameK.ViewModels
             }
         }
 
+        private string _bgSyncStateText;
+
+        public string BGSyncStateText
+        {
+            get { return _bgSyncStateText; }
+            set
+            {
+                if (!string.Equals(_bgSyncStateText, value, StringComparison.Ordinal))
+                {
+                    _bgSyncStateText = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
+
         public ICommand SyncCommand { get; }
         private async Task SyncImpAsync(object? parameters)
         {
@@ -419,8 +438,8 @@ namespace CodeNameK.ViewModels
             {
                 case SigninTimeoutException:
                     MessageBoxResult choice = MessageBox.Show("User sign in timeout. This is a fatal error. " + Environment.NewLine +
-                        $"Details: {ex.Message}" + Environment.NewLine + 
-                        Environment.NewLine + 
+                        $"Details: {ex.Message}" + Environment.NewLine +
+                        Environment.NewLine +
                         "It is highly recommended to restart the application. Do you want to exit the current session?", "Fatal error", MessageBoxButton.YesNo, MessageBoxImage.Stop, MessageBoxResult.Yes);
 
                     if (choice == MessageBoxResult.Yes)
@@ -583,6 +602,15 @@ namespace CodeNameK.ViewModels
             EndDateRange = endAt;
 
             await UpdateSeriesAsync(default).ConfigureAwait(false);
+        }
+        
+        private void BackgroundSyncProgress_ProgressChanged(object? sender, string e)
+        {
+            Dispatch(() =>
+            {
+                BGSyncStateText = e;
+                return 0;
+            });
         }
     }
 }
