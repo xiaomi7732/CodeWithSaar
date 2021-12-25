@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Identity;
 using CodeNameK.Contracts.CustomOptions;
+using CodeNameK.Core.CustomExceptions;
 using CodeNameK.Core.Utilities;
 using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
@@ -70,7 +71,18 @@ namespace CodeNameK.DAL.OneDrive
         public async IAsyncEnumerable<DataPointPathInfo> ListAllDataPointsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
         {
             Queue<DriveItem> works = new Queue<DriveItem>();
-            DriveItem appRootItem = await _graphServiceClient.Me.Drive.Special.AppRoot.Request().GetAsync(cancellationToken).ConfigureAwait(false);
+
+            DriveItem? appRootItem = null;
+            Task timeoutTask = Task.Delay(_graphAPIOptions.SignInTimeout);
+            Task<DriveItem> appRootTask = _graphServiceClient.Me.Drive.Special.AppRoot.Request().GetAsync(cancellationToken);
+
+            await Task.WhenAny(timeoutTask, appRootTask).ConfigureAwait(false);
+            if (!appRootTask.IsCompleted)
+            {
+                throw new SigninTimeoutException(_graphAPIOptions.SignInTimeout);
+            }
+
+            appRootItem = appRootTask.Result;
             works.Enqueue(appRootItem);
             string appRootPath = Path.Combine(appRootItem.ParentReference.Path, appRootItem.Name);
             while (works.TryDequeue(out DriveItem work))

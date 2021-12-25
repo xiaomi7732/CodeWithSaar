@@ -1,16 +1,16 @@
 {
-    "Logging": {
-        "LogLevel": {
-            "Default": "Information",
-            "Microsoft": "Warning",
-            "Microsoft.Hosting.Lifetime": "Information"
-        }
-    },
-    "GraphAPI": {
-        "ClientId": "c35c09da-4ac5-47e7-98cc-2ba2979d8ae7",
-        "Scopes": [
-            "Files.ReadWrite.All"
-        ],
-        "RedirectUri": "http://localhost"
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
     }
+  },
+  "GraphAPI": {
+    "ClientId": "c35c09da-4ac5-47e7-98cc-2ba2979d8ae7",
+    "Scopes": [
+      "Files.ReadWrite.All"
+    ],
+    "RedirectUri": "http://localhost"
+  }
 }

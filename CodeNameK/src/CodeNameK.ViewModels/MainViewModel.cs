@@ -2,6 +2,7 @@ using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
 using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.Contracts.DataContracts;
+using CodeNameK.Core.CustomExceptions;
 using CodeNameK.Core.Utilities;
 using CodeNameK.DataContracts;
 using LiveChartsCore;
@@ -81,7 +82,7 @@ namespace CodeNameK.ViewModels
             _dataFolderPath = localStoreOptions.Value.DataStorePath.Replace('/', '\\');
 
             ResetZoomCommand = new RelayCommand(ResetZoom);
-            SyncCommand = new AsyncRelayCommand(SyncImpAsync, canExecute: null, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(SyncCommand)}").Reveal);
+            SyncCommand = new AsyncRelayCommand(SyncImpAsync, canExecute: null, exceptionCallback: OnSyncImpException);
             AddCategoryCommand = new AsyncRelayCommand(AddCategoryImpAsync, CanAddCategoryImp, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(AddCategoryCommand)}").Reveal);
             PickPointCommand = new RelayCommand(PickPointImp);
             TodayOnlyCommand = new AsyncRelayCommand(TodayOnlyImpAsync, canExecute: null, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled exception invoking {TodayOnlyCommand}").Reveal);
@@ -90,10 +91,7 @@ namespace CodeNameK.ViewModels
             SelectedDateRangeOption = DateRangeOptions.First();
             _selectedDateRangeOption = SelectedDateRangeOption;
 
-            RequestInitialSync().FireWithExceptionHandler(ex =>
-            {
-                _errorRevealerFactory.CreateInstance(string.Empty).Reveal(ex, $"Unexpected error {nameof(RequestInitialSync)}");
-            });
+            RequestInitialSync().FireWithExceptionHandler(OnSyncImpException);
         }
 
         public ICollectionView CategoryCollectionView { get; }
@@ -414,6 +412,26 @@ namespace CodeNameK.ViewModels
             // Post sync
             InitializeCategoryCollection();
             await UpdateSeriesAsync(default).ConfigureAwait(false);
+        }
+        private void OnSyncImpException(Exception ex)
+        {
+            switch (ex)
+            {
+                case SigninTimeoutException:
+                    MessageBoxResult choice = MessageBox.Show("User sign in timeout. This is a fatal error. " + Environment.NewLine +
+                        $"Details: {ex.Message}" + Environment.NewLine + 
+                        Environment.NewLine + 
+                        "It is highly recommended to restart the application. Do you want to exit the current session?", "Fatal error", MessageBoxButton.YesNo, MessageBoxImage.Stop, MessageBoxResult.Yes);
+
+                    if (choice == MessageBoxResult.Yes)
+                    {
+                        Application.Current.MainWindow.Close();
+                    }
+                    break;
+                default:
+                    _errorRevealerFactory.CreateInstance(string.Empty).Reveal(ex, $"Error invoking {nameof(SyncCommand)}");
+                    break;
+            }
         }
 
         public ICommand AddCategoryCommand { get; }

@@ -1,13 +1,16 @@
 {
-    "Logging": {
-        "LogLevel": {
-            "Default": "Information",
-            "Microsoft": "Warning",
-            "Microsoft.Hosting.Lifetime": "Information",
-            "CodeNameK": "Debug"
-        }
-    },
-    "LocalStore":{
-        "DataStorePath": "%userprofile%/.codeNameK/DebugData"
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "CodeNameK": "Debug"
     }
+  },
+  "LocalStore": {
+    "DataStorePath": "%userprofile%/.codeNameK/DebugData"
+  },
+  "GraphAPI": {
+    "SignInTimeout" : "00:00:30"
+  }
 }
