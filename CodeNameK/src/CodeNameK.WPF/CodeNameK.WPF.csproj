@@ -10,6 +10,10 @@
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'DEBUG'">
+    <OutputType>Exe</OutputType>
+    <DisableWinExeOutputInference>true</DisableWinExeOutputInference>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CodeNameK.ViewModels\CodeNameK.ViewModels.csproj" />
