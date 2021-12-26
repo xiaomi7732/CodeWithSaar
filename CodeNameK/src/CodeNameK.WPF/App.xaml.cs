@@ -30,15 +30,23 @@ namespace CodeNameK.WPF
 #endif
                     ;
                 })
-                .ConfigureLogging(builder =>
+                .ConfigureLogging((context,builder) =>
                 {
-                    builder.AddDebug().AddConsole();
-
+                    builder.ClearProviders();
+                    builder.AddConfiguration(context.Configuration.GetSection("Logging"));
+                    builder
+                        .AddDebug()
+                        .AddSimpleConsole(
+                            configure =>
+                            {
+                                configure.SingleLine = true;
+                                configure.TimestampFormat = "[HH:mm:ss] ";
+                            });
                 })
-                .ConfigureServices(ConfigureServices2).Build();
+                .ConfigureServices(ConfigureServices).Build();
         }
 
-        private void ConfigureServices2(HostBuilderContext context, IServiceCollection services)
+        private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
         {
             IConfiguration configurationRoot = context.Configuration;
             services.RegisterDataAccessModule(configurationRoot);
