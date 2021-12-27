@@ -17,8 +17,8 @@ namespace CodeNameK.WPF
     /// </summary>
     public partial class App : Application
     {
-        IHost _host;
-        // private ServiceProvider _serviceProvider;
+        private readonly IHost _host;
+
         public App()
         {
             _host = new HostBuilder()

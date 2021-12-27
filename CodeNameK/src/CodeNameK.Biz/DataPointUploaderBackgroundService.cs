@@ -49,6 +49,12 @@ namespace CodeNameK.BIZ
             }
         }
 
+        public override Task StopAsync(CancellationToken cancellationToken)
+        {
+            _logger.LogDebug("Stopping background service gracefully.");
+            return Task.CompletedTask;
+        }
+
         private Task<DataPointPathInfo?> UploadAsync(DataPointPathInfo localPath, CancellationToken cancellationToken)
             => _oneDrive.UpSyncAsync(localPath, cancellationToken);
     }
