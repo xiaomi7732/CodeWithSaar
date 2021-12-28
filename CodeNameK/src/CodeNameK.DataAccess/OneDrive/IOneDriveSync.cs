@@ -11,4 +11,5 @@ public interface IOneDriveSync
     IAsyncEnumerable<DataPointPathInfo> DownSyncAsync(IEnumerable<DataPointPathInfo> data, IProgress<double>? progress = null, CancellationToken cancellationToken = default);
     IAsyncEnumerable<DataPointPathInfo> UpSyncAsync(IEnumerable<DataPointPathInfo> source, IProgress<double>? progress = null, CancellationToken cancellationToken = default);
     Task<DataPointPathInfo?> UpSyncAsync(DataPointPathInfo source, CancellationToken cancellationToken = default);
+    Task<bool> SignInAsync(CancellationToken cancellationToken = default);
 }

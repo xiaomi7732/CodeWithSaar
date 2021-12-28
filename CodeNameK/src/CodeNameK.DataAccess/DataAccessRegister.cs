@@ -1,3 +1,4 @@
+using CodeNameK.Contracts;
 using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.DAL.Interfaces;
 using CodeNameK.DAL.OneDrive;
@@ -24,6 +25,8 @@ namespace CodeNameK.DAL
             services.AddScoped<IDataPointRepo>(p => p.GetRequiredService<DataRepo>());
 
             services.AddOptions<MSALAppOptions<OneDriveSync>>().Bind(configuration.GetSection("GraphAPI"));
+            services.AddSingleton<OneDriveTokenCredential>();
+            services.AddSingleton<ITokenCredentialManager<OneDriveCredentialStatus>>(p => p.GetRequiredService<OneDriveTokenCredential>());
             services.AddScoped<IOneDriveSync, OneDriveSync>();
 
             return services;

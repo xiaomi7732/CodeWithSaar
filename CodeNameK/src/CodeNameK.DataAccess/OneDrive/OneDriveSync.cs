@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Identity;
+using CodeNameK.Contracts;
 using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.Core.CustomExceptions;
 using CodeNameK.Core.Utilities;
@@ -23,18 +23,22 @@ namespace CodeNameK.DAL.OneDrive
 
         private readonly IRemotePathProvider _remotePathProvider;
         private readonly ILocalPathProvider _localPathProvider;
+        private readonly OneDriveTokenCredential _tokenCredential;
         private readonly MSALAppOptions<OneDriveSync> _graphAPIOptions;
+
         private readonly ILogger _logger;
 
         public OneDriveSync(
             IRemotePathProvider remotePathProvider,
             ILocalPathProvider localPathProvider,
             IOptions<MSALAppOptions<OneDriveSync>> graphAPIOptions,
+            OneDriveTokenCredential tokenCredential,
             ILogger<OneDriveSync> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _remotePathProvider = remotePathProvider ?? throw new ArgumentNullException(nameof(remotePathProvider));
             _localPathProvider = localPathProvider ?? throw new ArgumentNullException(nameof(localPathProvider));
+            _tokenCredential = tokenCredential ?? throw new ArgumentNullException(nameof(tokenCredential));
             _graphAPIOptions = graphAPIOptions?.Value ?? throw new ArgumentNullException(nameof(graphAPIOptions));
 
             _graphServiceClient = CreateGraphServiceClient(_graphAPIOptions);
@@ -165,18 +169,15 @@ namespace CodeNameK.DAL.OneDrive
             return null;
         }
 
+        public async Task<bool> SignInAsync(CancellationToken cancellationToken = default)
+        {
+            OneDriveCredentialStatus status = await _tokenCredential.SignInAsync(_graphAPIOptions.SignInTimeout, cancellationToken);
+            return status == OneDriveCredentialStatus.SignedIn;
+        }
+
         private GraphServiceClient CreateGraphServiceClient(MSALAppOptions<OneDriveSync> graphAPIOptions)
         {
-            InteractiveBrowserCredentialOptions options = new InteractiveBrowserCredentialOptions
-            {
-                TenantId = graphAPIOptions.TenantId,
-                ClientId = graphAPIOptions.ClientId,
-                AuthorityHost = AzureAuthorityHosts.AzurePublicCloud,
-                RedirectUri = new Uri(graphAPIOptions.RedirectUri),
-            };
-            InteractiveBrowserCredential credential = new InteractiveBrowserCredential(options);
-            GraphServiceClient graphClient = new GraphServiceClient(credential, graphAPIOptions.Scopes);
-
+            GraphServiceClient graphClient = new GraphServiceClient(_tokenCredential, graphAPIOptions.Scopes);
             return graphClient;
         }
 

@@ -51,7 +51,10 @@ namespace CodeNameK.BIZ
 
                 List<DataPointPathInfo> remoteDataPoints = new List<DataPointPathInfo>();
                 List<DataPointPathInfo> downloadTarget = new List<DataPointPathInfo>();
-                SyncProgress syncProgress = new SyncProgress() { DisplayText = "Get ready", Value = (double)5 / 100 };
+                SyncProgress syncProgress = new SyncProgress() { DisplayText = "Signing in", Value = 0 };
+                progress?.Report(syncProgress); // 0%
+                await _oneDriveSync.SignInAsync(cancellationToken).ConfigureAwait(false);
+                syncProgress = new SyncProgress() { DisplayText = "Signed in", Value = (double)5 / 100 };
                 progress?.Report(syncProgress); // 5%
                 bool reported = false;
                 await foreach (DataPointPathInfo pathInfo in _oneDriveSync.ListAllDataPointsAsync(cancellationToken).ConfigureAwait(false))
