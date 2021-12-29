@@ -9,5 +9,7 @@ namespace CodeNameK.BIZ.Interfaces
     public interface ISync
     {
         Task<OperationResult<SyncStatistic>> Sync(IProgress<SyncProgress>? progress, CancellationToken cancellationToken = default);
+        int UpSyncQueueLength { get; }
+        ValueTask EnqueueSyncRequestAsync(UpSyncRequest request, CancellationToken cancellationToken = default);
     }
 }

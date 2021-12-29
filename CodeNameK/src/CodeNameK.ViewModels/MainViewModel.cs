@@ -93,6 +93,7 @@ namespace CodeNameK.ViewModels
             SelectedDateRangeOption = DateRangeOptions.First();
             _selectedDateRangeOption = SelectedDateRangeOption;
 
+            UpSyncQueueLength = _syncService.UpSyncQueueLength;
             backgroundSyncProgress.ProgressChanged += BackgroundSyncProgress_ProgressChanged;
             RequestInitialSync().FireWithExceptionHandler(OnSyncImpException);
         }
@@ -398,6 +399,20 @@ namespace CodeNameK.ViewModels
             }
         }
 
+        private int _upSyncQueueLength;
+        public int UpSyncQueueLength
+        {
+            get { return _upSyncQueueLength; }
+            set
+            {
+                if (_upSyncQueueLength != value)
+                {
+                    _upSyncQueueLength = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
 
         public ICommand SyncCommand { get; }
         private async Task SyncImpAsync(object? parameters)
@@ -603,12 +618,14 @@ namespace CodeNameK.ViewModels
 
             await UpdateSeriesAsync(default).ConfigureAwait(false);
         }
-        
-        private void BackgroundSyncProgress_ProgressChanged(object? sender, string e)
+
+        private void BackgroundSyncProgress_ProgressChanged(object? sender, (string, int) args)
         {
+            (string text, int queueLength) = args;
             Dispatch(() =>
             {
-                BGSyncStateText = e;
+                BGSyncStateText = text;
+                UpSyncQueueLength = queueLength;
                 return 0;
             });
         }

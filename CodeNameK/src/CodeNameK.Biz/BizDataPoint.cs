@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
@@ -13,14 +12,14 @@ namespace CodeNameK.BIZ;
 internal class BizDataPoint : IDataPoint
 {
     private readonly IDataPointRepo _dataPointRepo;
-    private readonly Channel<DataPointPathInfo> _syncChannel;
+    private readonly ISync _syncService;
 
     public BizDataPoint(
         IDataPointRepo dataPointRepo,
-        Channel<DataPointPathInfo> syncChannel)
+        ISync syncService)
     {
         _dataPointRepo = dataPointRepo ?? throw new ArgumentNullException(nameof(dataPointRepo));
-        _syncChannel = syncChannel ?? throw new ArgumentNullException(nameof(syncChannel));
+        _syncService = syncService ?? throw new ArgumentNullException(nameof(syncService));
     }
 
     public async Task<OperationResult<DataPoint>> AddAsync(DataPoint newPoint, CancellationToken cancellationToken)
@@ -62,8 +61,8 @@ internal class BizDataPoint : IDataPoint
             }
         }
 
-        DataPointInfo newDataPointInfo = await _dataPointRepo.AddPointAsync(newPoint, cancellationToken).ConfigureAwait(false);
-        await _syncChannel.Writer.WriteAsync(newPoint, cancellationToken);
+        DataPointPathInfo newDataPointInfo = await _dataPointRepo.AddPointAsync(newPoint, cancellationToken).ConfigureAwait(false);
+        await _syncService.EnqueueSyncRequestAsync(new UpSyncRequest(newDataPointInfo), cancellationToken);
         return new OperationResult<DataPoint>()
         {
             Entity = newPoint,
@@ -98,7 +97,7 @@ internal class BizDataPoint : IDataPoint
         await _dataPointRepo.DeletePointAsync(dataPoint, cancellationToken).ConfigureAwait(false);
         DataPointPathInfo dataPointPathInfo = dataPoint;
         dataPointPathInfo = dataPointPathInfo with { IsDeletionMark = true };
-        await _syncChannel.Writer.WriteAsync(dataPointPathInfo);
+        await _syncService.EnqueueSyncRequestAsync(new UpSyncRequest(dataPointPathInfo), cancellationToken);
 
         return new OperationResult<bool>()
         {
@@ -144,8 +143,8 @@ internal class BizDataPoint : IDataPoint
             deletedDataPoint = deletedDataPoint with { IsDeletionMark = true };
             DataPointPathInfo newDataPointPath = newDataPoint;
 
-            await _syncChannel.Writer.WriteAsync(deletedDataPoint);
-            await _syncChannel.Writer.WriteAsync(newDataPointPath);
+            await _syncService.EnqueueSyncRequestAsync(new UpSyncRequest(deletedDataPoint));
+            await _syncService.EnqueueSyncRequestAsync(new UpSyncRequest(newDataPointPath));
 
             return CreateSuccess(newDataPoint);
         }

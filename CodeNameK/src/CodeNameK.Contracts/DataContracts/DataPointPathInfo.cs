@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 
 namespace CodeNameK.DataContracts
 {
-    public record DataPointPathInfo : DataPointInfo, IEqualityComparer<DataPointPathInfo>
+    public record DataPointPathInfo : IEqualityComparer<DataPointPathInfo>
     {
+        public Guid Id { get; init; }
+        public Category? Category { get; init; }
         public ushort YearFolder { get; init; }
         public ushort MonthFolder { get; init; }
         public bool IsDeletionMark { get; init; }

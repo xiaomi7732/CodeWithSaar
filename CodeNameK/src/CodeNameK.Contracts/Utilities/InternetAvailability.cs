@@ -1,3 +1,6 @@
+#define ASSUME_NO_INTERNET
+#undef ASSUME_NO_INTERNET
+
 using System;
 using System.Net.Http;
 using System.Net.NetworkInformation;
@@ -17,6 +20,10 @@ namespace CodeNameK.Core.Utilities
 
         public async Task<bool> IsInternetAvailableAsync()
         {
+#if ASSUME_NO_INTERNET
+                return false;
+#endif
+
             // Fast fail when there's no internet connection
             if (!NetworkInterface.GetIsNetworkAvailable())
             {

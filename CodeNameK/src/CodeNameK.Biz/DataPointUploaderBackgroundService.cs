@@ -1,4 +1,5 @@
-﻿using CodeNameK.Core.Utilities;
+﻿using CodeNameK.Contracts;
+using CodeNameK.Core.Utilities;
 using CodeNameK.DAL.OneDrive;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Hosting;
@@ -15,15 +16,16 @@ namespace CodeNameK.BIZ
 {
     internal class DataPointUploaderBackgroundService : BackgroundService
     {
-        private readonly Channel<DataPointPathInfo> _channel;
+        private readonly Channel<UpSyncRequest> _channel;
         private readonly IOneDriveSync _oneDrive;
-        private readonly IProgress<string> _progress;
+        private readonly IProgress<(string, int)> _progress;
         private readonly IHostEnvironment _hostEnvironment;
         private readonly InternetAvailability _internetAvailability;
         private readonly ILogger<DataPointUploaderBackgroundService> _logger;
+        private readonly string _sessionFilePath;
 
         public DataPointUploaderBackgroundService(
-            Channel<DataPointPathInfo> channel,
+            Channel<UpSyncRequest> channel,
             IOneDriveSync oneDrive,
             BackgroundSyncProgress progress,
             IHostEnvironment hostEnvironment,
@@ -37,47 +39,75 @@ namespace CodeNameK.BIZ
             _hostEnvironment = hostEnvironment ?? throw new ArgumentNullException(nameof(hostEnvironment));
             _internetAvailability = internetAvailability ?? throw new ArgumentNullException(nameof(internetAvailability));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+            _sessionFilePath = Path.Combine(_hostEnvironment.ContentRootPath, "up-sync.json");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            // Restore data from saved session.
+            await RestoreSessionAsync(stoppingToken).ConfigureAwait(false);
+            LogAndReport("Check internet status...");
+            while (!await _internetAvailability.IsInternetAvailableAsync())
+            {
+                LogAndReport("No internet access. Retry in 1 minute.");
+                await Task.Delay(TimeSpan.FromMinutes(1)).ConfigureAwait(false);
+                LogAndReport("Check internet status...");
+            }
+            LogAndReport("Internet Connected. Waiting for data.");
+
+            bool signedIn = await _oneDrive.SignInAsync(stoppingToken).ConfigureAwait(false);
+            if (signedIn)
+            {
+                LogAndReport("User signed in.");
+            }
+            else
+            {
+                LogAndReport("User sign in failed. No auto sync.");
+                return;
+            }
+
             while (await _channel.Reader.WaitToReadAsync(stoppingToken).ConfigureAwait(false))
             {
-                DataPointPathInfo input = await _channel.Reader.ReadAsync(stoppingToken).ConfigureAwait(false);
-
-                LogAndReport("Check internet status...");
-                while (!await _internetAvailability.IsInternetAvailableAsync())
-                {
-                    LogAndReport("No internet access. Retry in 1 minute.");
-                    await Task.Delay(TimeSpan.FromMinutes(1)).ConfigureAwait(false);
-                    LogAndReport("Check internet status...");
-                }
-
+                DataPointPathInfo input = (await _channel.Reader.ReadAsync(stoppingToken).ConfigureAwait(false)).Payload;
                 LogAndReport("Signing in for auto sync...");
-                bool signedIn = await _oneDrive.SignInAsync(stoppingToken).ConfigureAwait(false);
-                if (signedIn)
-                {
-                    LogAndReport("User signed in.");
-                }
-                else
-                {
-                    LogAndReport("User sign in failed. No auto sync.");
-                    return;
-                }
 
                 try
                 {
-                    _progress.Report("Uploading data.");
+                    LogAndReport("Uploading data.");
                     await _oneDrive.SignInAsync(stoppingToken).ConfigureAwait(false);
                     DataPointPathInfo? result = await UploadAsync(input, stoppingToken).ConfigureAwait(false);
                     _logger.LogInformation("Uploaded: {0}", result);
-                    _progress.Report("Data uploaded");
+                    ReportProgress("Data uploaded");
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error uploading data: {0}");
-                    _progress.Report("Data uploaded error.");
+                    // Put back:
+                    bool putBack = !_channel.Writer.TryWrite(new UpSyncRequest(input));
+                    _logger.LogError(ex, "Error uploading data: {data}. Data returned to queue: {putBack}", input, putBack);
+                    ReportProgress("Data uploaded error.");
                 }
+            }
+        }
+
+        private async Task RestoreSessionAsync(CancellationToken cancellationToken = default)
+        {
+            if (!File.Exists(_sessionFilePath))
+            {
+                _logger.LogInformation("No session file found at {sessionFilePath}.", _sessionFilePath);
+                return;
+            }
+
+            using (Stream inputStream = File.OpenRead(_sessionFilePath))
+            {
+                List<DataPointPathInfo>? messages = await JsonSerializer.DeserializeAsync<List<DataPointPathInfo>>(inputStream, cancellationToken: cancellationToken).ConfigureAwait(false);
+                int count = 0;
+                foreach (DataPointPathInfo item in messages.NullAsEmpty())
+                {
+                    await _channel.Writer.WriteAsync(new UpSyncRequest(item));
+                    count++;
+                }
+                _logger.LogInformation("{count} item restored for uploading.", count);
             }
         }
 
@@ -87,9 +117,9 @@ namespace CodeNameK.BIZ
             _logger.LogInformation("{count} items are still in the channel.", _channel.Reader.Count);
 
             List<DataPointPathInfo> messages = new List<DataPointPathInfo>();
-            await foreach (DataPointPathInfo message in _channel.Reader.ReadAllAsync(cancellationToken))
+            await foreach (UpSyncRequest upSyncRequest in _channel.Reader.ReadAllAsync(cancellationToken).ConfigureAwait(false))
             {
-                messages.Add(message);
+                messages.Add(upSyncRequest.Payload);
             }
 
             string tempFileName = Path.GetTempFileName();
@@ -97,9 +127,8 @@ namespace CodeNameK.BIZ
             {
                 await JsonSerializer.SerializeAsync(outputFileStream, messages).ConfigureAwait(false);
             }
-            string targetFilePath = Path.Combine(_hostEnvironment.ContentRootPath, "job.json");
-            FileUtilities.Move(tempFileName, targetFilePath, true);
-            _logger.LogInformation("Session info persistent to: {destination}", targetFilePath);
+            FileUtilities.Move(tempFileName, _sessionFilePath, overwrite: true);
+            _logger.LogInformation("Session info persistent to: {destination}", _sessionFilePath);
         }
 
         private Task<DataPointPathInfo?> UploadAsync(DataPointPathInfo localPath, CancellationToken cancellationToken)
@@ -108,7 +137,12 @@ namespace CodeNameK.BIZ
         private void LogAndReport(string message, LogLevel logLevel = LogLevel.Information)
         {
             _logger.Log(logLevel, message);
-            _progress.Report(message);
+            ReportProgress(message);
+        }
+
+        private void ReportProgress(string message)
+        {
+            _progress.Report((message, _channel.Reader.Count));
         }
     }
 }

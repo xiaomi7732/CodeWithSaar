@@ -24,7 +24,7 @@ namespace CodeNameK.Core.Utilities
         /// <remarks>
         /// It is still preferred if the callee can return Enumerable.Empty{T}() than null.
         /// </remarks>
-        public static IEnumerable<T> NullAsEmpty<T>(this IEnumerable<T> original)
+        public static IEnumerable<T> NullAsEmpty<T>(this IEnumerable<T>? original)
             => original ?? Enumerable.Empty<T>();
 
         /// <summary>

@@ -2,16 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
-using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.Contracts.DataContracts;
 using CodeNameK.DAL.Interfaces;
 using CodeNameK.DAL.OneDrive;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace CodeNameK.BIZ
 {
@@ -20,19 +19,30 @@ namespace CodeNameK.BIZ
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly IOneDriveSync _oneDriveSync;
         private readonly ILocalPathProvider _localPathProvider;
-        private readonly LocalStoreOptions _localStoreOptions;
+        private readonly Channel<UpSyncRequest> _upSyncChannel;
+        private readonly IProgress<(string, int)> _upSyncProgress;
         private readonly ILogger _logger;
 
         public BizSync(
             IOneDriveSync oneDriveSync,
             ILocalPathProvider localPathProvider,
-            IOptions<LocalStoreOptions> localStoreOptions,
+            Channel<UpSyncRequest> upSyncChannel,
+            BackgroundSyncProgress upSyncProgress,
             ILogger<BizSync> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _oneDriveSync = oneDriveSync ?? throw new ArgumentNullException(nameof(oneDriveSync));
             _localPathProvider = localPathProvider ?? throw new ArgumentNullException(nameof(localPathProvider));
-            _localStoreOptions = localStoreOptions?.Value ?? throw new ArgumentNullException(nameof(localStoreOptions));
+            _upSyncChannel = upSyncChannel ?? throw new ArgumentNullException(nameof(upSyncChannel));
+            _upSyncProgress = upSyncProgress ?? throw new ArgumentNullException(nameof(upSyncProgress));
+        }
+
+        public int UpSyncQueueLength => _upSyncChannel.Reader.Count;
+
+        public async ValueTask EnqueueSyncRequestAsync(UpSyncRequest request, CancellationToken cancellationToken = default)
+        {
+            await _upSyncChannel.Writer.WriteAsync(request, cancellationToken);
+            _upSyncProgress.Report(("Up sync added.", _upSyncChannel.Reader.Count));
         }
 
         public async Task<OperationResult<SyncStatistic>> Sync(IProgress<SyncProgress>? progress, CancellationToken cancellationToken = default)
@@ -103,7 +113,7 @@ namespace CodeNameK.BIZ
                     progress?.Report(syncProgress);
                 });
                 IEnumerable<DataPointPathInfo> uploadTargets = _localPathProvider.ListAllDataPointPaths().Except(remoteDataPoints);
-                await foreach (DataPointInfo uploaded in _oneDriveSync.UpSyncAsync(uploadTargets, uploadProgress, cancellationToken).ConfigureAwait(false))
+                await foreach (DataPointPathInfo uploaded in _oneDriveSync.UpSyncAsync(uploadTargets, uploadProgress, cancellationToken).ConfigureAwait(false))
                 {
                     if (uploaded != null)
                     {
