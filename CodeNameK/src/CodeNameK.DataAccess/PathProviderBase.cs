@@ -129,4 +129,22 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
     public abstract bool PhysicalFileExists(DataPointPathInfo dataPointPathInfo);
 
     public abstract IEnumerable<DataPointPathInfo> ListAllDataPointPaths();
+
+    public bool TryGetCategory(string name, out Category? category)
+    {
+        category = null;
+
+        if (string.IsNullOrEmpty(name))
+        {
+            return false;
+        }
+
+        string categoryId = DecodePath(DecodeCategory(name));
+        if (string.IsNullOrEmpty(categoryId))
+        {
+            return false;
+        }
+        category = new Category() { Id = categoryId };
+        return true;
+    }
 }

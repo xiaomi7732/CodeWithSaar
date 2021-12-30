@@ -77,6 +77,11 @@ namespace CodeNameK.BIZ
             }
         }
 
+        public IAsyncEnumerable<Category> PeekRemoteCategoriesAsync(CancellationToken cancellationToken)
+        {
+            return _oneDriveSync.ListCategoriesAsync(cancellationToken);
+        }
+
         public async Task<OperationResult<SyncStatistic>> Sync(IProgress<SyncProgress>? progress, CancellationToken cancellationToken = default)
         {
             if (!await _semaphore.WaitAsync(timeout: TimeSpan.FromSeconds(1)))

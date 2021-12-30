@@ -11,4 +11,12 @@ public interface IRemotePathProvider
     /// Get relative remote path for a specific category. The category name is encoded correctly.
     /// </summary>
     string GetRemotePath(Category category);
+
+    /// <summary>
+    /// Tries to get a category by the folder name on remote.
+    /// </summary>
+    /// <param name="name">The encoded folder name.</param>
+    /// <param name="category">The category to return.</param>
+    /// <returns>Returns true when succeeded. False otherwise.</returns>
+    bool TryGetCategory(string name, out Category? category);
 }

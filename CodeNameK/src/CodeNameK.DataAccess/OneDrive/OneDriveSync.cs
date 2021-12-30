@@ -53,6 +53,48 @@ namespace CodeNameK.DAL.OneDrive
         public IAsyncEnumerable<DataPointPathInfo> ListAllDataPointsAsync(CancellationToken cancellationToken)
             => ListAllDataPointsAsync(relativeRemotePath: _remotePathProvider.BasePath, cancellationToken);
 
+        public async IAsyncEnumerable<Category> ListCategoriesAsync([EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            await SignInAsync(cancellationToken).ConfigureAwait(false);
+            string basePath = _remotePathProvider.BasePath;
+            DriveItem baseDriveItem = await _graphServiceClient.Me.Drive.Special.AppRoot.ItemWithPath(basePath).Request().GetAsync(cancellationToken);
+
+            if (baseDriveItem.Folder is null || baseDriveItem.Folder.ChildCount == 0)
+            {
+                // No children.
+                yield break;
+            }
+
+            IDriveItemChildrenCollectionPage items = await _graphServiceClient.Me.Drive.Items[baseDriveItem.Id].Children.Request().GetAsync(cancellationToken).ConfigureAwait(false);
+            while (items != null && items.Any())
+            {
+                foreach (DriveItem item in items)
+                {
+                    if (item.Folder is null)
+                    {
+                        continue;
+                    }
+
+                    if (_remotePathProvider.TryGetCategory(item.Name, out Category? category))
+                    {
+                        if (category is null)
+                        {
+                            continue;
+                        }
+                        yield return category;
+                    }
+
+                }
+
+                if (items.NextPageRequest is null)
+                {
+                    break;
+                }
+                items = await items.NextPageRequest.GetAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+        }
+
         public IAsyncEnumerable<DataPointPathInfo> ListAllDataPointsAsync(Category category, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(category.Id))

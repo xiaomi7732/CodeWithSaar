@@ -7,15 +7,29 @@ using System.Threading.Tasks;
 namespace CodeNameK.DAL.OneDrive;
 public interface IOneDriveSync
 {
+    /// <summary>
+    /// List all data points recursively.
+    /// </summary>
     IAsyncEnumerable<DataPointPathInfo> ListAllDataPointsAsync(CancellationToken cancellationToken);
 
     /// <summary>
     /// List all remote data points of a given category.
     /// </summary>
-    /// <param name="category">The target category</param>
     IAsyncEnumerable<DataPointPathInfo> ListAllDataPointsAsync(Category category, CancellationToken cancellationToken);
 
+    /// <summary>
+    /// List categories on the OneDrive.
+    /// </summary>
+    IAsyncEnumerable<Category> ListCategoriesAsync(CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Down sync a series of data points with progress.
+    /// </summary>
     IAsyncEnumerable<DataPointPathInfo> DownSyncAsync(IEnumerable<DataPointPathInfo> data, IProgress<double>? progress = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Up sync a series of data points with progress.
+    /// </summary>
     IAsyncEnumerable<DataPointPathInfo> UpSyncAsync(IEnumerable<DataPointPathInfo> source, IProgress<double>? progress = null, CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -39,5 +53,9 @@ public interface IOneDriveSync
     /// Exceptions might throw on other cases.
     /// </returns>
     Task<bool> UpSyncAsync(DataPointPathInfo source, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Sign in the user to OneDrive.
+    /// </summary>
     Task<bool> SignInAsync(CancellationToken cancellationToken = default);
 }

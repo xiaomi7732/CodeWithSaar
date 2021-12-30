@@ -2,6 +2,7 @@ using CodeNameK.Contracts;
 using CodeNameK.Contracts.DataContracts;
 using CodeNameK.DataContracts;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,6 +13,8 @@ namespace CodeNameK.BIZ.Interfaces
         Task<OperationResult<SyncStatistic>> Sync(IProgress<SyncProgress>? progress, CancellationToken cancellationToken = default);
         int UpSyncQueueLength { get; }
         int DownSyncQueueLength { get; }
+
+        IAsyncEnumerable<Category> PeekRemoteCategoriesAsync(CancellationToken cancellationToken);
 
         /// <summary>
         /// Initiate a up sync request in the background.
