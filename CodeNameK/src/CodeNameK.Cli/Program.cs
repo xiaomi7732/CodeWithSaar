@@ -285,7 +285,7 @@ namespace CodeNameK.Cli
         {
             services.AddOptions<LocalStoreOptions>().Bind(configurationRoot.GetSection(LocalStoreOptions.SectionName));
             services.RegisterDataAccessModule(configurationRoot);
-            services.RegisterBizModule(configurationRoot);
+            services.RegisterBizModule(configurationRoot.GetSection(SyncOptions.SectionName));
 
             services.AddSingleton<Program>();
         }

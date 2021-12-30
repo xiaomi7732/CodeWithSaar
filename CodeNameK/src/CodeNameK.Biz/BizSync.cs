@@ -1,16 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
+using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.Contracts.DataContracts;
 using CodeNameK.DAL.Interfaces;
 using CodeNameK.DAL.OneDrive;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace CodeNameK.BIZ
 {
@@ -18,41 +21,76 @@ namespace CodeNameK.BIZ
     {
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
         private readonly IOneDriveSync _oneDriveSync;
+        private readonly ITokenCredentialManager<OneDriveCredentialStatus> _oneDriveTokenManager;
         private readonly ILocalPathProvider _localPathProvider;
         private readonly Channel<UpSyncRequest> _upSyncChannel;
         private readonly Channel<DownSyncRequest> _downSyncChannel;
         private readonly IProgress<(string, int)> _upSyncProgress;
         private readonly IProgress<(string, int)> _downSyncProgress;
+        private readonly SyncOptions _options;
         private readonly ILogger _logger;
 
         public BizSync(
             IOneDriveSync oneDriveSync,
+            ITokenCredentialManager<OneDriveCredentialStatus> oneDriveTokenManager,
             ILocalPathProvider localPathProvider,
             Channel<UpSyncRequest> upSyncChannel,
             Channel<DownSyncRequest> downSyncChannel,
             BackgroundSyncProgress<UpSyncBackgroundService> upSyncProgress,
             BackgroundSyncProgress<DownSyncBackgroundService> downSyncProgress,
+            IOptions<SyncOptions> options,
             ILogger<BizSync> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _oneDriveSync = oneDriveSync ?? throw new ArgumentNullException(nameof(oneDriveSync));
+            _oneDriveTokenManager = oneDriveTokenManager ?? throw new ArgumentNullException(nameof(oneDriveTokenManager));
             _localPathProvider = localPathProvider ?? throw new ArgumentNullException(nameof(localPathProvider));
             _upSyncChannel = upSyncChannel ?? throw new ArgumentNullException(nameof(upSyncChannel));
             _downSyncChannel = downSyncChannel ?? throw new ArgumentNullException(nameof(downSyncChannel));
             _upSyncProgress = upSyncProgress ?? throw new ArgumentNullException(nameof(upSyncProgress));
             _downSyncProgress = downSyncProgress ?? throw new ArgumentNullException(nameof(downSyncProgress));
+            _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
         public int UpSyncQueueLength => _upSyncChannel.Reader.Count;
 
         public int DownSyncQueueLength => _downSyncChannel.Reader.Count;
 
-        public async ValueTask EnqueueDownSyncRequestAsync(Category forCategory, CancellationToken cancellationToken = default)
+        public async Task<bool> SignInAsync(CancellationToken cancellationToken)
+        {
+            return await _oneDriveTokenManager.SignInAsync(_options.SignInTimeout, cancellationToken).ConfigureAwait(false) == OneDriveCredentialStatus.SignedIn;
+        }
+
+        public async Task<bool> DownSyncAsync(DataPointPathInfo item, CancellationToken cancellationToken = default)
+        {
+            // Must have category:
+            if (string.IsNullOrEmpty(item?.Category?.Id))
+            {
+                throw new ArgumentNullException("item", "Category is required for downloading an item.");
+            }
+
+            // Must sign in first.
+            if (!await SignInAsync(cancellationToken).ConfigureAwait(false))
+            {
+                throw new UnauthorizedAccessException("Invalid sign in.");
+            }
+
+            // Down sync.
+            return await _oneDriveSync.DownSyncAsync(item, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async ValueTask EnqueueDownSyncAsync(Category forCategory, CancellationToken cancellationToken = default)
         {
             // Category can't be null
             if (string.IsNullOrEmpty(forCategory.Id))
             {
                 throw new ArgumentNullException(nameof(forCategory));
+            }
+
+            // Must sign in first.
+            if (!await SignInAsync(cancellationToken).ConfigureAwait(false))
+            {
+                throw new UnauthorizedAccessException("Invalid sign in.");
             }
 
             await foreach (DataPointPathInfo dataInfo in _oneDriveSync.ListAllDataPointsAsync(forCategory, cancellationToken).ConfigureAwait(false))
@@ -68,7 +106,24 @@ namespace CodeNameK.BIZ
             }
         }
 
-        public async ValueTask EnqueueSyncRequestAsync(UpSyncRequest request, CancellationToken cancellationToken = default)
+        public async Task<bool> UpSyncAsync(DataPointPathInfo item, CancellationToken cancellationToken = default)
+        {
+            // Must have category:
+            if (string.IsNullOrEmpty(item?.Category?.Id))
+            {
+                throw new ArgumentNullException("item", "Category is required for uploading an item.");
+            }
+
+            // Must sign in first.
+            if (!await SignInAsync(cancellationToken).ConfigureAwait(false))
+            {
+                throw new UnauthorizedAccessException("Invalid sign in.");
+            }
+
+            return await _oneDriveSync.UpSyncAsync(item, cancellationToken).ConfigureAwait(false);
+        }
+
+        public async ValueTask EnqueueUpSyncAsync(UpSyncRequest request, CancellationToken cancellationToken = default)
         {
             if (await _upSyncChannel.Writer.WaitToWriteAsync(cancellationToken))
             {
@@ -77,9 +132,18 @@ namespace CodeNameK.BIZ
             }
         }
 
-        public IAsyncEnumerable<Category> PeekRemoteCategoriesAsync(CancellationToken cancellationToken)
+        public async IAsyncEnumerable<Category> PeekRemoteCategoriesAsync([EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            return _oneDriveSync.ListCategoriesAsync(cancellationToken);
+            // Must sign in first.
+            if (!await SignInAsync(cancellationToken).ConfigureAwait(false))
+            {
+                throw new UnauthorizedAccessException("Invalid sign in.");
+            }
+
+            await foreach (Category category in _oneDriveSync.ListCategoriesAsync(cancellationToken).ConfigureAwait(false))
+            {
+                yield return category;
+            }
         }
 
         public async Task<OperationResult<SyncStatistic>> Sync(IProgress<SyncProgress>? progress, CancellationToken cancellationToken = default)
@@ -89,7 +153,7 @@ namespace CodeNameK.BIZ
                 return new OperationResult<SyncStatistic>()
                 {
                     IsSuccess = false,
-                    Reason = "Another sychronization is in progress.",
+                    Reason = "Another synchronization is in progress.",
                 };
             }
             try
@@ -99,8 +163,18 @@ namespace CodeNameK.BIZ
                 List<DataPointPathInfo> remoteDataPoints = new List<DataPointPathInfo>();
                 List<DataPointPathInfo> downloadTarget = new List<DataPointPathInfo>();
                 SyncProgress syncProgress = new SyncProgress() { DisplayText = "Signing in", Value = 0 };
+
                 progress?.Report(syncProgress); // 0%
-                await _oneDriveSync.SignInAsync(cancellationToken).ConfigureAwait(false);
+                if (!await SignInAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    return new OperationResult<SyncStatistic>()
+                    {
+                        IsSuccess = false,
+                        Reason = "Sign in failed",
+                        Entity = result,
+                    };
+                }
+
                 syncProgress = new SyncProgress() { DisplayText = "Signed in", Value = (double)5 / 100 };
                 progress?.Report(syncProgress); // 5%
                 bool reported = false;
@@ -171,6 +245,11 @@ namespace CodeNameK.BIZ
             {
                 _semaphore.Release();
             }
+        }
+
+        public Task WaitForSignInSuccessAsync(CancellationToken cancellationToken = default)
+        {
+            return _oneDriveTokenManager.SigningWaiter;
         }
     }
 }

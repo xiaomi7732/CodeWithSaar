@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using CodeNameK.Contracts;
 using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.Core.Utilities;
 using CodeNameK.DAL.Interfaces;
@@ -44,18 +43,11 @@ namespace CodeNameK.DAL.OneDrive
             _graphServiceClient = CreateGraphServiceClient(_graphAPIOptions);
         }
 
-        public async Task<bool> SignInAsync(CancellationToken cancellationToken = default)
-        {
-            OneDriveCredentialStatus status = await _tokenCredential.SignInAsync(_graphAPIOptions.SignInTimeout, cancellationToken);
-            return status == OneDriveCredentialStatus.SignedIn;
-        }
-
         public IAsyncEnumerable<DataPointPathInfo> ListAllDataPointsAsync(CancellationToken cancellationToken)
             => ListAllDataPointsAsync(relativeRemotePath: _remotePathProvider.BasePath, cancellationToken);
 
         public async IAsyncEnumerable<Category> ListCategoriesAsync([EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            await SignInAsync(cancellationToken).ConfigureAwait(false);
             string basePath = _remotePathProvider.BasePath;
             DriveItem baseDriveItem = await _graphServiceClient.Me.Drive.Special.AppRoot.ItemWithPath(basePath).Request().GetAsync(cancellationToken);
 
@@ -239,7 +231,6 @@ namespace CodeNameK.DAL.OneDrive
         private async IAsyncEnumerable<DataPointPathInfo> ListAllDataPointsAsync(string relativeRemotePath, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             Queue<DriveItem> works = new Queue<DriveItem>();
-            await _tokenCredential.SignInAsync(_graphAPIOptions.SignInTimeout, cancellationToken);
             DriveItem appRootItem = await _graphServiceClient.Me.Drive.Special.AppRoot.Request().GetAsync(cancellationToken);
 
             DriveItem? workRoot = null;

@@ -17,17 +17,42 @@ namespace CodeNameK.BIZ.Interfaces
         IAsyncEnumerable<Category> PeekRemoteCategoriesAsync(CancellationToken cancellationToken);
 
         /// <summary>
+        /// Actively sign in the user to OneDrive.
+        /// </summary>
+        /// <returns>
+        /// Returns true when signed in successfully. False otherwise.
+        /// </returns>
+        Task<bool> SignInAsync(CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Wait until the sign in without acttively trigger it.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task WaitForSignInSuccessAsync(CancellationToken cancellationToken);
+
+        /// <summary>
         /// Initiate a up sync request in the background.
         /// </summary>
         /// <param name="request">Request for uploading target.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        ValueTask EnqueueSyncRequestAsync(UpSyncRequest request, CancellationToken cancellationToken = default);
+        ValueTask EnqueueUpSyncAsync(UpSyncRequest request, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Initiate download in background for a specific category in the background.
         /// </summary>
         /// <param name="forCategory">Target category.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        ValueTask EnqueueDownSyncRequestAsync(Category forCategory, CancellationToken cancellationToken = default);
+        ValueTask EnqueueDownSyncAsync(Category forCategory, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Down sync a specific item. Returns true when sync happened successfully.
+        /// </summary>
+        Task<bool> DownSyncAsync(DataPointPathInfo item, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Up sync a specific item. Returns true when sync happened successfully.
+        /// </summary>
+        Task<bool> UpSyncAsync(DataPointPathInfo item, CancellationToken cancellationToken = default);
     }
 }

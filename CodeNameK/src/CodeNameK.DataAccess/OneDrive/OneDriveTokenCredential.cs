@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace CodeNameK.DAL.OneDrive
 {
-    public class OneDriveTokenCredential : TokenCredential, ITokenCredentialManager<OneDriveCredentialStatus>
+    public sealed class OneDriveTokenCredential : TokenCredential, ITokenCredentialManager<OneDriveCredentialStatus>, IDisposable
     {
         private readonly MSALAppOptions<OneDriveSync> _graphAPIOptions;
         private readonly ILogger _logger;
@@ -23,6 +23,8 @@ namespace CodeNameK.DAL.OneDrive
         private InteractiveBrowserCredential? _credential;
         private SemaphoreSlim _signInLock = new SemaphoreSlim(1, 1);
 
+        private TaskCompletionSource<bool> _signingCompletionSource = new TaskCompletionSource<bool>();
+
         public OneDriveTokenCredential(
             IOptions<MSALAppOptions<OneDriveSync>> graphAPIOptions,
             ILogger<OneDriveTokenCredential> logger)
@@ -30,7 +32,6 @@ namespace CodeNameK.DAL.OneDrive
             _graphAPIOptions = graphAPIOptions.Value ?? throw new ArgumentNullException(nameof(graphAPIOptions));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _credentialTokenOptions = CreateInteractiveBrowserCredentialOptions();
-
         }
 
         public OneDriveCredentialStatus CurrentStatus
@@ -38,6 +39,8 @@ namespace CodeNameK.DAL.OneDrive
             get;
             private set;
         } = OneDriveCredentialStatus.Initial;
+
+        public Task SigningWaiter => _signingCompletionSource.Task;
 
         public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
         {
@@ -101,6 +104,7 @@ namespace CodeNameK.DAL.OneDrive
                         }, _expiryTaskCancellationTokenSource.Token);
 
                         CurrentStatus = OneDriveCredentialStatus.SignedIn;
+                        _signingCompletionSource.TrySetResult(true);
                     }
                 }
                 catch (OperationCanceledException ex)
@@ -131,6 +135,13 @@ namespace CodeNameK.DAL.OneDrive
                 AuthorityHost = AzureAuthorityHosts.AzurePublicCloud,
                 RedirectUri = new Uri(_graphAPIOptions.RedirectUri),
             };
+        }
+
+        public void Dispose()
+        {
+            _expiryTask.Dispose();
+            _expiryTaskCancellationTokenSource?.Dispose();
+            _signInLock.Dispose();
         }
     }
 }

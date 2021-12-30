@@ -1,6 +1,6 @@
-﻿using CodeNameK.Contracts;
+﻿using CodeNameK.BIZ.Interfaces;
+using CodeNameK.Contracts;
 using CodeNameK.Core.Utilities;
-using CodeNameK.DAL.OneDrive;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -17,7 +17,7 @@ namespace CodeNameK.BIZ
     public class UpSyncBackgroundService : BackgroundService
     {
         private readonly Channel<UpSyncRequest> _channel;
-        private readonly IOneDriveSync _oneDrive;
+        private readonly ISync _syncService;
         private readonly IProgress<(string, int)> _progress;
         private readonly IHostEnvironment _hostEnvironment;
         private readonly InternetAvailability _internetAvailability;
@@ -26,7 +26,7 @@ namespace CodeNameK.BIZ
 
         public UpSyncBackgroundService(
             Channel<UpSyncRequest> channel,
-            IOneDriveSync oneDrive,
+            ISync syncService,
             BackgroundSyncProgress<UpSyncBackgroundService> progress,
             IHostEnvironment hostEnvironment,
             InternetAvailability internetAvailability,
@@ -34,7 +34,7 @@ namespace CodeNameK.BIZ
             )
         {
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
-            _oneDrive = oneDrive ?? throw new ArgumentNullException(nameof(oneDrive));
+            _syncService = syncService ?? throw new ArgumentNullException(nameof(syncService));
             _progress = progress ?? throw new ArgumentNullException(nameof(progress));
             _hostEnvironment = hostEnvironment ?? throw new ArgumentNullException(nameof(hostEnvironment));
             _internetAvailability = internetAvailability ?? throw new ArgumentNullException(nameof(internetAvailability));
@@ -58,12 +58,16 @@ namespace CodeNameK.BIZ
 
             while (await _channel.Reader.WaitToReadAsync(stoppingToken).ConfigureAwait(false))
             {
-                DataPointPathInfo input = (await _channel.Reader.ReadAsync(stoppingToken).ConfigureAwait(false)).Payload;
+                LogAndReport("Signing in for auto sync...");
+                while (!await _syncService.SignInAsync(stoppingToken).ConfigureAwait(false))
+                {
+                    LogAndReport("Sign in failed. Wait for signing in to success.");
+                    await _syncService.WaitForSignInSuccessAsync(stoppingToken).ConfigureAwait(false);
+                }
 
+                DataPointPathInfo input = (await _channel.Reader.ReadAsync(stoppingToken).ConfigureAwait(false)).Payload;
                 try
                 {
-                    LogAndReport("Signing in for auto sync...");
-                    await _oneDrive.SignInAsync(stoppingToken).ConfigureAwait(false);
                     string message;
                     if (await UploadAsync(input, stoppingToken).ConfigureAwait(false))
                     {
@@ -127,7 +131,7 @@ namespace CodeNameK.BIZ
         }
 
         private Task<bool> UploadAsync(DataPointPathInfo localPath, CancellationToken cancellationToken)
-            => _oneDrive.UpSyncAsync(localPath, cancellationToken);
+            => _syncService.UpSyncAsync(localPath, cancellationToken);
 
         private void LogAndReport(string message, LogLevel logLevel = LogLevel.Information)
         {

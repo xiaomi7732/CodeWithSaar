@@ -99,6 +99,7 @@ namespace CodeNameK.ViewModels
             RequestInitialSync().FireWithExceptionHandler(OnSyncImpException);
 
             DownSyncQueueLength = _syncService.DownSyncQueueLength;
+            _downSyncStateText = string.Empty;
             downSyncProgress.ProgressChanged += DownSyncProgress_ProgressChanged;
         }
 
@@ -149,7 +150,7 @@ namespace CodeNameK.ViewModels
                     _ = UpdateSeriesAsync(default);
                     if (value != null)
                     {
-                        _syncService.EnqueueDownSyncRequestAsync(value, default)
+                        _syncService.EnqueueDownSyncAsync(value, default)
                             .AsTask()
                             .FireWithExceptionHandler(_errorRevealerFactory.CreateInstance("Down sync error").Reveal);
                     }

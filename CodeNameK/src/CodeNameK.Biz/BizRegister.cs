@@ -1,14 +1,19 @@
 using System.Threading.Channels;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
+using CodeNameK.Contracts.CustomOptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CodeNameK.BIZ;
 public static class BizRegister
 {
-    public static IServiceCollection RegisterBizModule(this IServiceCollection services, IConfiguration localStoreSection)
+    public static IServiceCollection RegisterBizModule(
+        this IServiceCollection services,
+        IConfiguration syncSection)
     {
+        services.AddOptions<SyncOptions>().Bind(syncSection);
+
         services.AddScoped<ICategory, BizCategory>();
         services.AddScoped<IDataPoint, BizDataPoint>();
         services.AddScoped<ISync, BizSync>();

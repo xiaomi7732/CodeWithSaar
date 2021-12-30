@@ -53,9 +53,4 @@ public interface IOneDriveSync
     /// Exceptions might throw on other cases.
     /// </returns>
     Task<bool> UpSyncAsync(DataPointPathInfo source, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Sign in the user to OneDrive.
-    /// </summary>
-    Task<bool> SignInAsync(CancellationToken cancellationToken = default);
 }
