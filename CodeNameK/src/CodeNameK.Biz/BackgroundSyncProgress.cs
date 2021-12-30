@@ -2,7 +2,7 @@
 
 namespace CodeNameK.BIZ
 {
-    public class BackgroundSyncProgress : Progress<(string, int)>
+    public class BackgroundSyncProgress<T> : Progress<(string, int)>
     {
     }
 }

@@ -24,8 +24,6 @@ namespace CodeNameK.DataContracts
             {
                 Id = input.Id,
                 Category = input.Category,
-                YearFolder = (ushort)input.WhenUTC.Year,
-                MonthFolder = (ushort)input.WhenUTC.Month,
             };
         }
     }

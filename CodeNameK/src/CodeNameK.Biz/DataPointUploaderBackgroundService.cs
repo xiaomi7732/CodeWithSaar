@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace CodeNameK.BIZ
 {
-    internal class DataPointUploaderBackgroundService : BackgroundService
+    public class DataPointUploaderBackgroundService : BackgroundService
     {
         private readonly Channel<UpSyncRequest> _channel;
         private readonly IOneDriveSync _oneDrive;
@@ -27,7 +27,7 @@ namespace CodeNameK.BIZ
         public DataPointUploaderBackgroundService(
             Channel<UpSyncRequest> channel,
             IOneDriveSync oneDrive,
-            BackgroundSyncProgress progress,
+            BackgroundSyncProgress<DataPointUploaderBackgroundService> progress,
             IHostEnvironment hostEnvironment,
             InternetAvailability internetAvailability,
             ILogger<DataPointUploaderBackgroundService> logger
@@ -76,9 +76,16 @@ namespace CodeNameK.BIZ
                 {
                     LogAndReport("Uploading data.");
                     await _oneDrive.SignInAsync(stoppingToken).ConfigureAwait(false);
-                    DataPointPathInfo? result = await UploadAsync(input, stoppingToken).ConfigureAwait(false);
-                    _logger.LogInformation("Uploaded: {0}", result);
-                    ReportProgress("Data uploaded");
+                    string message;
+                    if (await UploadAsync(input, stoppingToken).ConfigureAwait(false))
+                    {
+                        message = $"Uploaded: {input}";
+                    }
+                    else
+                    {
+                        message = $"Upload didn't happen for: {input}";
+                    }
+                    LogAndReport(message);
                 }
                 catch (Exception ex)
                 {
@@ -131,7 +138,7 @@ namespace CodeNameK.BIZ
             _logger.LogInformation("Session info persistent to: {destination}", _sessionFilePath);
         }
 
-        private Task<DataPointPathInfo?> UploadAsync(DataPointPathInfo localPath, CancellationToken cancellationToken)
+        private Task<bool> UploadAsync(DataPointPathInfo localPath, CancellationToken cancellationToken)
             => _oneDrive.UpSyncAsync(localPath, cancellationToken);
 
         private void LogAndReport(string message, LogLevel logLevel = LogLevel.Information)

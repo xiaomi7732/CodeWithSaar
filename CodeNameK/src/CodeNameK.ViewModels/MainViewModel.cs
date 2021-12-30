@@ -52,7 +52,7 @@ namespace CodeNameK.ViewModels
             DataPointViewModel dataPointOperator,
             InternetAvailability internetAvailability,
             IErrorRevealerFactory errorRevealer,
-            BackgroundSyncProgress backgroundSyncProgress,
+            BackgroundSyncProgress<DataPointUploaderBackgroundService> upSyncProgress,
             IOptions<LocalStoreOptions> localStoreOptions,
             ILogger<MainViewModel> logger)
                 : base(errorRevealer)
@@ -94,7 +94,7 @@ namespace CodeNameK.ViewModels
             _selectedDateRangeOption = SelectedDateRangeOption;
 
             UpSyncQueueLength = _syncService.UpSyncQueueLength;
-            backgroundSyncProgress.ProgressChanged += BackgroundSyncProgress_ProgressChanged;
+            upSyncProgress.ProgressChanged += BackgroundSyncProgress_ProgressChanged;
             RequestInitialSync().FireWithExceptionHandler(OnSyncImpException);
         }
 

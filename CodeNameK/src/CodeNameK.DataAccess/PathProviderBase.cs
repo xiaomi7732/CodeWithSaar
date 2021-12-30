@@ -55,8 +55,6 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
         string fullPath = Path.Combine(
             BasePath,
             GetDirectoryName(dataPointInfo.Category),
-            dataPointInfo.YearFolder.ToString("D4"),
-            dataPointInfo.MonthFolder.ToString("D2"),
             Path.ChangeExtension(dataPointInfo.Id.ToString("D"), dataPointInfo.IsDeletionMark ? Constants.DeletedMarkerFileExtension : Constants.DataPointFileExtension));
 
         return EncodePath(fullPath);
@@ -76,17 +74,13 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
         string[] tokens = relativePath.Split("/");
 
         string categoryId = decodeCategoryName(tokens[0]);
-        ushort year = ushort.Parse(tokens[1]);
-        ushort month = ushort.Parse(tokens[2]);
-        Guid id = Guid.Parse(Path.GetFileNameWithoutExtension(tokens[3]));
-        string fileNameExtension = Path.GetExtension(tokens[3]);
+        Guid id = Guid.Parse(Path.GetFileNameWithoutExtension(tokens[1]));
+        string fileNameExtension = Path.GetExtension(tokens[1]);
 
         return new DataPointPathInfo()
         {
             Category = new Category() { Id = categoryId },
             Id = id,
-            YearFolder = year,
-            MonthFolder = month,
             IsDeletionMark = string.Equals(fileNameExtension, Constants.DeletedMarkerFileExtension, StringComparison.OrdinalIgnoreCase),
         };
     }

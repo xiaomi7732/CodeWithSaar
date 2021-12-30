@@ -21,6 +21,7 @@ namespace CodeNameK.WPF
 
         public App()
         {
+            System.Net.ServicePointManager.DefaultConnectionLimit = 100;
             _host = new HostBuilder()
                 .ConfigureAppConfiguration(builder =>
                 {

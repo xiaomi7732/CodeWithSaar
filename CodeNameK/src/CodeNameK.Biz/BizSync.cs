@@ -27,7 +27,7 @@ namespace CodeNameK.BIZ
             IOneDriveSync oneDriveSync,
             ILocalPathProvider localPathProvider,
             Channel<UpSyncRequest> upSyncChannel,
-            BackgroundSyncProgress upSyncProgress,
+            BackgroundSyncProgress<DataPointUploaderBackgroundService> upSyncProgress,
             ILogger<BizSync> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));

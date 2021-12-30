@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,32 +45,10 @@ namespace CodeNameK.DAL.OneDrive
             _graphServiceClient = CreateGraphServiceClient(_graphAPIOptions);
         }
 
-        public async IAsyncEnumerable<DataPointPathInfo> DownSyncAsync(
-            IEnumerable<DataPointPathInfo> data,
-            IProgress<double>? progress = null,
-            [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async Task<bool> SignInAsync(CancellationToken cancellationToken = default)
         {
-            List<DataPointPathInfo> dataList = data.ToList();
-            int total = dataList.Count;
-            int processed = 0;
-            List<DataPointPathInfo> results = new List<DataPointPathInfo>();
-            await dataList.ForEachAsync(10, async item =>
-            {
-                if (await DownSyncAsync(
-                    remotePath: _remotePathProvider.GetRemotePath(item),
-                    localPath: _localPathProvider.GetLocalPath(item),
-                    cancellationToken).ConfigureAwait(false))
-                {
-                    results.Add(item);
-                }
-                Interlocked.Increment(ref processed);
-                TryUpdateProgress(progress, processed, total);
-            });
-
-            foreach (DataPointPathInfo item in results)
-            {
-                yield return item;
-            }
+            OneDriveCredentialStatus status = await _tokenCredential.SignInAsync(_graphAPIOptions.SignInTimeout, cancellationToken);
+            return status == OneDriveCredentialStatus.SignedIn;
         }
 
         public async IAsyncEnumerable<DataPointPathInfo> ListAllDataPointsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
@@ -136,43 +115,66 @@ namespace CodeNameK.DAL.OneDrive
             }
         }
 
-        public async IAsyncEnumerable<DataPointPathInfo> UpSyncAsync(IEnumerable<DataPointPathInfo> source, IProgress<double>? progress = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async IAsyncEnumerable<DataPointPathInfo> DownSyncAsync(
+            IEnumerable<DataPointPathInfo> data,
+            IProgress<double>? progress = null,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            List<DataPointPathInfo> pathInfoList = source.ToList();
+            List<DataPointPathInfo> dataList = data.ToList();
+            int total = dataList.Count;
             int processed = 0;
-
-            if (pathInfoList.Count == 0)
+            List<DataPointPathInfo> results = new List<DataPointPathInfo>();
+            await dataList.ForEachAsync(50, async item =>
             {
-                TryUpdateProgress(progress, 1, 1); // So that it is 100%.
-                yield break;
-            }
-
-            foreach (DataPointPathInfo pathInfo in pathInfoList)
-            {
-                DataPointPathInfo? result = await UpSyncAsync(pathInfo, cancellationToken).ConfigureAwait(false);
-                TryUpdateProgress(progress, ++processed, pathInfoList.Count);
-                if (result != null)
+                if (await DownSyncAsync(item, cancellationToken).ConfigureAwait(false))
                 {
-                    yield return result;
+                    results.Add(item);
                 }
+                Interlocked.Increment(ref processed);
+                TryUpdateProgress(progress, processed, total);
+            });
+
+            foreach (DataPointPathInfo item in results)
+            {
+                yield return item;
             }
         }
 
-        public async Task<DataPointPathInfo?> UpSyncAsync(DataPointPathInfo pathInfo, CancellationToken cancellationToken = default)
+        public Task<bool> DownSyncAsync(DataPointPathInfo data, CancellationToken cancellationToken = default)
+        {
+            string localPath = _localPathProvider.GetLocalPath(data);
+            string remotePath = _remotePathProvider.GetRemotePath(data);
+            return DownSyncAsync(localPath, remotePath, cancellationToken);
+        }
+
+        public async IAsyncEnumerable<DataPointPathInfo> UpSyncAsync(IEnumerable<DataPointPathInfo> source, IProgress<double>? progress = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            List<DataPointPathInfo> allPoints = source.ToList();
+            int total = allPoints.Count;
+            int processed = 0;
+            ConcurrentBag<DataPointPathInfo> results = new ConcurrentBag<DataPointPathInfo>();
+
+            await source.ForEachAsync(50, async item =>
+            {
+                if (await UpSyncAsync(item, cancellationToken).ConfigureAwait(false))
+                {
+                    results.Add(item);
+                }
+                Interlocked.Increment(ref processed);
+                TryUpdateProgress(progress, processed, total);
+            }).ConfigureAwait(false);
+
+            foreach (DataPointPathInfo item in results)
+            {
+                yield return item;
+            }
+        }
+
+        public Task<bool> UpSyncAsync(DataPointPathInfo pathInfo, CancellationToken cancellationToken = default)
         {
             string localPath = _localPathProvider.GetLocalPath(pathInfo);
             string remotePath = _remotePathProvider.GetRemotePath(pathInfo);
-            if (await UpSyncAsync(localPath, remotePath, cancellationToken))
-            {
-                return pathInfo;
-            }
-            return null;
-        }
-
-        public async Task<bool> SignInAsync(CancellationToken cancellationToken = default)
-        {
-            OneDriveCredentialStatus status = await _tokenCredential.SignInAsync(_graphAPIOptions.SignInTimeout, cancellationToken);
-            return status == OneDriveCredentialStatus.SignedIn;
+            return UpSyncAsync(localPath, remotePath, cancellationToken);
         }
 
         private GraphServiceClient CreateGraphServiceClient(MSALAppOptions<OneDriveSync> graphAPIOptions)

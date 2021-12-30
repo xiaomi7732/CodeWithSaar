@@ -7,8 +7,6 @@ namespace CodeNameK.DataContracts
     {
         public Guid Id { get; init; }
         public Category? Category { get; init; }
-        public ushort YearFolder { get; init; }
-        public ushort MonthFolder { get; init; }
         public bool IsDeletionMark { get; init; }
 
         public bool Equals(DataPointPathInfo x, DataPointPathInfo y)
@@ -27,8 +25,6 @@ namespace CodeNameK.DataContracts
             // Otherwise
             return x.Id.Equals(y.Id) &&
                 x.Category.Id.Equals(y.Category.Id, System.StringComparison.OrdinalIgnoreCase) &&
-                x.YearFolder == y.YearFolder &&
-                x.MonthFolder == y.MonthFolder &&
                 x.IsDeletionMark == y.IsDeletionMark;
 
         }
@@ -44,14 +40,6 @@ namespace CodeNameK.DataContracts
             if (!string.IsNullOrEmpty(obj.Category?.Id))
             {
                 hashCode = hashCode ^ obj.Category.Id.GetHashCode();
-            }
-            if (YearFolder != 0)
-            {
-                hashCode = hashCode ^ YearFolder;
-            }
-            if (MonthFolder != 0)
-            {
-                hashCode = hashCode ^ MonthFolder;
             }
             hashCode = hashCode ^ IsDeletionMark.GetHashCode();
 
