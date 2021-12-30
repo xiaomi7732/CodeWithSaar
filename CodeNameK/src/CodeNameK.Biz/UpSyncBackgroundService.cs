@@ -56,17 +56,6 @@ namespace CodeNameK.BIZ
             }
             LogAndReport("Internet Connected. Waiting for data.");
 
-            bool signedIn = await _oneDrive.SignInAsync(stoppingToken).ConfigureAwait(false);
-            if (signedIn)
-            {
-                LogAndReport("User signed in.");
-            }
-            else
-            {
-                LogAndReport("User sign in failed. No auto sync.");
-                return;
-            }
-
             while (await _channel.Reader.WaitToReadAsync(stoppingToken).ConfigureAwait(false))
             {
                 DataPointPathInfo input = (await _channel.Reader.ReadAsync(stoppingToken).ConfigureAwait(false)).Payload;
