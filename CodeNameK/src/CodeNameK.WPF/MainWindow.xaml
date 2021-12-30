@@ -28,6 +28,12 @@
                 <TextBlock Text="{Binding SyncStateText}" />
             </StatusBarItem>
             <StatusBarItem>
+                <TextBlock Text="Sign in state:" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding SignInStatus}" />
+            </StatusBarItem>
+            <StatusBarItem>
                 <TextBlock Text="Background Sync:" />
             </StatusBarItem>
             <StatusBarItem>
@@ -38,9 +44,6 @@
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Text="{Binding UpSyncQueueLength}" />
-            </StatusBarItem>
-            <StatusBarItem>
-                <TextBlock Text="{Binding DownSyncStateText}" />
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Text="D:" />

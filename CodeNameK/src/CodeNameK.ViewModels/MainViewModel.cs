@@ -67,6 +67,7 @@ namespace CodeNameK.ViewModels
             _categoryBiz = categoryBiz ?? throw new System.ArgumentNullException(nameof(categoryBiz));
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
             _syncService = syncService ?? throw new ArgumentNullException(nameof(syncService));
+            _syncService.SignInStatusChanged += OnSignInStatusChanged;
             _dateRangeService = dateRangeService ?? throw new ArgumentNullException(nameof(dateRangeService));
             _chartAxisExpansion = chartAxisExpansion ?? throw new ArgumentNullException(nameof(chartAxisExpansion));
             _internetAvailability = internetAvailability ?? throw new ArgumentNullException(nameof(internetAvailability));
@@ -99,8 +100,9 @@ namespace CodeNameK.ViewModels
             RequestInitialSync().FireWithExceptionHandler(OnSyncImpException);
 
             DownSyncQueueLength = _syncService.DownSyncQueueLength;
-            _downSyncStateText = string.Empty;
             downSyncProgress.ProgressChanged += DownSyncProgress_ProgressChanged;
+
+            _signInStatus = string.Empty;
         }
 
         public ICollectionView CategoryCollectionView { get; }
@@ -410,21 +412,6 @@ namespace CodeNameK.ViewModels
             }
         }
 
-        private string _downSyncStateText;
-        public string DownSyncStateText
-        {
-            get { return _downSyncStateText; }
-            set
-            {
-                if (!string.Equals(_downSyncStateText, value, StringComparison.Ordinal))
-                {
-                    _downSyncStateText = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
-
         private int _upSyncQueueLength;
         public int UpSyncQueueLength
         {
@@ -453,6 +440,21 @@ namespace CodeNameK.ViewModels
                 }
             }
         }
+
+        private string _signInStatus;
+        public string SignInStatus
+        {
+            get { return _signInStatus; }
+            set
+            {
+                if (_signInStatus != value)
+                {
+                    _signInStatus = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
 
         public ICommand SyncCommand { get; }
         private async Task SyncImpAsync(object? parameters)
@@ -675,8 +677,42 @@ namespace CodeNameK.ViewModels
             (string text, int queueLength) = args;
             Dispatch(() =>
             {
-                DownSyncStateText = text;
+                UpSyncStateText = text;
                 DownSyncQueueLength = queueLength;
+                return 0;
+            });
+        }
+
+        private void OnSignInStatusChanged(object? sender, OneDriveCredentialStatus newStatus)
+        {
+            // Get Sign in display text
+            string newStateText = "Unknown";
+            switch (newStatus)
+            {
+                case OneDriveCredentialStatus.Initial:
+                    newStateText = "No sign in yet";
+                    break;
+                case OneDriveCredentialStatus.SigningIn:
+                    newStateText = "Waiting signing in response ...";
+                    break;
+                case OneDriveCredentialStatus.SignedIn:
+                    newStateText = "Signed in.";
+                    break;
+                case OneDriveCredentialStatus.Failed:
+                    newStateText = "Sign in failed.";
+                    break;
+                case OneDriveCredentialStatus.Expired:
+                    newStateText = "Sign in expired.";
+                    break;
+                default:
+                    newStateText = $"Unrecognized sign in status: {newStatus}";
+                    break;
+            }
+
+            // Update UI.
+            Dispatch(() =>
+            {
+                SignInStatus = newStateText;
                 return 0;
             });
         }

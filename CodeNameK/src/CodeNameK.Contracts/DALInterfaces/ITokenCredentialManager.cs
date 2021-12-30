@@ -25,5 +25,10 @@ namespace CodeNameK.DAL.Interfaces
         /// Waiting on this task won't trigger login diaglog.
         /// </summary>
         Task SigningWaiter { get; }
+
+        /// <summary>
+        /// An event happens when the sign in status changed.
+        /// </summary>
+        event EventHandler<T>? StatusChanged;
     }
 }

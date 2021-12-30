@@ -25,6 +25,8 @@ namespace CodeNameK.DAL.OneDrive
 
         private TaskCompletionSource<bool> _signingCompletionSource = new TaskCompletionSource<bool>();
 
+        public event EventHandler<OneDriveCredentialStatus>? StatusChanged;
+
         public OneDriveTokenCredential(
             IOptions<MSALAppOptions<OneDriveSync>> graphAPIOptions,
             ILogger<OneDriveTokenCredential> logger)
@@ -34,11 +36,22 @@ namespace CodeNameK.DAL.OneDrive
             _credentialTokenOptions = CreateInteractiveBrowserCredentialOptions();
         }
 
+        private OneDriveCredentialStatus _currentStatus = OneDriveCredentialStatus.Initial;
         public OneDriveCredentialStatus CurrentStatus
         {
-            get;
-            private set;
-        } = OneDriveCredentialStatus.Initial;
+            get
+            {
+                return _currentStatus;
+            }
+            private set
+            {
+                if (_currentStatus != value)
+                {
+                    _currentStatus = value;
+                    StatusChanged?.Invoke(this, value);
+                }
+            }
+        }
 
         public Task SigningWaiter => _signingCompletionSource.Task;
 

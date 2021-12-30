@@ -30,6 +30,8 @@ namespace CodeNameK.BIZ
         private readonly SyncOptions _options;
         private readonly ILogger _logger;
 
+        public event EventHandler<OneDriveCredentialStatus>? SignInStatusChanged;
+
         public BizSync(
             IOneDriveSync oneDriveSync,
             ITokenCredentialManager<OneDriveCredentialStatus> oneDriveTokenManager,
@@ -44,6 +46,10 @@ namespace CodeNameK.BIZ
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _oneDriveSync = oneDriveSync ?? throw new ArgumentNullException(nameof(oneDriveSync));
             _oneDriveTokenManager = oneDriveTokenManager ?? throw new ArgumentNullException(nameof(oneDriveTokenManager));
+            _oneDriveTokenManager.StatusChanged += (sender, newStatus) =>
+            {
+                SignInStatusChanged?.Invoke(this, newStatus);
+            };
             _localPathProvider = localPathProvider ?? throw new ArgumentNullException(nameof(localPathProvider));
             _upSyncChannel = upSyncChannel ?? throw new ArgumentNullException(nameof(upSyncChannel));
             _downSyncChannel = downSyncChannel ?? throw new ArgumentNullException(nameof(downSyncChannel));
