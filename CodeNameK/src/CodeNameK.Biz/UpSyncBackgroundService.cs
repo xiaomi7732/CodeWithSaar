@@ -14,23 +14,23 @@ using System.Threading.Tasks;
 
 namespace CodeNameK.BIZ
 {
-    public class DataPointUploaderBackgroundService : BackgroundService
+    public class UpSyncBackgroundService : BackgroundService
     {
         private readonly Channel<UpSyncRequest> _channel;
         private readonly IOneDriveSync _oneDrive;
         private readonly IProgress<(string, int)> _progress;
         private readonly IHostEnvironment _hostEnvironment;
         private readonly InternetAvailability _internetAvailability;
-        private readonly ILogger<DataPointUploaderBackgroundService> _logger;
+        private readonly ILogger<UpSyncBackgroundService> _logger;
         private readonly string _sessionFilePath;
 
-        public DataPointUploaderBackgroundService(
+        public UpSyncBackgroundService(
             Channel<UpSyncRequest> channel,
             IOneDriveSync oneDrive,
-            BackgroundSyncProgress<DataPointUploaderBackgroundService> progress,
+            BackgroundSyncProgress<UpSyncBackgroundService> progress,
             IHostEnvironment hostEnvironment,
             InternetAvailability internetAvailability,
-            ILogger<DataPointUploaderBackgroundService> logger
+            ILogger<UpSyncBackgroundService> logger
             )
         {
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
@@ -70,11 +70,10 @@ namespace CodeNameK.BIZ
             while (await _channel.Reader.WaitToReadAsync(stoppingToken).ConfigureAwait(false))
             {
                 DataPointPathInfo input = (await _channel.Reader.ReadAsync(stoppingToken).ConfigureAwait(false)).Payload;
-                LogAndReport("Signing in for auto sync...");
 
                 try
                 {
-                    LogAndReport("Uploading data.");
+                    LogAndReport("Signing in for auto sync...");
                     await _oneDrive.SignInAsync(stoppingToken).ConfigureAwait(false);
                     string message;
                     if (await UploadAsync(input, stoppingToken).ConfigureAwait(false))

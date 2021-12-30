@@ -16,9 +16,11 @@ public static class BizRegister
         services.AddTransient<IDateRangeService, BizDateRangeService>();
 
         services.AddSingleton<Channel<UpSyncRequest>>(p => Channel.CreateUnbounded<UpSyncRequest>());
-        services.AddSingleton<BackgroundSyncProgress<DataPointUploaderBackgroundService>>();
-        services.AddHostedService<DataPointUploaderBackgroundService>();
-
+        services.AddSingleton<Channel<DownSyncRequest>>(p => Channel.CreateUnbounded<DownSyncRequest>());
+        services.AddSingleton<BackgroundSyncProgress<UpSyncBackgroundService>>();
+        services.AddSingleton<BackgroundSyncProgress<DownSyncBackgroundService>>();
+        services.AddHostedService<UpSyncBackgroundService>();
+        services.AddHostedService<DownSyncBackgroundService>();
         return services;
     }
 }

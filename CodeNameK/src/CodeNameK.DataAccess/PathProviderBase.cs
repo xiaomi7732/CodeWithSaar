@@ -61,6 +61,15 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
     }
 
     public string GetRemotePath(DataPointPathInfo dataPointInfo) => GetLocalPath(dataPointInfo);
+    public string GetRemotePath(Category category)
+    {
+        if (string.IsNullOrEmpty(category.Id))
+        {
+            throw new ArgumentNullException(nameof(category));
+        }
+        string fullPath = Path.Combine(BasePath, GetDirectoryName(category));
+        return EncodePath(fullPath);
+    }
 
     /// <summary>
     /// Parse a file path into DataPointPathInfo object.
@@ -120,5 +129,4 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
     public abstract bool PhysicalFileExists(DataPointPathInfo dataPointPathInfo);
 
     public abstract IEnumerable<DataPointPathInfo> ListAllDataPointPaths();
-
 }

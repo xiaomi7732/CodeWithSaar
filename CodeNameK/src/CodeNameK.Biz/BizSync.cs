@@ -20,29 +20,61 @@ namespace CodeNameK.BIZ
         private readonly IOneDriveSync _oneDriveSync;
         private readonly ILocalPathProvider _localPathProvider;
         private readonly Channel<UpSyncRequest> _upSyncChannel;
+        private readonly Channel<DownSyncRequest> _downSyncChannel;
         private readonly IProgress<(string, int)> _upSyncProgress;
+        private readonly IProgress<(string, int)> _downSyncProgress;
         private readonly ILogger _logger;
 
         public BizSync(
             IOneDriveSync oneDriveSync,
             ILocalPathProvider localPathProvider,
             Channel<UpSyncRequest> upSyncChannel,
-            BackgroundSyncProgress<DataPointUploaderBackgroundService> upSyncProgress,
+            Channel<DownSyncRequest> downSyncChannel,
+            BackgroundSyncProgress<UpSyncBackgroundService> upSyncProgress,
+            BackgroundSyncProgress<DownSyncBackgroundService> downSyncProgress,
             ILogger<BizSync> logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _oneDriveSync = oneDriveSync ?? throw new ArgumentNullException(nameof(oneDriveSync));
             _localPathProvider = localPathProvider ?? throw new ArgumentNullException(nameof(localPathProvider));
             _upSyncChannel = upSyncChannel ?? throw new ArgumentNullException(nameof(upSyncChannel));
+            _downSyncChannel = downSyncChannel ?? throw new ArgumentNullException(nameof(downSyncChannel));
             _upSyncProgress = upSyncProgress ?? throw new ArgumentNullException(nameof(upSyncProgress));
+            _downSyncProgress = downSyncProgress ?? throw new ArgumentNullException(nameof(downSyncProgress));
         }
 
         public int UpSyncQueueLength => _upSyncChannel.Reader.Count;
 
+        public int DownSyncQueueLength => _downSyncChannel.Reader.Count;
+
+        public async ValueTask EnqueueDownSyncRequestAsync(Category forCategory, CancellationToken cancellationToken = default)
+        {
+            // Category can't be null
+            if (string.IsNullOrEmpty(forCategory.Id))
+            {
+                throw new ArgumentNullException(nameof(forCategory));
+            }
+
+            await foreach (DataPointPathInfo dataInfo in _oneDriveSync.ListAllDataPointsAsync(forCategory, cancellationToken).ConfigureAwait(false))
+            {
+                if (!_localPathProvider.PhysicalFileExists(dataInfo))
+                {
+                    if (await _downSyncChannel.Writer.WaitToWriteAsync(cancellationToken))
+                    {
+                        await _downSyncChannel.Writer.WriteAsync(new DownSyncRequest(dataInfo), cancellationToken);
+                        _downSyncProgress.Report(("Down sync added", _downSyncChannel.Reader.Count));
+                    }
+                }
+            }
+        }
+
         public async ValueTask EnqueueSyncRequestAsync(UpSyncRequest request, CancellationToken cancellationToken = default)
         {
-            await _upSyncChannel.Writer.WriteAsync(request, cancellationToken);
-            _upSyncProgress.Report(("Up sync added.", _upSyncChannel.Reader.Count));
+            if (await _upSyncChannel.Writer.WaitToWriteAsync(cancellationToken))
+            {
+                await _upSyncChannel.Writer.WriteAsync(request, cancellationToken);
+                _upSyncProgress.Report(("Up sync added.", _upSyncChannel.Reader.Count));
+            }
         }
 
         public async Task<OperationResult<SyncStatistic>> Sync(IProgress<SyncProgress>? progress, CancellationToken cancellationToken = default)

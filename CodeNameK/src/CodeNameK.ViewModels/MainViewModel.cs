@@ -52,7 +52,8 @@ namespace CodeNameK.ViewModels
             DataPointViewModel dataPointOperator,
             InternetAvailability internetAvailability,
             IErrorRevealerFactory errorRevealer,
-            BackgroundSyncProgress<DataPointUploaderBackgroundService> upSyncProgress,
+            BackgroundSyncProgress<UpSyncBackgroundService> upSyncProgress,
+            BackgroundSyncProgress<DownSyncBackgroundService> downSyncProgress,
             IOptions<LocalStoreOptions> localStoreOptions,
             ILogger<MainViewModel> logger)
                 : base(errorRevealer)
@@ -79,7 +80,7 @@ namespace CodeNameK.ViewModels
                 RaisePropertyChanged(nameof(CategoryHeader));
             };
             _syncStateText = "No sync.";
-            _bgSyncStateText = string.Empty;
+            _upSyncStateText = string.Empty;
 
             _dataFolderPath = localStoreOptions.Value.DataStorePath.Replace('/', '\\');
 
@@ -96,6 +97,9 @@ namespace CodeNameK.ViewModels
             UpSyncQueueLength = _syncService.UpSyncQueueLength;
             upSyncProgress.ProgressChanged += BackgroundSyncProgress_ProgressChanged;
             RequestInitialSync().FireWithExceptionHandler(OnSyncImpException);
+
+            DownSyncQueueLength = _syncService.DownSyncQueueLength;
+            downSyncProgress.ProgressChanged += DownSyncProgress_ProgressChanged;
         }
 
         public ICollectionView CategoryCollectionView { get; }
@@ -143,6 +147,12 @@ namespace CodeNameK.ViewModels
                     _selectedCategory = value;
                     RaisePropertyChanged();
                     _ = UpdateSeriesAsync(default);
+                    if (value != null)
+                    {
+                        _syncService.EnqueueDownSyncRequestAsync(value, default)
+                            .AsTask()
+                            .FireWithExceptionHandler(_errorRevealerFactory.CreateInstance("Down sync error").Reveal);
+                    }
                 }
             }
         }
@@ -384,20 +394,35 @@ namespace CodeNameK.ViewModels
             }
         }
 
-        private string _bgSyncStateText;
+        private string _upSyncStateText;
 
-        public string BGSyncStateText
+        public string UpSyncStateText
         {
-            get { return _bgSyncStateText; }
+            get { return _upSyncStateText; }
             set
             {
-                if (!string.Equals(_bgSyncStateText, value, StringComparison.Ordinal))
+                if (!string.Equals(_upSyncStateText, value, StringComparison.Ordinal))
                 {
-                    _bgSyncStateText = value;
+                    _upSyncStateText = value;
                     RaisePropertyChanged();
                 }
             }
         }
+
+        private string _downSyncStateText;
+        public string DownSyncStateText
+        {
+            get { return _downSyncStateText; }
+            set
+            {
+                if (!string.Equals(_downSyncStateText, value, StringComparison.Ordinal))
+                {
+                    _downSyncStateText = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
+
 
         private int _upSyncQueueLength;
         public int UpSyncQueueLength
@@ -413,6 +438,20 @@ namespace CodeNameK.ViewModels
             }
         }
 
+        private int _downSyncQueueLength;
+        public int DownSyncQueueLength
+        {
+            get { return _downSyncQueueLength; }
+            set
+            {
+                if (_downSyncQueueLength != value)
+                {
+                    _downSyncQueueLength = value;
+                    RaisePropertyChanged();
+                    UpdateSeriesAsync(default).ConfigureAwait(false);
+                }
+            }
+        }
 
         public ICommand SyncCommand { get; }
         private async Task SyncImpAsync(object? parameters)
@@ -624,8 +663,19 @@ namespace CodeNameK.ViewModels
             (string text, int queueLength) = args;
             Dispatch(() =>
             {
-                BGSyncStateText = text;
+                UpSyncStateText = text;
                 UpSyncQueueLength = queueLength;
+                return 0;
+            });
+        }
+
+        private void DownSyncProgress_ProgressChanged(object? sender, (string, int) args)
+        {
+            (string text, int queueLength) = args;
+            Dispatch(() =>
+            {
+                DownSyncStateText = text;
+                DownSyncQueueLength = queueLength;
                 return 0;
             });
         }

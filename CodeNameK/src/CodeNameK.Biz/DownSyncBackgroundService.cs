@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -22,6 +25,7 @@ namespace CodeNameK.BIZ
         private readonly IHostEnvironment _hostEnvironment;
         private readonly InternetAvailability _internetAvailability;
         private readonly ILogger _logger;
+        private readonly string _sessionFilePath;
 
         public DownSyncBackgroundService(
             Channel<DownSyncRequest> channel,
@@ -38,6 +42,8 @@ namespace CodeNameK.BIZ
             _hostEnvironment = hostEnvironment ?? throw new ArgumentNullException(nameof(hostEnvironment));
             _internetAvailability = internetAvailability ?? throw new ArgumentNullException(nameof(internetAvailability));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+            _sessionFilePath = Path.Combine(_hostEnvironment.ContentRootPath, "down-sync.json");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -92,9 +98,49 @@ namespace CodeNameK.BIZ
             }
         }
 
+        private async Task RestoreSessionAsync(CancellationToken cancellationToken = default)
+        {
+            if (!File.Exists(_sessionFilePath))
+            {
+                _logger.LogInformation("No session file found at {sessionFilePath}.", _sessionFilePath);
+                return;
+            }
+
+            using (Stream inputStream = File.OpenRead(_sessionFilePath))
+            {
+                List<DataPointPathInfo>? messages = await JsonSerializer.DeserializeAsync<List<DataPointPathInfo>>(inputStream, cancellationToken: cancellationToken).ConfigureAwait(false);
+                int count = 0;
+                foreach (DataPointPathInfo item in messages.NullAsEmpty())
+                {
+                    await _channel.Writer.WriteAsync(new DownSyncRequest(item));
+                    count++;
+                }
+                _logger.LogInformation("{count} item restored for downloading.", count);
+            }
+        }
+
+        public override async Task StopAsync(CancellationToken cancellationToken)
+        {
+            _channel.Writer.Complete();
+            _logger.LogInformation("{count} items are still in the channel.", _channel.Reader.Count);
+
+            List<DataPointPathInfo> messages = new List<DataPointPathInfo>();
+            await foreach (DownSyncRequest downSyncRequest in _channel.Reader.ReadAllAsync(cancellationToken).ConfigureAwait(false))
+            {
+                messages.Add(downSyncRequest.Payload);
+            }
+
+            string tempFileName = Path.GetTempFileName();
+            using (Stream outputFileStream = File.OpenWrite(tempFileName))
+            {
+                await JsonSerializer.SerializeAsync(outputFileStream, messages).ConfigureAwait(false);
+            }
+            FileUtilities.Move(tempFileName, _sessionFilePath, overwrite: true);
+            _logger.LogInformation("Session info persistent to: {destination}", _sessionFilePath);
+        }
+
         private Task<bool> DownloadAsync(DataPointPathInfo input, CancellationToken stoppingToken)
             => _oneDrive.DownSyncAsync(input, stoppingToken);
-
 
         private void LogAndReport(string message, LogLevel logLevel = LogLevel.Information)
         {

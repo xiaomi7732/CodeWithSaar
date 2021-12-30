@@ -6,7 +6,7 @@ namespace CodeNameK.Core.Utilities
     public static class TaskUtilities
     {
         /// <summary>
-        /// Fire & forget a task. Handles exception when handler is specified.
+        /// Fire and forget a task. Handles exception when handler is specified.
         /// </summary>
         /// <param name="task">The target task.</param>
         /// <param name="exceptionHandler">The exception handler.</param>

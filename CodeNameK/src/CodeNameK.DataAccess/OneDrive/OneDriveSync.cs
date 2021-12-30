@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using CodeNameK.Contracts;
 using CodeNameK.Contracts.CustomOptions;
-using CodeNameK.Core.CustomExceptions;
 using CodeNameK.Core.Utilities;
 using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
@@ -51,68 +50,16 @@ namespace CodeNameK.DAL.OneDrive
             return status == OneDriveCredentialStatus.SignedIn;
         }
 
-        public async IAsyncEnumerable<DataPointPathInfo> ListAllDataPointsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
+        public IAsyncEnumerable<DataPointPathInfo> ListAllDataPointsAsync(CancellationToken cancellationToken)
+            => ListAllDataPointsAsync(relativeRemotePath: _remotePathProvider.BasePath, cancellationToken);
+
+        public IAsyncEnumerable<DataPointPathInfo> ListAllDataPointsAsync(Category category, CancellationToken cancellationToken)
         {
-            Queue<DriveItem> works = new Queue<DriveItem>();
-
-            DriveItem? appRootItem = null;
-            Task timeoutTask = Task.Delay(_graphAPIOptions.SignInTimeout);
-            Task<DriveItem> appRootTask = _graphServiceClient.Me.Drive.Special.AppRoot.Request().GetAsync(cancellationToken);
-
-            await Task.WhenAny(timeoutTask, appRootTask).ConfigureAwait(false);
-            if (!appRootTask.IsCompleted)
+            if (string.IsNullOrEmpty(category.Id))
             {
-                throw new SigninTimeoutException(_graphAPIOptions.SignInTimeout);
+                throw new ArgumentNullException(nameof(category));
             }
-
-            appRootItem = appRootTask.Result;
-            works.Enqueue(appRootItem);
-            string appRootPath = Path.Combine(appRootItem.ParentReference.Path, appRootItem.Name);
-            while (works.TryDequeue(out DriveItem work))
-            {
-                if (work.Folder.ChildCount == 0)
-                {
-                    continue;
-                }
-
-                IDriveItemChildrenCollectionPage items = await _graphServiceClient.Me.Drive.Items[work.Id].Children.Request().GetAsync(cancellationToken).ConfigureAwait(false);
-                while (items is not null && items.Any())
-                {
-                    foreach (DriveItem item in items)
-                    {
-                        // Folder
-                        if (item.Folder is not null)
-                        {
-                            works.Enqueue(item);
-                            continue;
-                        }
-
-                        if (item.File is null)
-                        {
-                            continue;
-                        }
-
-                        // File
-                        int appRootPathLength = appRootPath.Length + 1;
-                        if (item.ParentReference.Path.Length < appRootPathLength)
-                        {
-                            continue;
-                        }
-
-                        string remotePath = item.ParentReference.Path.Substring(appRootPathLength) + '/' + item.Name;
-                        if (_remotePathProvider.TryGetDataPointInfo(remotePath, out DataPointPathInfo? pathInfo))
-                        {
-                            yield return pathInfo!;
-                        }
-                    }
-
-                    if (items.NextPageRequest is null)
-                    {
-                        break;
-                    }
-                    items = await items.NextPageRequest.GetAsync(cancellationToken).ConfigureAwait(false);
-                }
-            }
+            return ListAllDataPointsAsync(relativeRemotePath: _remotePathProvider.GetRemotePath(category), cancellationToken);
         }
 
         public async IAsyncEnumerable<DataPointPathInfo> DownSyncAsync(
@@ -144,7 +91,7 @@ namespace CodeNameK.DAL.OneDrive
         {
             string localPath = _localPathProvider.GetLocalPath(data);
             string remotePath = _remotePathProvider.GetRemotePath(data);
-            return DownSyncAsync(localPath, remotePath, cancellationToken);
+            return DownSyncAsync(remotePath, localPath, cancellationToken);
         }
 
         public async IAsyncEnumerable<DataPointPathInfo> UpSyncAsync(IEnumerable<DataPointPathInfo> source, IProgress<double>? progress = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -245,6 +192,85 @@ namespace CodeNameK.DAL.OneDrive
                 System.IO.File.Delete(tempFile);
             });
             return true;
+        }
+
+        private async IAsyncEnumerable<DataPointPathInfo> ListAllDataPointsAsync(string relativeRemotePath, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            Queue<DriveItem> works = new Queue<DriveItem>();
+            await _tokenCredential.SignInAsync(_graphAPIOptions.SignInTimeout, cancellationToken);
+            DriveItem appRootItem = await _graphServiceClient.Me.Drive.Special.AppRoot.Request().GetAsync(cancellationToken);
+
+            DriveItem? workRoot = null;
+            if (string.IsNullOrEmpty(relativeRemotePath))
+            {
+                workRoot = appRootItem;
+            }
+            else
+            {
+                try
+                {
+                    workRoot = await _graphServiceClient.Me.Drive.Special.AppRoot.ItemWithPath(relativeRemotePath).Request().GetAsync(cancellationToken).ConfigureAwait(false);
+                }
+                catch (ServiceException ex) when (string.Equals(ex.Error?.Code, "itemNotFound"))
+                {
+                    _logger.LogWarning("Remote item doesn't exist: {path}", relativeRemotePath);
+                }
+            };
+
+            if (workRoot is null)
+            {
+                // Nothing.
+                yield break;
+            }
+
+            works.Enqueue(workRoot);
+            string appRootPath = Path.Combine(appRootItem.ParentReference.Path, appRootItem.Name);
+
+            while (works.TryDequeue(out DriveItem work))
+            {
+                if (work.Folder.ChildCount == 0)
+                {
+                    continue;
+                }
+
+                IDriveItemChildrenCollectionPage items = await _graphServiceClient.Me.Drive.Items[work.Id].Children.Request().GetAsync(cancellationToken).ConfigureAwait(false);
+                while (items is not null && items.Any())
+                {
+                    foreach (DriveItem item in items)
+                    {
+                        // Folder
+                        if (item.Folder is not null)
+                        {
+                            works.Enqueue(item);
+                            continue;
+                        }
+
+                        if (item.File is null)
+                        {
+                            continue;
+                        }
+
+                        // File
+                        int appRootPathLength = appRootPath.Length + 1;
+                        if (item.ParentReference.Path.Length < appRootPathLength)
+                        {
+                            continue;
+                        }
+
+                        string remotePath = item.ParentReference.Path.Substring(appRootPathLength) + '/' + item.Name;
+                        if (_remotePathProvider.TryGetDataPointInfo(remotePath, out DataPointPathInfo? pathInfo))
+                        {
+                            yield return pathInfo!;
+                        }
+                    }
+
+                    if (items.NextPageRequest is null)
+                    {
+                        break;
+                    }
+                    items = await items.NextPageRequest.GetAsync(cancellationToken).ConfigureAwait(false);
+                }
+            }
         }
     }
 }
