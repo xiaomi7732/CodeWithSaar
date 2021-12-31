@@ -1,4 +1,8 @@
-﻿<Window x:Class="CodeNameK.WPF.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:CodeNameK.WPF" xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF" xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" TextElement.Foreground="{DynamicResource MaterialDesignBody}" Background="{DynamicResource MaterialDesignPaper}" TextElement.FontWeight="Medium" TextElement.FontSize="14" FontFamily="{materialDesign:MaterialDesignFont}" mc:Ignorable="d" Title="CodeNameK" Height="800" Width="1024">
+﻿<Window x:Class="CodeNameK.WPF.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:CodeNameK.WPF" 
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF" xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase" 
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" TextElement.Foreground="{DynamicResource MaterialDesignBody}" Background="{DynamicResource MaterialDesignPaper}" TextElement.FontWeight="Normal" TextElement.FontSize="14" mc:Ignorable="d" Title="CodeNameK" Height="800" Width="1024">
     <Window.Resources>
         <DataTemplate x:Key="categoryItemTemplate">
             <TextBlock Text="{Binding Id}" ToolTip="{Binding Id}" />
@@ -61,27 +65,24 @@
         <Grid Margin="16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition MinWidth="200" Width="*" />
-                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="4" />
                 <ColumnDefinition Width="5*" />
             </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <!--Primary area-->
-                <RowDefinition />
-                <!--Progress bar-->
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <GroupBox Padding="8" Margin="0 0 8 0">
-                <GroupBox.Header>
-                    <TextBlock Text="{Binding CategoryHeader}" />
-                </GroupBox.Header>
+            <materialDesign:Card Margin="0 0 8 0" Padding="8 8 0 0">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <!--Header-->
+                        <RowDefinition Height="Auto"></RowDefinition>
                         <!--TextBox-->
                         <RowDefinition Height="Auto"></RowDefinition>
                         <!--ListView-->
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Grid Grid.Row="0">
+                    <StackPanel>
+                        <TextBlock Text="{Binding CategoryHeader}" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                               Margin="8"/>
+                    </StackPanel>
+                    <Grid Grid.Row="1" Margin="8">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -94,11 +95,14 @@
                         </TextBox>
                         <Button Grid.Column="1" Width="48" Margin="4 0 0 0" Command="{Binding AddCategoryCommand}" VerticalAlignment="Center" Height="24">+</Button>
                     </Grid>
-                    <ListView Grid.Row="1" ItemsSource="{Binding CategoryCollectionView, Mode=OneWay}" ItemTemplate="{StaticResource ResourceKey=categoryItemTemplate}" SelectedItem="{Binding SelectedCategory, Mode=TwoWay}" />
+                    <ListView Grid.Row="2" ItemsSource="{Binding CategoryCollectionView, Mode=OneWay}" 
+                              ItemTemplate="{StaticResource ResourceKey=categoryItemTemplate}" 
+                              SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                              Cursor="Hand"
+                              />
                 </Grid>
-            </GroupBox>
-
-            <GridSplitter Grid.Column="1" Width="10" HorizontalAlignment="Stretch" Margin="0 20 0 20" />
+            </materialDesign:Card>
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch" Margin="0 20 0 20" />
             <!-- Chart container -->
             <Grid Grid.Column="2" Margin="32,32,32,0">
                 <Grid.RowDefinitions>
@@ -107,7 +111,8 @@
                     <!-- Selected dataPoint -->
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Grid HorizontalAlignment="Right" Height="50">
+                <!--Buttons on the right upper corner-->
+                <Grid HorizontalAlignment="Right" Height="50" Visibility="{Binding SelectedCategory, Converter={StaticResource NullableToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
@@ -147,7 +152,7 @@
                         </TextBlock.ToolTip>
                     </TextBlock>
                 </Grid>
-                <lvc:CartesianChart Grid.Row="1" Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="X">
+                <lvc:CartesianChart Grid.Row="1" Margin="0 0 0 16" Series="{Binding Series}" XAxes="{Binding XAxes}" YAxes="{Binding YAxes}" ZoomMode="X">
                     <lvc:CartesianChart.InputBindings>
                         <MouseBinding Command="{Binding PickPointCommand}" Gesture="Control+LeftClick" />
                         <MouseBinding Command="{Binding PickPointCommand}" Gesture="RightClick" />
@@ -160,39 +165,51 @@
                         </ContextMenu>
                     </lvc:CartesianChart.ContextMenu>
                 </lvc:CartesianChart>
-                <GroupBox Grid.Row="2" Padding="8">
-                    <GroupBox.Header>
-                        <TextBlock Text="Manage Data Point" />
-                    </GroupBox.Header>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100" />
-                            <ColumnDefinition Width="2*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <RadioButton GroupName="DateMode" Grid.ColumnSpan="3" VerticalAlignment="Center" IsChecked="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Mode=TwoWay}">Use Current Datetime</RadioButton>
-                        <!--Date Time-->
-                        <RadioButton IsChecked="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Converter={StaticResource InverseBooleanConverter}}" GroupName="DateMode" Grid.Row="1" VerticalAlignment="Center">
-                            Specify:
-                        </RadioButton>
-                        <DatePicker Grid.Row="1" HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center" SelectedDateFormat="Long" SelectedDate="{Binding SelectedDataPoint.LocalDate, Mode=TwoWay}" IsEnabled="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Converter={StaticResource InverseBooleanConverter}}"/>
-                        <TextBox Grid.Row="1" Grid.Column="2" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" Text="{Binding SelectedDataPoint.TimeSpan, Mode=TwoWay}" Margin="4 4 0 4" MinWidth="120" IsEnabled="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Converter={StaticResource InverseBooleanConverter}}" />
+                <materialDesign:Card  Grid.Row="2" Padding="16">
+                    <StackPanel>
+                        <TextBlock Text="Manage Data Point" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 0 0 4" />
+                        <TextBlock Text="Add a new data point or pick a data point by Ctrl+Click to replicate." Style="{StaticResource MaterialDesignSubtitle2TextBlock}" Margin="0 4 0 16" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <RadioButton GroupName="DateMode" Grid.ColumnSpan="3" 
+                                     VerticalAlignment="Center" IsChecked="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Mode=TwoWay}"
+                                         >Use Current Datetime</RadioButton>
+                            <!--Date Time-->
+                            <RadioButton IsChecked="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Converter={StaticResource InverseBooleanConverter}}" GroupName="DateMode" Grid.Row="1" VerticalAlignment="Center">
+                                Specify:
+                            </RadioButton>
+                            <DatePicker Grid.Row="1" HorizontalAlignment="Left" Grid.Column="1" VerticalAlignment="Center" SelectedDateFormat="Long" SelectedDate="{Binding SelectedDataPoint.LocalDate, Mode=TwoWay}" IsEnabled="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Converter={StaticResource InverseBooleanConverter}}"/>
+                            <materialDesign:TimePicker 
+                                Grid.Row="1"
+                                Grid.Column="2" 
+                                Text="{Binding SelectedDataPoint.TimeSpan, Mode=TwoWay}"
+                                IsEnabled="{Binding SelectedDataPoint.IsCurrentDateTimeMode, Converter={StaticResource InverseBooleanConverter}}" 
+                                HorizontalAlignment="Left"
+                                SelectedTimeFormat="Long"
+                                WithSeconds="True"
+                                Is24Hours="True" />
 
-                        <!--Value-->
-                        <TextBlock Text="Value:" Grid.Row="2" VerticalAlignment="Center" />
-                        <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2" Text="{Binding SelectedDataPoint.Value, Mode=TwoWay}" />
-                        <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.ColumnSpan="3">
-                            <Button Command="{Binding SelectedDataPoint.AddPointCommand}" CommandParameter="{Binding}">_Add</Button>
-                            <Button Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}" ToolTip="Use Ctrl + Click to pick a data point for deletion">_Delete</Button>
-                        </StackPanel>
-                    </Grid>
-                </GroupBox>
+
+                            <!--Value-->
+                            <TextBlock Text="Value:" Grid.Row="2" VerticalAlignment="Center" />
+                            <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2" Text="{Binding SelectedDataPoint.Value, Mode=TwoWay}" />
+                            <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.ColumnSpan="3">
+                                <Button Command="{Binding SelectedDataPoint.AddPointCommand}" CommandParameter="{Binding}">_Add</Button>
+                                <Button Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}" ToolTip="Use Ctrl + Click to pick a data point for deletion">_Delete</Button>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </materialDesign:Card>
             </Grid>
         </Grid>
     </DockPanel>
