@@ -17,13 +17,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CodeNameK.ViewModels\CodeNameK.ViewModels.csproj" />
-    <ProjectReference Include="..\..\..\..\fork-WpfToolkit\WpfToolkit\WPF.Themes\DotNetProjects.WPF.Themes.csproj" />
+    <!-- <ProjectReference Include="..\..\..\..\fork-WpfToolkit\WpfToolkit\WPF.Themes\DotNetProjects.WPF.Themes.csproj" /> -->
     <!-- <ProjectReference Include="..\..\..\..\fork-livechart-2\src\skiasharp\LiveChartsCore.SkiaSharp.WPF\LiveChartsCore.SkiaSharpView.WPF.csproj" /> -->
     
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-beta.80" />
+    <PackageReference Include="MaterialDesignThemes" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
