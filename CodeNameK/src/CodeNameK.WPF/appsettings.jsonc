@@ -7,7 +7,8 @@
     }
   },
   "GraphAPI": {
-    "ClientId": "c35c09da-4ac5-47e7-98cc-2ba2979d8ae7",
+    "ClientId": "65d4370e-acab-4127-900f-8465791391ed",
+    "TenantId": "consumers",
     "Scopes": [
       "Files.ReadWrite.All"
     ],

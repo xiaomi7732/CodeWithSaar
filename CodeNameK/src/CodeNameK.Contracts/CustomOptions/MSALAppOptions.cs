@@ -1,5 +1,3 @@
-using System;
-
 namespace CodeNameK.Contracts.CustomOptions
 {
     public class MSALAppOptions<T>

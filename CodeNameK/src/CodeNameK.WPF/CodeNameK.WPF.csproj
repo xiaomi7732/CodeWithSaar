@@ -14,7 +14,6 @@
     <OutputType>Exe</OutputType>
     <DisableWinExeOutputInference>true</DisableWinExeOutputInference>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\CodeNameK.ViewModels\CodeNameK.ViewModels.csproj" />
     <!-- <ProjectReference Include="..\..\..\..\fork-WpfToolkit\WpfToolkit\WPF.Themes\DotNetProjects.WPF.Themes.csproj" /> -->
@@ -36,6 +35,10 @@
   <ItemGroup>
     <None Include="appsettings.jsonc" CopyToOutputDirectory="PreserveNewest" />
     <None Include="appsettings.debug.jsonc" CopyToOutputDirectory="PreserveNewest" Condition="'$(Configuration)'=='Debug'" />
+  </ItemGroup>
+  <ItemGroup>
+	<None Remove="icon128.png" />
+    <Resource Include="icon128.png" />
   </ItemGroup>
 
 </Project>
