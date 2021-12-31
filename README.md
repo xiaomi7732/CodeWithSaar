@@ -4,7 +4,7 @@ This is the codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.
 
 ## Announcements
 
-* 12/31/2021: **NumberIt** _(CodeNameK)_ release page is established. [Details](./codenamek/Readme.md).
+* 12/31/2021: **NumberIt** _(CodeNameK)_ release page is established. [Details](./CodeNameK/Readme.md).
 
 ## Fundamentals
 
@@ -13,7 +13,7 @@ This is the codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.
 
 ## Advanced
 
-* [NumberIt - CodeNameK](./codenameK/Readme.md) | [YouTube Playlist](https://youtube.com/playlist?list=PLxWo8vu0UTZ28_GwEGdjwExCHDKx1WCua)
+* [NumberIt - CodeNameK](./CodeNameK/Readme.md) | [YouTube Playlist](https://youtube.com/playlist?list=PLxWo8vu0UTZ28_GwEGdjwExCHDKx1WCua)
 * [JWT Auth for AspNetCore WebAPI](./Auth.AspNetCore.WebApi/README.md) | [NuGet package](https://www.nuget.org/packages/CodeWithSaar.JWTAuthentication.WebAPI)
 * [Two-way named pipe stream wrapper](./IPC/README.md) | [NuGet package](https://www.nuget.org/packages/CodeWithSaar.IPC)
 
