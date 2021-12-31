@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using WPF.Themes;
 
 namespace CodeNameK.WPF
 {
@@ -22,6 +23,16 @@ namespace CodeNameK.WPF
         public App()
         {
             System.Net.ServicePointManager.DefaultConnectionLimit = 100;
+            try
+            {
+                Application.Current.ApplyTheme("MetroLight");
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Console.WriteLine("Failed loading theme. Error details: {0}", ex);
+#endif
+            }
             _host = new HostBuilder()
                 .ConfigureAppConfiguration(builder =>
                 {
@@ -31,7 +42,7 @@ namespace CodeNameK.WPF
 #endif
                     ;
                 })
-                .ConfigureLogging((context,builder) =>
+                .ConfigureLogging((context, builder) =>
                 {
                     builder.ClearProviders();
                     builder.AddConfiguration(context.Configuration.GetSection("Logging"));
