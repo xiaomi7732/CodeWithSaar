@@ -157,6 +157,7 @@ namespace CodeNameK.ViewModels
                             .AsTask()
                             .FireWithExceptionHandler(_errorRevealerFactory.CreateInstance("Down sync error").Reveal);
                     }
+                    SelectedDataPoint.SetModel(null);
                 }
             }
         }
@@ -364,7 +365,22 @@ namespace CodeNameK.ViewModels
         public ICommand PickPointCommand { get; }
         private void PickPointImp(object? parameter)
         {
-            SelectedDataPoint.SetModel(_hoverPoint);
+
+            if (SelectedCategory is null)
+            {
+                SelectedDataPoint.SetModel(null);
+                SelectedDataPoint.IsCurrentDateTimeMode = true;
+                return;
+            }
+
+            if (Series.Count == 1 && Series[0] is LineSeries<DataPoint> lineSeries && lineSeries.Values.NullAsEmpty().Count() == 1)
+            {
+                SelectedDataPoint.SetModel(lineSeries.Values!.First());
+            }
+            else
+            {
+                SelectedDataPoint.SetModel(_hoverPoint);
+            }
             SelectedDataPoint.IsCurrentDateTimeMode = false;
         }
 

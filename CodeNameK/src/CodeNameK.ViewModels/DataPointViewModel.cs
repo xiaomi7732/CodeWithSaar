@@ -39,6 +39,11 @@ namespace CodeNameK.ViewModels
         /// <param name="newModel"></param>
         public void SetModel(DataPoint? newModel)
         {
+            if (newModel is null)
+            {
+                IsCurrentDateTimeMode = true;
+            }
+
             newModel ??= CreateDefaultModel();
             _id = newModel.Id;
 
