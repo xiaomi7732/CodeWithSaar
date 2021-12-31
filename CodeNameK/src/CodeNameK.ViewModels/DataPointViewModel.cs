@@ -29,7 +29,7 @@ namespace CodeNameK.ViewModels
             _dataPointBiz = dataPointBiz ?? throw new ArgumentNullException(nameof(dataPointBiz));
             LocalDate = DateTime.Today;
 
-            AddPointCommand = new AsyncRelayCommand(AddPointAsync, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unexpected error invoking {nameof(AddPointCommand)}").Reveal);
+            AddPointCommand = new AsyncRelayCommand(AddPointAsync, (obj) => Value is not null, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unexpected error invoking {nameof(AddPointCommand)}").Reveal);
             DeletePointCommand = new AsyncRelayCommand(DeletePointAsync, CanDelete, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unexpected error invoking {nameof(AsyncRelayCommand)}").Reveal);
         }
 
@@ -39,6 +39,7 @@ namespace CodeNameK.ViewModels
         /// <param name="newModel"></param>
         public void SetModel(DataPoint? newModel)
         {
+            bool newModelNull = newModel is null;
             if (newModel is null)
             {
                 IsCurrentDateTimeMode = true;
@@ -52,7 +53,7 @@ namespace CodeNameK.ViewModels
 
             LocalDate = localDateTime.Date;
             TimeSpan = localDateTime - LocalDate;
-            Value = newModel.Value;
+            Value = newModelNull ? null : newModel.Value;
         }
 
         private DateTime _localDate;
@@ -95,11 +96,11 @@ namespace CodeNameK.ViewModels
             }
         }
 
-        private double _value;
+        private double? _value;
         /// <summary>
         /// Gets or sets the value for the data point
         /// </summary>
-        public double Value
+        public double? Value
         {
             get
             {
@@ -160,6 +161,7 @@ namespace CodeNameK.ViewModels
             if (addResult.IsSuccess)
             {
                 await mainViewModel.UpdateSeriesAsync(default).ConfigureAwait(false);
+                Value = null;
             }
             else
             {
@@ -235,7 +237,7 @@ namespace CodeNameK.ViewModels
                 Id = _id,
                 Category = category,
                 WhenUTC = IsCurrentDateTimeMode ? DateTime.UtcNow : BuildWhenUTC(),
-                Value = this.Value,
+                Value = this.Value ?? 0,
             };
         }
 

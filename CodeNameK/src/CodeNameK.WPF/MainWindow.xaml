@@ -205,7 +205,11 @@
 
                             <!-- Manage Data Point -->
                             <TextBlock Text="Value:" Grid.Row="2" VerticalAlignment="Center" />
-                            <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2" Text="{Binding SelectedDataPoint.Value, Mode=TwoWay}" GotFocus="TextBox_GotFocus" />
+                            <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2" Text="{Binding SelectedDataPoint.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" GotFocus="TextBox_GotFocus">
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="Return" Command="{Binding SelectedDataPoint.AddPointCommand}" CommandParameter="{Binding}" />
+                                </TextBox.InputBindings>
+                            </TextBox>
                             <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.ColumnSpan="3">
                                 <Button Command="{Binding SelectedDataPoint.AddPointCommand}" CommandParameter="{Binding}">_Add</Button>
                                 <Button Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}" Style="{StaticResource MaterialDesignOutlinedButton}" ToolTip="Use Ctrl + Click to pick a data point for deletion">_Delete</Button>
