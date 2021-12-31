@@ -68,6 +68,7 @@
                 <ColumnDefinition Width="4" />
                 <ColumnDefinition Width="5*" />
             </Grid.ColumnDefinitions>
+            <!--Category-->
             <materialDesign:Card Margin="0 0 8 0" Padding="8 8 0 0">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -93,7 +94,7 @@
                                 <KeyBinding Command="{Binding AddCategoryCommand}" Key="Return"></KeyBinding>
                             </TextBox.InputBindings>
                         </TextBox>
-                        <Button Grid.Column="1" Width="48" Margin="4 0 0 0" Command="{Binding AddCategoryCommand}" VerticalAlignment="Center" Height="24">+</Button>
+                        <Button Grid.Column="1" Width="48" Margin="4 0 0 0" Command="{Binding AddCategoryCommand}" VerticalAlignment="Center" Height="28" Style="{StaticResource MaterialDesignOutlinedButton}">+</Button>
                     </Grid>
                     <ListView Grid.Row="2" ItemsSource="{Binding CategoryCollectionView, Mode=OneWay}" 
                               ItemTemplate="{StaticResource ResourceKey=categoryItemTemplate}" 
@@ -127,7 +128,8 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button Grid.Column="2" ToolTip="Use mouse scroller to zoom in. Click here to reset zoom." Command="{Binding ResetZoomCommand}">_Reset Zoom</Button>
+                    <Button Grid.Column="2" ToolTip="Use mouse scroller to zoom in. Click here to reset zoom." Command="{Binding ResetZoomCommand}"
+                            Style="{StaticResource MaterialDesignFlatButton}">_Reset Zoom</Button>
                     <TextBlock Grid.Column="3" Margin="0 0 8 0" VerticalAlignment="Center">
                         <Bold>> Tips</Bold>
                         <TextBlock.ToolTip>
@@ -200,12 +202,12 @@
                                 Is24Hours="True" />
 
 
-                            <!--Value-->
+                            <!-- Manage Data Point -->
                             <TextBlock Text="Value:" Grid.Row="2" VerticalAlignment="Center" />
                             <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2" Text="{Binding SelectedDataPoint.Value, Mode=TwoWay}" />
                             <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.ColumnSpan="3">
                                 <Button Command="{Binding SelectedDataPoint.AddPointCommand}" CommandParameter="{Binding}">_Add</Button>
-                                <Button Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}" ToolTip="Use Ctrl + Click to pick a data point for deletion">_Delete</Button>
+                                <Button Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}" Style="{StaticResource MaterialDesignOutlinedButton}" ToolTip="Use Ctrl + Click to pick a data point for deletion">_Delete</Button>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
