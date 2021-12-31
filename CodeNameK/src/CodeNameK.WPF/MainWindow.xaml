@@ -53,7 +53,10 @@
                 <TextBlock Text="{Binding DownSyncQueueLength}" />
             </StatusBarItem>
         </StatusBar>
-
+        <!--Sync progress-->
+        <Grid DockPanel.Dock="Bottom" Margin="0 0 0 0">
+            <ProgressBar Grid.Column="0" Maximum="1" Minimum="0" SmallChange="0.01" LargeChange="0.1" Value="{Binding SyncProgress}" VerticalAlignment="Center" Height="2" />
+        </Grid>
         <!--Main Area-->
         <Grid Margin="16">
             <Grid.ColumnDefinitions>
@@ -186,15 +189,10 @@
                         <TextBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" Grid.ColumnSpan="2" Text="{Binding SelectedDataPoint.Value, Mode=TwoWay}" />
                         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.ColumnSpan="3">
                             <Button Command="{Binding SelectedDataPoint.AddPointCommand}" CommandParameter="{Binding}">_Add</Button>
-                            <Button Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}">_Delete</Button>
+                            <Button Command="{Binding SelectedDataPoint.DeletePointCommand}" CommandParameter="{Binding}" ToolTip="Use Ctrl + Click to pick a data point for deletion">_Delete</Button>
                         </StackPanel>
                     </Grid>
                 </GroupBox>
-            </Grid>
-
-            <!--Sync progress-->
-            <Grid Grid.Row="1" Grid.ColumnSpan="3" Margin="0 8 0 0">
-                <ProgressBar Grid.Column="0" Maximum="1" Minimum="0" SmallChange="0.01" LargeChange="0.1" Value="{Binding SyncProgress}" VerticalAlignment="Center" Height="12" />
             </Grid>
         </Grid>
     </DockPanel>

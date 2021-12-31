@@ -30,7 +30,7 @@ namespace CodeNameK.ViewModels
             LocalDate = DateTime.Today;
 
             AddPointCommand = new AsyncRelayCommand(AddPointAsync, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unexpected error invoking {nameof(AddPointCommand)}").Reveal);
-            DeletePointCommand = new AsyncRelayCommand(DeletePointAsync, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unexpected error invoking {nameof(AsyncRelayCommand)}").Reveal);
+            DeletePointCommand = new AsyncRelayCommand(DeletePointAsync, CanDelete, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unexpected error invoking {nameof(AsyncRelayCommand)}").Reveal);
         }
 
         /// <summary>
@@ -198,6 +198,14 @@ namespace CodeNameK.ViewModels
             {
                 _errorRevealerFactory.CreateInstance(string.Empty).Reveal(result.Reason, "Delete data point failed.");
             }
+        }
+        private bool CanDelete(object? parameter)
+        {
+            if (parameter is MainViewModel mainViewModel)
+            {
+                return mainViewModel.SelectedDataPoint is not null && _id != Guid.Empty;
+            }
+            return false;
         }
 
         /// <summary>

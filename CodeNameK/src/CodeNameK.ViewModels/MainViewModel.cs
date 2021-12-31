@@ -501,6 +501,7 @@ namespace CodeNameK.ViewModels
             {
                 SyncStateText = "Success";
                 MessageBox.Show($"{result.Entity.Uploaded} files uploaded, {result.Entity.Downloaded} files downloaded.", "Sync Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                SyncProgress = 0;
             }
             else
             {
