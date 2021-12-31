@@ -15,6 +15,11 @@ namespace CodeNameK.DAL.Interfaces
         Task<T> SignInAsync(TimeSpan timeout, CancellationToken cancellationToken = default);
         
         /// <summary>
+        /// Cancel the current sign in.
+        /// </summary>
+        void CancelSignIn();
+
+        /// <summary>
         /// Gets the current sign in status.
         /// </summary>
         /// <value></value>

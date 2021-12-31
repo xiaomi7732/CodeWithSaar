@@ -25,6 +25,11 @@ namespace CodeNameK.BIZ.Interfaces
         Task<bool> SignInAsync(CancellationToken cancellationToken);
 
         /// <summary>
+        /// Cancel the current sign in.
+        /// </summary>
+        void CancelSignIn();
+
+        /// <summary>
         /// An event when sign in status changed.
         /// </summary>
         event EventHandler<OneDriveCredentialStatus>? SignInStatusChanged;

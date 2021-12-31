@@ -9,6 +9,7 @@
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_Application">
                 <MenuItem Header="_Sync" Command="{Binding SyncCommand}" />
+                <MenuItem Header="_Cancel Sign In" Command="{Binding CancelSignInCommand}" />
                 <Separator />
                 <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
             </MenuItem>

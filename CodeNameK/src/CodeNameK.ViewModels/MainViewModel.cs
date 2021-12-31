@@ -91,6 +91,7 @@ namespace CodeNameK.ViewModels
             PickPointCommand = new RelayCommand(PickPointImp);
             TodayOnlyCommand = new AsyncRelayCommand(TodayOnlyImpAsync, canExecute: null, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled exception invoking {TodayOnlyCommand}").Reveal);
             ExitCommand = new RelayCommand(ExitImp);
+            CancelSignInCommand = new RelayCommand(CancelSignIn);
 
             SelectedDateRangeOption = DateRangeOptions.First();
             _selectedDateRangeOption = SelectedDateRangeOption;
@@ -455,6 +456,12 @@ namespace CodeNameK.ViewModels
             }
         }
 
+
+        public ICommand CancelSignInCommand { get; }
+        private void CancelSignIn(object? parameter)
+        {
+            _syncService.CancelSignIn();
+        }
 
         public ICommand SyncCommand { get; }
         private async Task SyncImpAsync(object? parameters)

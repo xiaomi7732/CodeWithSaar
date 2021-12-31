@@ -67,6 +67,17 @@ namespace CodeNameK.BIZ
             return await _oneDriveTokenManager.SignInAsync(_options.SignInTimeout, cancellationToken).ConfigureAwait(false) == OneDriveCredentialStatus.SignedIn;
         }
 
+        public void CancelSignIn()
+        {
+            // Do nothing if it is not currently signing in.
+            if(_oneDriveTokenManager.CurrentStatus != OneDriveCredentialStatus.SigningIn)
+            {
+                return;
+            }
+            
+            _oneDriveTokenManager.CancelSignIn();
+        }
+
         public async Task<bool> DownSyncAsync(DataPointPathInfo item, CancellationToken cancellationToken = default)
         {
             // Must have category:

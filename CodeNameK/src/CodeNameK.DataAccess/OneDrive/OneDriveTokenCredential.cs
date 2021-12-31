@@ -19,6 +19,8 @@ namespace CodeNameK.DAL.OneDrive
         private readonly InteractiveBrowserCredentialOptions _credentialTokenOptions;
         private Task _expiryTask = Task.CompletedTask;
         private CancellationTokenSource? _expiryTaskCancellationTokenSource = null;
+        private CancellationTokenSource _cancelSignInTokenSource = new CancellationTokenSource();
+
         private AccessToken _knownAccessToken;
         private InteractiveBrowserCredential? _credential;
         private SemaphoreSlim _signInLock = new SemaphoreSlim(1, 1);
@@ -95,8 +97,9 @@ namespace CodeNameK.DAL.OneDrive
                     _credential = _credential ?? new InteractiveBrowserCredential(_credentialTokenOptions);
                     TokenRequestContext context = new TokenRequestContext(_graphAPIOptions.Scopes!);
 
-                    using (CancellationTokenSource timeoutTokenSource = new CancellationTokenSource(timeout))
-                    using (CancellationTokenSource linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeoutTokenSource.Token))
+                    using (CancellationTokenSource timeoutTokenSource = new CancellationTokenSource(timeout))   // Timeout token source
+                    using (CancellationTokenSource cancelableTokenSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutTokenSource.Token, _cancelSignInTokenSource.Token))   // Timeout + cancellable
+                    using (CancellationTokenSource linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cancelableTokenSource.Token)) // Timeout + cancellable + local function
                     {
                         _knownAccessToken = await _credential.GetTokenAsync(context, linkedTokenSource.Token);
 
@@ -149,12 +152,19 @@ namespace CodeNameK.DAL.OneDrive
                 RedirectUri = new Uri(_graphAPIOptions.RedirectUri),
             };
         }
+        public void CancelSignIn()
+        {
+            _cancelSignInTokenSource.Cancel();
+            _cancelSignInTokenSource.Dispose();
+            _cancelSignInTokenSource = new CancellationTokenSource();
+        }
 
         public void Dispose()
         {
             _expiryTask.Dispose();
             _expiryTaskCancellationTokenSource?.Dispose();
             _signInLock.Dispose();
+            _cancelSignInTokenSource?.Dispose();
         }
     }
 }
