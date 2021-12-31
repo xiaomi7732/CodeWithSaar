@@ -1,0 +1,17 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "GraphAPI": {
+    "ClientId": "65d4370e-acab-4127-900f-8465791391ed",
+    "TenantId": "consumers",
+    "Scopes": [
+      "Files.ReadWrite.All"
+    ],
+    "RedirectUri": "http://localhost"
+  }
+}

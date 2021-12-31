@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\CodeNameK.Biz\CodeNameK.Biz.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-beta.80" />
+    <!-- <ProjectReference Include="..\..\..\..\fork-livechart-2\src\skiasharp\LiveChartsCore.SkiaSharp.WPF\LiveChartsCore.SkiaSharpView.WPF.csproj" /> -->
+
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+	  <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+
+</Project>

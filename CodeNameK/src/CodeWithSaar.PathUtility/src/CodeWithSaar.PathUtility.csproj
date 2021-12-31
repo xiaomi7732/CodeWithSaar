@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>CodeWithSaar.PathUtility</PackageId>
+    <Version>1.0.4</Version>
+    <Authors>Saar</Authors>
+    <Company>CodeWithSaar</Company>
+    <NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
+    <Description>Path Utility like file name encoder / decoder.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/xiaomi7732/CodeWithSaar/tree/codeNameK/CodeNameK/src/CodeWithSaar.PathUtility</PackageProjectUrl>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageTags>PathUtility Path Utility Encoding Decoding Encoder Decoder Specical Characters Wildcard Wildcards</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../../../icon.png" Pack="true" PackagePath="" />
+  </ItemGroup>
+</Project>

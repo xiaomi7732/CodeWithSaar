@@ -1,0 +1,19 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "CodeNameK": "Debug"
+    }
+  },
+  "LocalStore": {
+    "DataStorePath": "%userprofile%/.codeNameK/CliData"
+  },
+  "GraphAPI": {
+    "ClientId": "c35c09da-4ac5-47e7-98cc-2ba2979d8ae7",
+    "Scopes": [
+      "Files.ReadWrite.All"
+    ],
+    "RedirectUri": "http://localhost"
+  }
+}
