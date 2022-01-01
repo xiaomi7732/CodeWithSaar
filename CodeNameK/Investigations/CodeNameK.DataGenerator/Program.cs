@@ -1,5 +1,7 @@
-﻿using CodeNameK.Biz;
-using CodeNameK.DataAccess;
+﻿using CodeNameK.BIZ;
+using CodeNameK.BIZ.Interfaces;
+using CodeNameK.Contracts;
+using CodeNameK.DAL;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,8 +11,8 @@ IConfiguration configuration = new ConfigurationBuilder().Build();
 IServiceCollection services = new ServiceCollection();
 services.AddLogging();
 
-services.RegisterBiz(configuration);
-services.RegisterDataAccess(configuration);
+services.RegisterBizModule(configuration);
+services.RegisterDataAccessModule(configuration);
 
 IServiceProvider serviceProvider = services.BuildServiceProvider();
 
