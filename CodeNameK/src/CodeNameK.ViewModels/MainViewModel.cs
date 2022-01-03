@@ -231,7 +231,7 @@ namespace CodeNameK.ViewModels
             List<LineSeries<DataPoint>> existingSeries = Series.OfType<LineSeries<DataPoint>>().NullAsEmpty().ToList();
             foreach (var series in existingSeries)
             {
-                series.PointHovered -= SeriesPointHover;
+                series.DataPointerHover -= SeriesPointHover;
             }
 
             if (string.IsNullOrEmpty(SelectedCategory?.Id))
@@ -307,7 +307,7 @@ namespace CodeNameK.ViewModels
                 GeometryStroke = new SolidColorPaint(SKColors.SteelBlue, 4),
                 Mapping = SeriesMapping,
             };
-            series.PointHovered += SeriesPointHover;
+            series.DataPointerHover += SeriesPointHover;
             return series;
         }
 
@@ -317,7 +317,7 @@ namespace CodeNameK.ViewModels
             chartPoint.SecondaryValue = dataPoint.WhenUTC.ToLocalTime().Ticks;
         }
 
-        private void SeriesPointHover(TypedChartPoint<DataPoint, LineBezierVisualPoint<SkiaSharpDrawingContext, CircleGeometry, CubicBezierSegment, SKPath>, LabelGeometry, SkiaSharpDrawingContext> point)
+        private void SeriesPointHover(IChartView chart, ChartPoint<DataPoint, LineBezierVisualPoint<SkiaSharpDrawingContext, CircleGeometry, CubicBezierSegment, SKPath>, LabelGeometry> point)
         {
             _logger.LogDebug("Hover point: {point}", point.Model);
             if (point.Model is null)
@@ -327,9 +327,9 @@ namespace CodeNameK.ViewModels
             _hoverPoint = point.Model;
         }
 
-        private string FormatToolTip(TypedChartPoint<DataPoint, LineBezierVisualPoint<SkiaSharpDrawingContext, CircleGeometry, CubicBezierSegment, SKPath>, LabelGeometry, SkiaSharpDrawingContext> point)
+        private string FormatToolTip(ChartPoint<DataPoint, LineBezierVisualPoint<SkiaSharpDrawingContext, CircleGeometry, CubicBezierSegment, SKPath>, LabelGeometry> point)
         {
-            return string.Format($"{point?.Model?.WhenUTC.ToLocalTime():g}" + Environment.NewLine + $"{point?.PrimaryValue:N2}");
+            return $"{point?.Model?.WhenUTC.ToLocalTime():g}" + Environment.NewLine + $"{point?.PrimaryValue:N2}";
         }
 
         private Axis CreateNewXAxis()
