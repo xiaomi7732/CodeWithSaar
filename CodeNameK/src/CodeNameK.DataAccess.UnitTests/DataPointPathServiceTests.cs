@@ -32,7 +32,7 @@ namespace CodeNameK.DAL.UnitTests
             };
             ILocalPathProvider target = new LocalPathProvider(Options.Create(options));
             string actual = target.GetLocalPath(dataPoint).Replace("\\", "/");
-            string expected = $"{category}/{utcNow.Year}/{utcNow.Month:00}/{dataPointId:D}.dpt";
+            string expected = $"{category}/{dataPointId:D}.dpt";
             Assert.Equal(expected, actual);
         }
 
@@ -60,7 +60,7 @@ namespace CodeNameK.DAL.UnitTests
             };
             ILocalPathProvider target = new LocalPathProvider(Options.Create(options));
             string actual = target.GetLocalPath(dataPoint).Replace("\\", "/"); // Normalize separator for various OS.
-            string expected = $"{basePath}/{category}/{utcNow.Year}/{utcNow.Month:00}/{dataPointId:D}.dpt";
+            string expected = $"{basePath}/{category}/{dataPointId:D}.dpt";
             
             Assert.Equal(expected, actual);
         }
