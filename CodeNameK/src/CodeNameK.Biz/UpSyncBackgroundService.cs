@@ -69,15 +69,20 @@ namespace CodeNameK.BIZ
                 try
                 {
                     string message;
+                    string details;
                     if (await UploadAsync(input, stoppingToken).ConfigureAwait(false))
                     {
-                        message = $"Uploaded: {input}";
+                        message = "Uploaded";
+                        details = $"Uploaded: {input}";
                     }
                     else
                     {
-                        message = $"Upload didn't happen for: {input}";
+                        message = "Upload failed";
+                        details = $"Upload didn't happen for: {input}";
                     }
-                    LogAndReport(message);
+                    
+                    _logger.LogInformation(details);
+                    ReportProgress(message);
                 }
                 catch (Exception ex)
                 {
