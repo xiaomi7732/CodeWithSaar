@@ -25,7 +25,7 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
     /// <summary>
     /// Gets a data point entity by local or remote path.
     /// </summary>
-    /// <param name="path">Relative path including the base path. For example: data/CategoryName/yyyy/MM/guid.dtp</param>
+    /// <param name="path">Relative path including the base path. For example: data/CategoryName/guid.dtp</param>
     /// <param name="basePath">The base path. For example: data.</param>
     public bool TryGetDataPointInfo(string path, out DataPointPathInfo? pathInfo)
     {
@@ -37,7 +37,7 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
         }
 
         pathInfo = GetDataPointInfo(path, DecodeCategory);
-        return true;
+        return pathInfo != null;
     }
 
     public string GetLocalPath(DataPointPathInfo dataPointInfo)
@@ -74,13 +74,22 @@ internal abstract class PathProviderBase : IRemotePathProvider, ILocalPathProvid
     /// <summary>
     /// Parse a file path into DataPointPathInfo object.
     /// </summary>
-    /// <param name="path">Relative path to a data point. For example: base/EncodedCategoryName/yyyy/MM/data-id-guid.ext</param>
+    /// <param name="path">Relative path to a data point. For example: base/EncodedCategoryName/data-id-guid.ext</param>
     /// <param name="basePath">Base path. `data` for example.</param>
     /// <param name="decodeCategoryName">A delegate to decode category name for remote storage or local storage</param>
-    private DataPointPathInfo GetDataPointInfo(string path, Func<string, string> decodeCategoryName)
+    private DataPointPathInfo? GetDataPointInfo(string path, Func<string, string> decodeCategoryName)
     {
         string relativePath = Path.GetRelativePath(BasePath, path).Replace('\\', '/');
         string[] tokens = relativePath.Split("/");
+
+        if (tokens.Length != 2)
+        {
+#if DEBUG
+            throw new InvalidCastException($"File format doesn't match expectation. Relative path: {relativePath }");
+#else
+            return null;
+#endif
+        }
 
         string categoryId = decodeCategoryName(tokens[0]);
         Guid id = Guid.Parse(Path.GetFileNameWithoutExtension(tokens[1]));
