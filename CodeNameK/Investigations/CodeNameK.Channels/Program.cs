@@ -1,73 +1,54 @@
 ﻿using System.Text.Json;
 using System.Threading.Channels;
 
-Task? lastDelayTask = Task.CompletedTask;
-Channel<int> channel = Channel.CreateUnbounded<int>();
-int dataValue = 1;
+Channel<string> newChannel = Channel.CreateUnbounded<string>();
+using CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
-if (File.Exists("messages.json"))
-{
-    Console.WriteLine("There are messages left from the last session. Restore them.");
-    using (Stream inputStream = File.OpenRead("messages.json"))
+_ = Task.Run(async ()=>{
+    using(Stream inputStream = File.OpenRead("jobs.json"))
     {
-        List<int>? leftOver = await JsonSerializer.DeserializeAsync<List<int>>(inputStream).ConfigureAwait(false);
-        if (leftOver is not null)
+        List<string>? toResume = await JsonSerializer.DeserializeAsync<List<string>>(inputStream);
+        if(toResume is not null)
         {
-            foreach (int item in leftOver)
+            foreach(string item in toResume)
             {
-                await channel.Writer.WriteAsync(item).ConfigureAwait(false);
+                await newChannel.Writer.WriteAsync(item);
             }
-            Console.WriteLine("{0} items restored from the last session", leftOver?.Count);
         }
     }
-}
+});
 
-using (CancellationTokenSource cts = new CancellationTokenSource())
+_ = Task.Run(async () =>
 {
-    _ = Task.Run(async () => await SetupReaderAsync(cts.Token));
-    _ = Task.Run(async () => await SetupWriterAsync(cts.Token));
-
-    Console.WriteLine("Press any key to start quiting ...");
-    Console.ReadKey(intercept: true);
-
-    channel.Writer.Complete();  // Stop the writing
-    cts.Cancel();   // Stop the reading and processing;
-    await lastDelayTask; // Finish what has been processed.
-    Console.WriteLine("Cancel requested. There are {0} items left in the channel:", channel.Reader.Count);
-
-    // Time to persistent the items left
-    List<int> messages = new List<int>();
-    await foreach (int item in channel.Reader.ReadAllAsync())
+    while (await newChannel.Reader.WaitToReadAsync(cancellationTokenSource.Token))
     {
-        messages.Add(item);
+        string message = await newChannel.Reader.ReadAsync();
+        Console.WriteLine(message);
+        await Task.Delay(TimeSpan.FromSeconds(5));
     }
-    using (Stream output = File.OpenWrite("messages.json"))
-    {
-        await JsonSerializer.SerializeAsync(output, messages);
-    }
+});
 
-    Console.ReadKey(intercept: true);
-}
-
-async Task SetupWriterAsync(CancellationToken cancellationToken)
+Task writing1 = Task.Run(async () => await newChannel.Writer.WriteAsync("Hello Channel!!"));
+Task writing2 = Task.Run(async () =>
 {
-    while (await channel.Writer.WaitToWriteAsync())
-    {
-        await channel.Writer.WriteAsync(dataValue);
-        Console.WriteLine("In channel: {0}", dataValue++);
-        await Task.Delay(500);
-    }
-}
-
-async Task SetupReaderAsync(CancellationToken cancellationToken)
+    await newChannel.Writer.WriteAsync("From Thread 2");
+    await Task.Delay(TimeSpan.FromSeconds(1));
+    await newChannel.Writer.WriteAsync("From Thread 2 again");
+});
+await Task.WhenAll(writing1, writing1);
+newChannel.Writer.Complete();
+cancellationTokenSource.Cancel();
+List<string> left = new List<string>();
+await foreach (string payload in newChannel.Reader.ReadAllAsync())
 {
-    while (await channel.Reader.WaitToReadAsync(cancellationToken))
-    {
-        int result = await channel.Reader.ReadAsync(cancellationToken);
-        lastDelayTask = Task.Delay(1000);
-        await lastDelayTask;
-        Console.WriteLine("Processed: {0}", result);
-    }
-
-    Console.WriteLine("There are {0} items in the channel.", channel.Reader.Count);
+    left.Add(payload);
 }
+using (Stream outputStream = File.OpenWrite("jobs.json"))
+{
+    await JsonSerializer.SerializeAsync<List<string>>(outputStream, left).ConfigureAwait(false);
+}
+
+await newChannel.Reader.Completion;
+
+// Console.WriteLine("Press any key to continue...");
+// Console.ReadKey(intercept: true);
