@@ -67,8 +67,8 @@ jobs:
     - name: Restore the project
       run: dotnet restore -c $env:Configuration $env:TargetProject 
       env:
-        TargetProject: ${{ env:TargetProject }}
-        Configuration: ${{ env:Configuration }}
+        TargetProject: ${{ env.TargetProject }}
+        Configuration: ${{ env.Configuration }}
 
 
     # # Execute all unit tests in the solution
