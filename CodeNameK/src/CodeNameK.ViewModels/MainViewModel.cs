@@ -250,10 +250,21 @@ namespace CodeNameK.ViewModels
             {
                 dataPoints.Add(dataPoint);
             };
+
+            if (dataPoints.Count == 0)
+            {
+                // No data point
+                Series.Clear();
+                return;
+            }
+
             dataPoints.Sort(DatePointComparer.DateTimeComparer);
 
             double maxValue = _chartAxisExpansion.ExpandUp(dataPoints.Any() ? dataPoints.Max(point => point.Value) : 0);
             double minValue = _chartAxisExpansion.ExpandDown(dataPoints.Any() ? dataPoints.Min(point => point.Value) : 0);
+
+            DateTime minDateTime = dataPoints.Min(d => d.WhenUTC);
+            DateTime maxDateTime = dataPoints.Max(d => d.WhenUTC);
 
             await syncContext;
             Series.Add(CreateNewSeries(dataPoints));
@@ -264,26 +275,37 @@ namespace CodeNameK.ViewModels
 
             XAxes.Clear();
             YAxes.Clear();
+
+            ICartesianAxis? pickedXAxis = null;
+            ICartesianAxis? pickedYAxis = null;
+
             if (_axesCache.ContainsKey(SelectedCategory))
             {
-                (ICartesianAxis xAxis, ICartesianAxis yAxis) = _axesCache[SelectedCategory];
-                yAxis.MaxLimit = maxValue;
-                yAxis.MinLimit = minValue;
-                XAxes.Add(xAxis);
-                YAxes.Add(yAxis);
+                (pickedXAxis, pickedYAxis) = _axesCache[SelectedCategory];
+                pickedYAxis.MaxLimit = maxValue;
+                pickedYAxis.MinLimit = minValue;
+                XAxes.Add(pickedXAxis);
+                YAxes.Add(pickedYAxis);
             }
             else
             {
-                Axis newXAxis = CreateNewXAxis();
-                XAxes.Add(newXAxis);
+                pickedXAxis = CreateNewXAxis();
+                XAxes.Add(pickedXAxis);
 
-                Axis newYAxis = new Axis()
+                pickedYAxis = new Axis()
                 {
                     MaxLimit = maxValue,
                     MinLimit = minValue,
                 };
-                YAxes.Add(newYAxis);
-                _axesCache.Add(SelectedCategory, (newXAxis, newYAxis));
+                YAxes.Add(pickedYAxis);
+                _axesCache.Add(SelectedCategory, (pickedXAxis, pickedYAxis));
+            }
+
+            // Adjust the scale units
+            if (pickedXAxis is not null)
+            {
+                pickedXAxis.UnitWidth = (maxDateTime.Ticks - minDateTime.Ticks) / (double)100;
+                pickedXAxis.MinStep = (maxDateTime.Ticks - minDateTime.Ticks) / (double)100;
             }
         }
 
@@ -329,7 +351,7 @@ namespace CodeNameK.ViewModels
 
         private string FormatToolTip(ChartPoint<DataPoint, LineBezierVisualPoint<SkiaSharpDrawingContext, CircleGeometry, CubicBezierSegment, SKPath>, LabelGeometry> point)
         {
-            return $"{point?.Model?.WhenUTC.ToLocalTime():g}" + Environment.NewLine + $"{point?.PrimaryValue:N2}";
+            return $"{point?.Model?.WhenUTC.ToLocalTime():yyyy-MM-dd HH:mm:ss.ff}" + Environment.NewLine + $"{point?.PrimaryValue:N2}";
         }
 
         private Axis CreateNewXAxis()
@@ -357,8 +379,6 @@ namespace CodeNameK.ViewModels
             {
                 Labeler = CreateLabeler,
                 LabelsRotation = 30,
-                UnitWidth = TimeSpan.FromDays(1).Ticks,
-                MinStep = TimeSpan.FromMinutes(5).Ticks,
             };
         }
 
