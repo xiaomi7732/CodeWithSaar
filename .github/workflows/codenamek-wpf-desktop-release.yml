@@ -60,7 +60,7 @@ jobs:
           fetch-depth: 0
 
       # Install the .NET Core SDK
-      - name: Install .NET Core
+      - name: Install .NET 6
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.x
@@ -72,12 +72,30 @@ jobs:
           TargetProject: ${{ env.TargetProject }}
           RID: ${{ env.RID }}
 
+      # Build the target project
       - name: Build the project
         run: dotnet build -c $env:Configuration -r $env:RID --no-restore --sc $env:TargetProject
         env:
           Configuration: ${{ env.Configuration }}
           TargetProject: ${{ env.TargetProject }}
           RID: ${{ env.RID }}
+
+      # Publish the target project
+      - name: Publish the project
+        run: dotnet publish -c $env:Configuration -r $env:RID --no-build --self-contained $env:TargetProject -o "$env:ArtifactsFolder/publish/$env:RID/"
+        env:
+          Configuration: ${{ env.Configuration }}
+          TargetProject: ${{ env.TargetProject }}
+          RID: ${{ env.RID }}
+          ArtifactsFolder: ${{ env.ArtifactsFolder }}
+
+      # Upload the artifacts: https://github.com/marketplace/actions/upload-a-build-artifact
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Binary.${{ env.RID }}
+          path: ${{ env.ArtifactsFolder }}
+          retention-days: 1
 
     # # Execute all unit tests in the solution
     # - name: Execute unit tests
