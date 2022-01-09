@@ -87,7 +87,7 @@ namespace CodeNameK.ViewModels
 
             ResetZoomCommand = new RelayCommand(ResetZoom);
             SyncCommand = new AsyncRelayCommand(SyncImpAsync, canExecute: null, exceptionCallback: OnSyncImpException);
-            AddCategoryCommand = new AsyncRelayCommand(AddCategoryImpAsync, CanAddCategoryImp, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(AddCategoryCommand)}").Reveal);
+            AddCategoryCommand = new AsyncRelayCommand(AddCategoryAsync, CanAddCategoryImp, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(AddCategoryCommand)}").Reveal);
             PickPointCommand = new RelayCommand(PickPointImp);
             TodayOnlyCommand = new AsyncRelayCommand(TodayOnlyImpAsync, canExecute: null, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled exception invoking {TodayOnlyCommand}").Reveal);
             ExitCommand = new RelayCommand(ExitImp);
@@ -555,7 +555,7 @@ namespace CodeNameK.ViewModels
         }
 
         public ICommand AddCategoryCommand { get; }
-        private async Task AddCategoryImpAsync(object? parameter)
+        private async Task AddCategoryAsync(object? parameter)
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
             if (string.IsNullOrEmpty(CategoryText))
@@ -564,18 +564,25 @@ namespace CodeNameK.ViewModels
                 return;
             }
             OperationResult<Category> createCategoryResult = await _categoryBiz.AddCategoryAsync(new Category() { Id = CategoryText }, default).ConfigureAwait(false);
-
             await syncContext;
             if (!createCategoryResult.IsSuccess)
             {
                 MessageBox.Show($"Failed creating a category. Details: {createCategoryResult.Reason}", "Failed Creating Category", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                Category? matchedCategroy = _categoryCollection.FirstOrDefault(c => string.Equals(c.Id, CategoryText, StringComparison.OrdinalIgnoreCase));
+                if (matchedCategroy is not null)
+                {
+                    SelectedCategory = matchedCategroy;
+                }
                 CategoryText = string.Empty;
                 return;
             }
+            Category newCategory = createCategoryResult.Entity!;
 
-            _categoryCollection.Add(createCategoryResult!);
+            _categoryCollection.Add(newCategory);
             MessageBox.Show($"Category {createCategoryResult.Entity?.Id} is created!", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             CategoryText = string.Empty;
+            SelectedCategory = newCategory;
         }
         private bool CanAddCategoryImp(object? parameter) => !string.IsNullOrEmpty(CategoryText);
 
