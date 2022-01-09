@@ -4,6 +4,7 @@ This is the codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.
 
 ## Announcements
 
+* 1/8/2022: **NumberIt** _(CodeNameK)_ 1.0.0-beta1 is released. [Details](./CodeNameK/Readme.md).
 * 12/31/2021: **NumberIt** _(CodeNameK)_ release page is established. [Details](./CodeNameK/Readme.md).
 
 ## Fundamentals

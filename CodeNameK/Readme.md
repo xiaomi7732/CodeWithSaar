@@ -6,7 +6,7 @@
 
 ## Beta1 for Desktop is released
 
-Refer to the release page here: [Number It 1.0.0-beta1](https://github.com/xiaomi7732/CodeWithSaar/releases/tag/NumbetIt.1.0.0-beta1) for details.
+Refer to the release page here: [Number It 1.0.0-beta1](https://github.com/xiaomi7732/CodeWithSaar/releases/tag/NumbetIt.1.0.0-beta1) for details, or [download it now](https://github.com/xiaomi7732/CodeWithSaar/releases/download/NumbetIt.1.0.0-beta1/NumberIt.1.0.0-beta1.win10-x64.zip).
 
 * To run the application:
   * Extract the zip file to anywhere on your PC.
