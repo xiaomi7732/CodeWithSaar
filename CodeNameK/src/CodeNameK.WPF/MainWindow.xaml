@@ -168,7 +168,7 @@
                         </ContextMenu>
                     </lvc:CartesianChart.ContextMenu>
                 </lvc:CartesianChart>
-                <materialDesign:Card  Grid.Row="2" Padding="16">
+                <materialDesign:Card Grid.Row="2" Padding="16" Visibility="{Binding SelectedCategory, Converter={StaticResource NullableToVisibilityConverter}}">
                     <StackPanel>
                         <TextBlock Text="Manage Data Point" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 0 0 4" />
                         <TextBlock Text="Add a new data point or pick a data point by Ctrl+Click to replicate." Style="{StaticResource MaterialDesignSubtitle2TextBlock}" Margin="0 4 0 16" />
