@@ -75,16 +75,19 @@
                     <Grid.RowDefinitions>
                         <!--Header-->
                         <RowDefinition Height="Auto"></RowDefinition>
-                        <!--TextBox-->
-                        <RowDefinition Height="Auto"></RowDefinition>
                         <!--ListView-->
                         <RowDefinition Height="*"></RowDefinition>
+                        <!--Add Category-->
+                        <RowDefinition Height="Auto"></RowDefinition>
                     </Grid.RowDefinitions>
+                    <!--Title-->
                     <StackPanel>
                         <TextBlock Text="{Binding CategoryHeader}" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                Margin="8"/>
+                        <TextBlock Margin="8" Text="{Binding SelectedCategory.Id}" Style="{StaticResource MaterialDesignSubtitle2TextBlock}" TextWrapping="WrapWithOverflow" />
                     </StackPanel>
-                    <Grid Grid.Row="1" Margin="8">
+                    <!--Add category list-->
+                    <Grid Grid.Row="2" Margin="8">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -97,7 +100,7 @@
                         </TextBox>
                         <Button Grid.Column="1" Width="48" Margin="4 0 0 0" Command="{Binding AddCategoryCommand}" VerticalAlignment="Center" Height="28" Style="{StaticResource MaterialDesignOutlinedButton}">+</Button>
                     </Grid>
-                    <ListView Grid.Row="2" ItemsSource="{Binding CategoryCollectionView, Mode=OneWay}" 
+                    <ListView Grid.Row="1" ItemsSource="{Binding CategoryCollectionView, Mode=OneWay}" 
                               ItemTemplate="{StaticResource ResourceKey=categoryItemTemplate}" 
                               SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
                               Cursor="Hand"
