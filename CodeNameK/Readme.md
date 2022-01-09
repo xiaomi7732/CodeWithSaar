@@ -4,15 +4,18 @@
 
 [CodeNameK on YouTube](https://youtube.com/playlist?list=PLxWo8vu0UTZ28_GwEGdjwExCHDKx1WCua).
 
-## Beta1 for Desktop is coming
+## Beta1 for Desktop is released
 
-After about 3 months, NumberIt (CodeName:K Desktop) is almost ready for releasing.
-Please mark the page because More details will be shared here.
+Refer to the release page here: [Number It 1.0.0-beta1](https://github.com/xiaomi7732/CodeWithSaar/releases/tag/NumbetIt.1.0.0-beta1) for details.
 
-* For now, a screenshot:
+* To run the application:
+  * Extract the zip file to anywhere on your PC.
+  * Run the exe at: public/win10-x64/CodeNameK.WPF.exe
+
+* A screenshot when for the running application:
 ![BetaPreviewScreenShot](./images/BetaPreview.png)
 
-  Or if you dare, build it from the source :-)
+* File issues at [issues](https://github.com/xiaomi7732/CodeWithSaar/issues).
 
 ## References
 
