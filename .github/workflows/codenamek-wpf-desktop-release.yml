@@ -37,39 +37,47 @@
 # refer to https://github.com/microsoft/github-actions-for-desktop-apps
 
 name: Build CodeNameK WPF for Release
-on:
-  workflow_dispatch
+on: workflow_dispatch
 jobs:
   build:
-    runs-on: windows-latest  # For a list of available runner types, refer to
-                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on:
+      windows-latest # For a list of available runner types, refer to
+      # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
     env:
       Configuration: Release
       TargetProject: CodeNameK/src/CodeNameK.WPF/CodeNameK.WPF.csproj
-      Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
-      Wap_Project_Directory: your-wap-project-directory-name    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
-      Wap_Project_Path: your-wap-project-path                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
+      ArtifactsFolder: CodeNameK/artifacts
+      RID: win10-x64
+      Test_Project_Path: your-test-project-path # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
+      Wap_Project_Directory: your-wap-project-directory-name # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
+      Wap_Project_Path: your-wap-project-path # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
-    # Install the .NET Core SDK
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.x
+      # Install the .NET Core SDK
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.x
 
-    # Restore the target project
-    - name: Restore the project
-      run: dotnet restore -c $env:Configuration $env:TargetProject 
-      env:
-        TargetProject: ${{ env.TargetProject }}
-        Configuration: ${{ env.Configuration }}
+      # Restore the target project
+      - name: Restore the project
+        run: dotnet restore -r $env:RID $env:TargetProject
+        env:
+          TargetProject: ${{ env.TargetProject }}
+          RID: ${{ env.RID }}
 
+      - name: Build the project
+        run: dotnet build -c $env:Configuration -r $env:RID --no-restore --sc $env:TargetProject
+        env:
+          Configuration: ${{ env.Configuration }}
+          TargetProject: ${{ env.TargetProject }}
+          RID: ${{ env.RID }}
 
     # # Execute all unit tests in the solution
     # - name: Execute unit tests
