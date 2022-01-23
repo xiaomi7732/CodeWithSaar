@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using CodeNameK.BIZ;
+using CodeNameK.Contracts;
 using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.Core.Utilities;
 using CodeNameK.DAL;
@@ -53,7 +54,9 @@ namespace CodeNameK.WPF
             IConfiguration configurationRoot = context.Configuration;
             services.RegisterDataAccessModule(configurationRoot);
             services.AddOptions<LocalStoreOptions>().Bind(configurationRoot.GetSection(LocalStoreOptions.SectionName));
-            services.RegisterBizModule(configurationRoot);
+            services.RegisterBizModule(
+                configurationRoot.GetSection(SyncOptions.SectionName),
+                configurationRoot.GetSection(UserPreference.SectionName));
             services.RegisterViewModels(configurationRoot);
 
             services.AddHttpClient<InternetAvailability>();

@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using CodeNameK.Contracts;
+using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.Core.Utilities;
 using CodeNameK.DAL.Interfaces;
 
@@ -31,13 +32,21 @@ namespace CodeNameK.DAL
         /// <param name="cancellationToken"></param>
         public async Task WriteAsync(UserPreference data, string filePath, CancellationToken cancellationToken)
         {
+            if (data is null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            SectionOf<UserPreference> contract = new SectionOf<UserPreference>(UserPreference.SectionName, data);
             await _writerLock.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
                 string tempWritingFile = Path.GetTempFileName();
+                JsonSerializerOptions serializationOptions = new JsonSerializerOptions();
+                serializationOptions.Converters.Add(new SectionOfJsonSerializer<UserPreference>());
                 using (Stream output = File.OpenWrite(tempWritingFile))
                 {
-                    await JsonSerializer.SerializeAsync(output, data).ConfigureAwait(false);
+                    await JsonSerializer.SerializeAsync(output, contract, serializationOptions).ConfigureAwait(false);
                 }
                 FileUtilities.Move(tempWritingFile, filePath, true);
             }

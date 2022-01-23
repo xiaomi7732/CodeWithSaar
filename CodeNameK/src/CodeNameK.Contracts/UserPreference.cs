@@ -5,6 +5,8 @@ namespace CodeNameK.Contracts
     /// </summary>
     public class UserPreference
     {
+        public const string SectionName = "UserPreference";
+
         /// <summary>
         /// Gets or sets whether sync is enabled or not.
         /// </summary>
