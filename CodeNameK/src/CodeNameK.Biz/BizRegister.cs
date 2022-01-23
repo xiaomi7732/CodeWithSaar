@@ -26,6 +26,8 @@ public static class BizRegister
         services.AddSingleton<BackgroundSyncProgress<DownSyncBackgroundService>>();
         services.AddHostedService<UpSyncBackgroundService>();
         services.AddHostedService<DownSyncBackgroundService>();
+
+        services.AddSingleton<IBizUserPreferenceService, BizUserPreferenceService>();
         return services;
     }
 }

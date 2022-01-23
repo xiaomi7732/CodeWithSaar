@@ -39,6 +39,7 @@ namespace CodeNameK.ViewModels
         private readonly IDateRangeService _dateRangeService;
         private readonly IChartAxisExpansion _chartAxisExpansion;
         private readonly InternetAvailability _internetAvailability;
+        private readonly IBizUserPreferenceService _userPreferenceService;
         private readonly ILogger _logger;
         private bool _initialSyncRequested;
         private ObservableCollection<Category> _categoryCollection = new ObservableCollection<Category>();
@@ -54,6 +55,7 @@ namespace CodeNameK.ViewModels
             IErrorRevealerFactory errorRevealer,
             BackgroundSyncProgress<UpSyncBackgroundService> upSyncProgress,
             BackgroundSyncProgress<DownSyncBackgroundService> downSyncProgress,
+            IBizUserPreferenceService userPreferenceService,
             IOptions<LocalStoreOptions> localStoreOptions,
             ILogger<MainViewModel> logger)
                 : base(errorRevealer)
@@ -71,6 +73,7 @@ namespace CodeNameK.ViewModels
             _dateRangeService = dateRangeService ?? throw new ArgumentNullException(nameof(dateRangeService));
             _chartAxisExpansion = chartAxisExpansion ?? throw new ArgumentNullException(nameof(chartAxisExpansion));
             _internetAvailability = internetAvailability ?? throw new ArgumentNullException(nameof(internetAvailability));
+            _userPreferenceService = userPreferenceService ?? throw new ArgumentNullException(nameof(userPreferenceService));
             SelectedDataPoint = dataPointOperator ?? throw new ArgumentNullException(nameof(dataPointOperator));
             InitializeCategoryCollection();
             CategoryCollectionView = CollectionViewSource.GetDefaultView(_categoryCollection);
@@ -92,6 +95,8 @@ namespace CodeNameK.ViewModels
             TodayOnlyCommand = new AsyncRelayCommand(TodayOnlyImpAsync, canExecute: null, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled exception invoking {TodayOnlyCommand}").Reveal);
             ExitCommand = new RelayCommand(ExitImp);
             CancelSignInCommand = new RelayCommand(CancelSignIn);
+            EnableSyncCommand = new AsyncRelayCommand(EnableSyncAsync, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(EnableSyncCommand)}").Reveal);
+            DisableSyncCommand = new AsyncRelayCommand(DisableSyncAsync, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(DisableSyncCommand)}").Reveal);
 
             SelectedDateRangeOption = DateRangeOptions.First();
             _selectedDateRangeOption = SelectedDateRangeOption;
@@ -612,6 +617,18 @@ namespace CodeNameK.ViewModels
                 return;
             }
             Application.Current.MainWindow.Close();
+        }
+
+        public ICommand EnableSyncCommand { get; }
+        private async Task EnableSyncAsync(object? parameter)
+        {
+            await _userPreferenceService.EnableSyncAsync(default).ConfigureAwait(false);
+        }
+
+        public ICommand DisableSyncCommand { get; }
+        private async Task DisableSyncAsync(object? parameter)
+        {
+            await _userPreferenceService.DisableSyncAsync(default).ConfigureAwait(false);
         }
 
         private async Task RequestInitialSync()

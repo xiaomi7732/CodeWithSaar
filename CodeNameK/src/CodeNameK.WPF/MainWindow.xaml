@@ -18,6 +18,10 @@
                 <Separator />
                 <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
             </MenuItem>
+            <MenuItem Header="_Options">
+                <MenuItem Header="_Enable Sync" Command="{Binding EnableSyncCommand}" />
+                <MenuItem Header="_Disable Sync" Command="{Binding DisableSyncCommand}" />
+            </MenuItem>
         </Menu>
         <!--Status bar-->
         <StatusBar DockPanel.Dock="Bottom" Grid.Row="2" Grid.ColumnSpan="2">

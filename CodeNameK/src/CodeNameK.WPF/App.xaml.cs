@@ -26,6 +26,7 @@ namespace CodeNameK.WPF
                 .ConfigureAppConfiguration(builder =>
                 {
                     builder.AddJsonFile("appsettings.jsonc", optional: false, reloadOnChange: true)
+                    .AddJsonFile(BizUserPreferenceService.FilePath, optional: true, reloadOnChange: true)
 #if DEBUG
                     .AddJsonFile("appsettings.debug.jsonc", optional: false, reloadOnChange: true)
 #endif
