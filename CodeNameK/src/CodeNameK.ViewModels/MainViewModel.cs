@@ -89,13 +89,12 @@ namespace CodeNameK.ViewModels
             _dataFolderPath = localStoreOptions.Value.DataStorePath.Replace('/', '\\');
 
             ResetZoomCommand = new RelayCommand(ResetZoom);
-            SyncCommand = new AsyncRelayCommand(SyncImpAsync, canExecute: null, exceptionCallback: OnSyncImpException);
+            SyncCommand = new AsyncRelayCommand(SyncAsync, canExecute: null, exceptionCallback: OnSyncImpException);
             AddCategoryCommand = new AsyncRelayCommand(AddCategoryAsync, CanAddCategoryImp, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(AddCategoryCommand)}").Reveal);
             PickPointCommand = new RelayCommand(PickPointImp);
             TodayOnlyCommand = new AsyncRelayCommand(TodayOnlyImpAsync, canExecute: null, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled exception invoking {TodayOnlyCommand}").Reveal);
             ExitCommand = new RelayCommand(ExitImp);
             CancelSignInCommand = new RelayCommand(CancelSignIn);
-            
             IsSyncEnabled = _userPreferenceService.UserPreference.EnableSync;
             EnableSyncCommand = new AsyncRelayCommand(EnableSyncAsync, p => !IsSyncEnabled, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(EnableSyncCommand)}").Reveal);
             DisableSyncCommand = new AsyncRelayCommand(DisableSyncAsync, p => IsSyncEnabled, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(DisableSyncCommand)}").Reveal);
@@ -521,7 +520,7 @@ namespace CodeNameK.ViewModels
         }
 
         public ICommand SyncCommand { get; }
-        private async Task SyncImpAsync(object? parameters)
+        private async Task SyncAsync(object? parameters)
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
 
@@ -661,22 +660,25 @@ namespace CodeNameK.ViewModels
                 return syncContext;
             });
 
-            if (await _internetAvailability.IsInternetAvailableAsync())
-            {
-                await uiThread;
-                MessageBoxResult syncChoice = MessageBox.Show("You have internet access. Do you want to start a data synchronization immediately?", "Sync", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
-                if (syncChoice == MessageBoxResult.No)
-                {
-                    return;
-                }
-
-                await SyncImpAsync(null).ConfigureAwait(false);
-            }
-            else
+            if (!await _internetAvailability.IsInternetAvailableAsync().ConfigureAwait(false))
             {
                 await uiThread;
                 MessageBox.Show("There is no internet connection, skip initial syncing.", "No internet", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
             }
+
+            if (!IsSyncEnabled)
+            {
+                await uiThread;
+                MessageBoxResult syncChoice = MessageBox.Show("NumberIt leverages OneDrive to sync the data across devices. Do you want to enable it? If you choose yes, a dialog will show up in your browser to sign in ...", "Sync", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                if (syncChoice == MessageBoxResult.No)
+                {
+                    // The user choose not to sync
+                    return;
+                }
+                await EnableSyncAsync(null).ConfigureAwait(false);
+            }
+            await SyncAsync(null).ConfigureAwait(false);
         }
 
 
