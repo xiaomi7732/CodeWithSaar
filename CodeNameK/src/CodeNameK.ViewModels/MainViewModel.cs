@@ -95,8 +95,10 @@ namespace CodeNameK.ViewModels
             TodayOnlyCommand = new AsyncRelayCommand(TodayOnlyImpAsync, canExecute: null, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled exception invoking {TodayOnlyCommand}").Reveal);
             ExitCommand = new RelayCommand(ExitImp);
             CancelSignInCommand = new RelayCommand(CancelSignIn);
-            EnableSyncCommand = new AsyncRelayCommand(EnableSyncAsync, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(EnableSyncCommand)}").Reveal);
-            DisableSyncCommand = new AsyncRelayCommand(DisableSyncAsync, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(DisableSyncCommand)}").Reveal);
+            
+            IsSyncEnabled = _userPreferenceService.UserPreference.EnableSync;
+            EnableSyncCommand = new AsyncRelayCommand(EnableSyncAsync, p => !IsSyncEnabled, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(EnableSyncCommand)}").Reveal);
+            DisableSyncCommand = new AsyncRelayCommand(DisableSyncAsync, p => IsSyncEnabled, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(DisableSyncCommand)}").Reveal);
 
             SelectedDateRangeOption = DateRangeOptions.First();
             _selectedDateRangeOption = SelectedDateRangeOption;
@@ -108,7 +110,6 @@ namespace CodeNameK.ViewModels
             DownSyncQueueLength = _syncService.DownSyncQueueLength;
             downSyncProgress.ProgressChanged += DownSyncProgress_ProgressChanged;
 
-            IsSyncEnabled = _userPreferenceService.UserPreference.EnableSync;
             _userPreferenceService.UserPreferenceChanged += OnUserPreferenceChanged;
 
             _signInStatus = string.Empty;

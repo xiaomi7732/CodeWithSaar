@@ -19,8 +19,8 @@
                 <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
             </MenuItem>
             <MenuItem Header="_Options">
-                <MenuItem Header="_Enable Sync" Command="{Binding EnableSyncCommand}" />
-                <MenuItem Header="_Disable Sync" Command="{Binding DisableSyncCommand}" />
+                <MenuItem Header="_Enable Sync" Command="{Binding EnableSyncCommand}" Visibility="{Binding IsSyncEnabled, Converter={StaticResource InverseBoolToVisConverter}}" />
+                <MenuItem Header="_Disable Sync" Command="{Binding DisableSyncCommand}" Visibility="{Binding IsSyncEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" />
             </MenuItem>
         </Menu>
         <!--Status bar-->
