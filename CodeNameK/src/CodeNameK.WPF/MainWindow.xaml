@@ -61,6 +61,12 @@
             <StatusBarItem>
                 <TextBlock Text="{Binding DownSyncQueueLength}" />
             </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="Sync: " />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding IsSyncEnabled}" />
+            </StatusBarItem>
         </StatusBar>
         <!--Sync progress-->
         <Grid DockPanel.Dock="Bottom" Margin="0 0 0 0">

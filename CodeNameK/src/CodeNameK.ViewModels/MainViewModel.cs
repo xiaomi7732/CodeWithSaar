@@ -108,6 +108,8 @@ namespace CodeNameK.ViewModels
             DownSyncQueueLength = _syncService.DownSyncQueueLength;
             downSyncProgress.ProgressChanged += DownSyncProgress_ProgressChanged;
 
+            _userPreferenceService.UserPreferenceChanged += OnUserPreferenceChanged;
+
             _signInStatus = string.Empty;
         }
 
@@ -213,7 +215,6 @@ namespace CodeNameK.ViewModels
         }
 
         private string _dataFolderPath;
-
         public string DataFolderPath
         {
             get { return _dataFolderPath; }
@@ -497,6 +498,19 @@ namespace CodeNameK.ViewModels
             }
         }
 
+        private bool _isSyncEnabled;
+        public bool IsSyncEnabled
+        {
+            get { return _isSyncEnabled; }
+            set
+            {
+                if (_isSyncEnabled != value)
+                {
+                    _isSyncEnabled = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
 
         public ICommand CancelSignInCommand { get; }
         private void CancelSignIn(object? parameter)
@@ -783,6 +797,11 @@ namespace CodeNameK.ViewModels
                 SignInStatus = newStateText;
                 return 0;
             });
+        }
+
+        private void OnUserPreferenceChanged(object? sender, UserPreference e)
+        {
+            IsSyncEnabled = e?.EnableSync ?? false;
         }
     }
 }
