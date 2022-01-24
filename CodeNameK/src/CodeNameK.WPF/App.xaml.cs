@@ -24,6 +24,7 @@ namespace CodeNameK.WPF
         {
             System.Net.ServicePointManager.DefaultConnectionLimit = 100;
             _host = new HostBuilder()
+                .ConfigureDefaults(new string[] { })
                 .ConfigureAppConfiguration(builder =>
                 {
                     builder.AddJsonFile("appsettings.jsonc", optional: false, reloadOnChange: true)

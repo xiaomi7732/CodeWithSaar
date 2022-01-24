@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using CodeNameK.BIZ.Interfaces;
@@ -11,7 +12,12 @@ namespace CodeNameK.BIZ
 {
     public sealed class BizUserPreferenceService : IBizUserPreferenceService, IDisposable
     {
-        public const string FilePath = "UserPreference.json";
+        public static string FilePath = "UserPreference.jsonc";
+        static BizUserPreferenceService()
+        {
+            FilePath = Path.Combine(DirectoryUtilities.GetExecutingAssemblyDirectory(), "UserPreference.jsonc");
+        }
+
         private bool _isDisposed = false;
 
         private readonly IOptionsMonitor<UserPreference> _currentUserPreference;
