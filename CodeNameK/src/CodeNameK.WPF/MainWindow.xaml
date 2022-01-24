@@ -18,6 +18,10 @@
                 <Separator />
                 <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
             </MenuItem>
+            <MenuItem Header="_Options">
+                <MenuItem Header="_Enable Sync" Command="{Binding EnableSyncCommand}" Visibility="{Binding IsSyncEnabled, Converter={StaticResource InverseBoolToVisConverter}}" />
+                <MenuItem Header="_Disable Sync" Command="{Binding DisableSyncCommand}" Visibility="{Binding IsSyncEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </MenuItem>
         </Menu>
         <!--Status bar-->
         <StatusBar DockPanel.Dock="Bottom" Grid.Row="2" Grid.ColumnSpan="2">
@@ -56,6 +60,12 @@
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Text="{Binding DownSyncQueueLength}" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="Sync: " />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding IsSyncEnabled}" />
             </StatusBarItem>
         </StatusBar>
         <!--Sync progress-->

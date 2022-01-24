@@ -39,6 +39,7 @@ namespace CodeNameK.ViewModels
         private readonly IDateRangeService _dateRangeService;
         private readonly IChartAxisExpansion _chartAxisExpansion;
         private readonly InternetAvailability _internetAvailability;
+        private readonly IBizUserPreferenceService _userPreferenceService;
         private readonly ILogger _logger;
         private bool _initialSyncRequested;
         private ObservableCollection<Category> _categoryCollection = new ObservableCollection<Category>();
@@ -54,6 +55,7 @@ namespace CodeNameK.ViewModels
             IErrorRevealerFactory errorRevealer,
             BackgroundSyncProgress<UpSyncBackgroundService> upSyncProgress,
             BackgroundSyncProgress<DownSyncBackgroundService> downSyncProgress,
+            IBizUserPreferenceService userPreferenceService,
             IOptions<LocalStoreOptions> localStoreOptions,
             ILogger<MainViewModel> logger)
                 : base(errorRevealer)
@@ -71,6 +73,7 @@ namespace CodeNameK.ViewModels
             _dateRangeService = dateRangeService ?? throw new ArgumentNullException(nameof(dateRangeService));
             _chartAxisExpansion = chartAxisExpansion ?? throw new ArgumentNullException(nameof(chartAxisExpansion));
             _internetAvailability = internetAvailability ?? throw new ArgumentNullException(nameof(internetAvailability));
+            _userPreferenceService = userPreferenceService ?? throw new ArgumentNullException(nameof(userPreferenceService));
             SelectedDataPoint = dataPointOperator ?? throw new ArgumentNullException(nameof(dataPointOperator));
             InitializeCategoryCollection();
             CategoryCollectionView = CollectionViewSource.GetDefaultView(_categoryCollection);
@@ -86,12 +89,15 @@ namespace CodeNameK.ViewModels
             _dataFolderPath = localStoreOptions.Value.DataStorePath.Replace('/', '\\');
 
             ResetZoomCommand = new RelayCommand(ResetZoom);
-            SyncCommand = new AsyncRelayCommand(SyncImpAsync, canExecute: null, exceptionCallback: OnSyncImpException);
+            SyncCommand = new AsyncRelayCommand(SyncAsync, canExecute: null, exceptionCallback: OnSyncImpException);
             AddCategoryCommand = new AsyncRelayCommand(AddCategoryAsync, CanAddCategoryImp, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(AddCategoryCommand)}").Reveal);
             PickPointCommand = new RelayCommand(PickPointImp);
             TodayOnlyCommand = new AsyncRelayCommand(TodayOnlyImpAsync, canExecute: null, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled exception invoking {TodayOnlyCommand}").Reveal);
             ExitCommand = new RelayCommand(ExitImp);
             CancelSignInCommand = new RelayCommand(CancelSignIn);
+            IsSyncEnabled = _userPreferenceService.UserPreference.EnableSync;
+            EnableSyncCommand = new AsyncRelayCommand(EnableSyncAsync, p => !IsSyncEnabled, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(EnableSyncCommand)}").Reveal);
+            DisableSyncCommand = new AsyncRelayCommand(DisableSyncAsync, p => IsSyncEnabled, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(DisableSyncCommand)}").Reveal);
 
             SelectedDateRangeOption = DateRangeOptions.First();
             _selectedDateRangeOption = SelectedDateRangeOption;
@@ -102,6 +108,8 @@ namespace CodeNameK.ViewModels
 
             DownSyncQueueLength = _syncService.DownSyncQueueLength;
             downSyncProgress.ProgressChanged += DownSyncProgress_ProgressChanged;
+
+            _userPreferenceService.UserPreferenceChanged += OnUserPreferenceChanged;
 
             _signInStatus = string.Empty;
         }
@@ -208,7 +216,6 @@ namespace CodeNameK.ViewModels
         }
 
         private string _dataFolderPath;
-
         public string DataFolderPath
         {
             get { return _dataFolderPath; }
@@ -492,6 +499,19 @@ namespace CodeNameK.ViewModels
             }
         }
 
+        private bool _isSyncEnabled;
+        public bool IsSyncEnabled
+        {
+            get { return _isSyncEnabled; }
+            set
+            {
+                if (_isSyncEnabled != value)
+                {
+                    _isSyncEnabled = value;
+                    RaisePropertyChanged();
+                }
+            }
+        }
 
         public ICommand CancelSignInCommand { get; }
         private void CancelSignIn(object? parameter)
@@ -500,7 +520,7 @@ namespace CodeNameK.ViewModels
         }
 
         public ICommand SyncCommand { get; }
-        private async Task SyncImpAsync(object? parameters)
+        private async Task SyncAsync(object? parameters)
         {
             SynchronizationContext syncContext = SynchronizationContext.Current!;
 
@@ -614,6 +634,18 @@ namespace CodeNameK.ViewModels
             Application.Current.MainWindow.Close();
         }
 
+        public ICommand EnableSyncCommand { get; }
+        private async Task EnableSyncAsync(object? parameter)
+        {
+            await _userPreferenceService.EnableSyncAsync(default).ConfigureAwait(false);
+        }
+
+        public ICommand DisableSyncCommand { get; }
+        private async Task DisableSyncAsync(object? parameter)
+        {
+            await _userPreferenceService.DisableSyncAsync(default).ConfigureAwait(false);
+        }
+
         private async Task RequestInitialSync()
         {
             if (_initialSyncRequested)
@@ -628,22 +660,25 @@ namespace CodeNameK.ViewModels
                 return syncContext;
             });
 
-            if (await _internetAvailability.IsInternetAvailableAsync())
-            {
-                await uiThread;
-                MessageBoxResult syncChoice = MessageBox.Show("You have internet access. Do you want to start a data synchronization immediately?", "Sync", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
-                if (syncChoice == MessageBoxResult.No)
-                {
-                    return;
-                }
-
-                await SyncImpAsync(null).ConfigureAwait(false);
-            }
-            else
+            if (!await _internetAvailability.IsInternetAvailableAsync().ConfigureAwait(false))
             {
                 await uiThread;
                 MessageBox.Show("There is no internet connection, skip initial syncing.", "No internet", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
             }
+
+            if (!IsSyncEnabled)
+            {
+                await uiThread;
+                MessageBoxResult syncChoice = MessageBox.Show("NumberIt leverages OneDrive to sync the data across devices. Do you want to enable it? If you choose yes, a dialog will show up in your browser to sign in ...", "Sync", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
+                if (syncChoice == MessageBoxResult.No)
+                {
+                    // The user choose not to sync
+                    return;
+                }
+                await EnableSyncAsync(null).ConfigureAwait(false);
+            }
+            await SyncAsync(null).ConfigureAwait(false);
         }
 
 
@@ -766,6 +801,11 @@ namespace CodeNameK.ViewModels
                 SignInStatus = newStateText;
                 return 0;
             });
+        }
+
+        private void OnUserPreferenceChanged(object? sender, UserPreference e)
+        {
+            IsSyncEnabled = e?.EnableSync ?? false;
         }
     }
 }

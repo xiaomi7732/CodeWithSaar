@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CodeNameK.BIZ;
 using CodeNameK.BIZ.Interfaces;
+using CodeNameK.Contracts;
 using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.Contracts.DataContracts;
 using CodeNameK.DAL;
@@ -285,7 +286,9 @@ namespace CodeNameK.Cli
         {
             services.AddOptions<LocalStoreOptions>().Bind(configurationRoot.GetSection(LocalStoreOptions.SectionName));
             services.RegisterDataAccessModule(configurationRoot);
-            services.RegisterBizModule(configurationRoot.GetSection(SyncOptions.SectionName));
+            services.RegisterBizModule(
+                syncSection: configurationRoot.GetSection(SyncOptions.SectionName),
+                userPreferenceSection: configurationRoot.GetSection(UserPreference.SectionName));
 
             services.AddSingleton<Program>();
         }

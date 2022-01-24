@@ -10,9 +10,11 @@ public static class BizRegister
 {
     public static IServiceCollection RegisterBizModule(
         this IServiceCollection services,
-        IConfiguration syncSection)
+        IConfiguration syncSection,
+        IConfiguration userPreferenceSection)
     {
         services.AddOptions<SyncOptions>().Bind(syncSection);
+        services.AddOptions<UserPreference>().Bind(userPreferenceSection);
 
         services.AddScoped<ICategory, BizCategory>();
         services.AddScoped<IDataPoint, BizDataPoint>();
@@ -26,6 +28,8 @@ public static class BizRegister
         services.AddSingleton<BackgroundSyncProgress<DownSyncBackgroundService>>();
         services.AddHostedService<UpSyncBackgroundService>();
         services.AddHostedService<DownSyncBackgroundService>();
+
+        services.AddSingleton<IBizUserPreferenceService, BizUserPreferenceService>();
         return services;
     }
 }

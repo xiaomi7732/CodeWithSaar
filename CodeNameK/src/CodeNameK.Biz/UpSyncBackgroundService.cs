@@ -19,8 +19,8 @@ namespace CodeNameK.BIZ
         private readonly Channel<UpSyncRequest> _channel;
         private readonly ISync _syncService;
         private readonly IProgress<(string, int)> _progress;
-        private readonly IHostEnvironment _hostEnvironment;
         private readonly InternetAvailability _internetAvailability;
+        private readonly IBizUserPreferenceService _userPreferenceService;
         private readonly ILogger<UpSyncBackgroundService> _logger;
         private readonly string _sessionFilePath;
 
@@ -28,19 +28,19 @@ namespace CodeNameK.BIZ
             Channel<UpSyncRequest> channel,
             ISync syncService,
             BackgroundSyncProgress<UpSyncBackgroundService> progress,
-            IHostEnvironment hostEnvironment,
             InternetAvailability internetAvailability,
+            IBizUserPreferenceService userPreferenceService,
             ILogger<UpSyncBackgroundService> logger
             )
         {
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
             _syncService = syncService ?? throw new ArgumentNullException(nameof(syncService));
             _progress = progress ?? throw new ArgumentNullException(nameof(progress));
-            _hostEnvironment = hostEnvironment ?? throw new ArgumentNullException(nameof(hostEnvironment));
             _internetAvailability = internetAvailability ?? throw new ArgumentNullException(nameof(internetAvailability));
+            _userPreferenceService = userPreferenceService ?? throw new ArgumentNullException(nameof(userPreferenceService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-            _sessionFilePath = Path.Combine(_hostEnvironment.ContentRootPath, "up-sync.json");
+            _sessionFilePath = Path.Combine(DirectoryUtilities.GetExecutingAssemblyDirectory(), "up-sync.json");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -58,38 +58,43 @@ namespace CodeNameK.BIZ
 
             while (await _channel.Reader.WaitToReadAsync(stoppingToken).ConfigureAwait(false))
             {
-                LogAndReport("Signing in for auto sync...");
-                while (!await _syncService.SignInAsync(stoppingToken).ConfigureAwait(false))
+                if (_userPreferenceService.UserPreference.EnableSync)
                 {
-                    LogAndReport("Sign in failed. Wait for signing in to success.");
+                    LogAndReport("Sign in is not there yet. Wait for signing in to success.");
                     await _syncService.WaitForSignInSuccessAsync(stoppingToken).ConfigureAwait(false);
-                }
 
-                DataPointPathInfo input = (await _channel.Reader.ReadAsync(stoppingToken).ConfigureAwait(false)).Payload;
-                try
-                {
-                    string message;
-                    string details;
-                    if (await UploadAsync(input, stoppingToken).ConfigureAwait(false))
+                    DataPointPathInfo input = (await _channel.Reader.ReadAsync(stoppingToken).ConfigureAwait(false)).Payload;
+                    try
                     {
-                        message = "Uploaded";
-                        details = $"Uploaded: {input}";
+                        string message;
+                        string details;
+                        if (await UploadAsync(input, stoppingToken).ConfigureAwait(false))
+                        {
+                            message = "Uploaded";
+                            details = $"Uploaded: {input}";
+                        }
+                        else
+                        {
+                            message = "Upload failed";
+                            details = $"Upload didn't happen for: {input}";
+                        }
+
+                        _logger.LogInformation(details);
+                        ReportProgress(message);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        message = "Upload failed";
-                        details = $"Upload didn't happen for: {input}";
+                        // Put back:
+                        bool putBack = !_channel.Writer.TryWrite(new UpSyncRequest(input));
+                        _logger.LogError(ex, "Error uploading data: {data}. Data returned to queue: {putBack}", input, putBack);
+                        ReportProgress("Data uploaded error.");
                     }
-                    
-                    _logger.LogInformation(details);
-                    ReportProgress(message);
                 }
-                catch (Exception ex)
+                else
                 {
-                    // Put back:
-                    bool putBack = !_channel.Writer.TryWrite(new UpSyncRequest(input));
-                    _logger.LogError(ex, "Error uploading data: {data}. Data returned to queue: {putBack}", input, putBack);
-                    ReportProgress("Data uploaded error.");
+                    // Try again in 30 seconds
+                    await Task.Delay(TimeSpan.FromSeconds(30));
+                    _logger.LogInformation("Sync is not enabled. Try again in 30 seconds.");
                 }
             }
         }

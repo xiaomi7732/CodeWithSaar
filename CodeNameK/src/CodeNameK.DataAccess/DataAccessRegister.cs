@@ -29,6 +29,7 @@ namespace CodeNameK.DAL
             services.AddSingleton<ITokenCredentialManager<OneDriveCredentialStatus>>(p => p.GetRequiredService<OneDriveTokenCredential>());
             services.AddScoped<IOneDriveSync, OneDriveSync>();
 
+            services.AddSingleton<IUserPreferenceManager>(p => UserPreferenceManager.Instance);
             return services;
         }
     }

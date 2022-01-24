@@ -27,6 +27,7 @@ namespace CodeNameK.BIZ
         private readonly Channel<DownSyncRequest> _downSyncChannel;
         private readonly IProgress<(string, int)> _upSyncProgress;
         private readonly IProgress<(string, int)> _downSyncProgress;
+        private readonly IBizUserPreferenceService _userPreferenceService;
         private readonly SyncOptions _options;
         private readonly ILogger _logger;
 
@@ -40,6 +41,7 @@ namespace CodeNameK.BIZ
             Channel<DownSyncRequest> downSyncChannel,
             BackgroundSyncProgress<UpSyncBackgroundService> upSyncProgress,
             BackgroundSyncProgress<DownSyncBackgroundService> downSyncProgress,
+            IBizUserPreferenceService userPreferenceService,
             IOptions<SyncOptions> options,
             ILogger<BizSync> logger)
         {
@@ -55,6 +57,7 @@ namespace CodeNameK.BIZ
             _downSyncChannel = downSyncChannel ?? throw new ArgumentNullException(nameof(downSyncChannel));
             _upSyncProgress = upSyncProgress ?? throw new ArgumentNullException(nameof(upSyncProgress));
             _downSyncProgress = downSyncProgress ?? throw new ArgumentNullException(nameof(downSyncProgress));
+            _userPreferenceService = userPreferenceService ?? throw new ArgumentNullException(nameof(userPreferenceService));
             _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
@@ -70,11 +73,11 @@ namespace CodeNameK.BIZ
         public void CancelSignIn()
         {
             // Do nothing if it is not currently signing in.
-            if(_oneDriveTokenManager.CurrentStatus != OneDriveCredentialStatus.SigningIn)
+            if (_oneDriveTokenManager.CurrentStatus != OneDriveCredentialStatus.SigningIn)
             {
                 return;
             }
-            
+
             _oneDriveTokenManager.CancelSignIn();
         }
 
@@ -104,12 +107,15 @@ namespace CodeNameK.BIZ
                 throw new ArgumentNullException(nameof(forCategory));
             }
 
-            // Must sign in first.
-            if (!await SignInAsync(cancellationToken).ConfigureAwait(false))
+            if (!_userPreferenceService.UserPreference.EnableSync)
             {
-                throw new UnauthorizedAccessException("Invalid sign in.");
+                // Sync data is not enabled.
+                _logger.LogInformation("Sync data is not enabled.");
+                return;
             }
 
+            // Must sign in first.
+            await WaitForSignInSuccessAsync(cancellationToken).ConfigureAwait(false);
             await foreach (DataPointPathInfo dataInfo in _oneDriveSync.ListAllDataPointsAsync(forCategory, cancellationToken).ConfigureAwait(false))
             {
                 if (!_localPathProvider.PhysicalFileExists(dataInfo))
