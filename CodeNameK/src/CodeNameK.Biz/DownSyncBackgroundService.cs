@@ -22,7 +22,6 @@ namespace CodeNameK.BIZ
         private readonly Channel<DownSyncRequest> _channel;
         private readonly ISync _syncService;
         private readonly IProgress<(string, int)> _progress;
-        private readonly IHostEnvironment _hostEnvironment;
         private readonly InternetAvailability _internetAvailability;
         private readonly ILogger _logger;
         private readonly string _sessionFilePath;
@@ -31,7 +30,6 @@ namespace CodeNameK.BIZ
             Channel<DownSyncRequest> channel,
             ISync syncService,
             BackgroundSyncProgress<DownSyncBackgroundService> progress,
-            IHostEnvironment hostEnvironment,
             InternetAvailability internetAvailability,
             ILogger<DownSyncBackgroundService> logger
         )
@@ -39,11 +37,10 @@ namespace CodeNameK.BIZ
             _channel = channel ?? throw new ArgumentNullException(nameof(channel));
             _syncService = syncService ?? throw new ArgumentNullException(nameof(syncService));
             _progress = progress ?? throw new ArgumentNullException(nameof(progress));
-            _hostEnvironment = hostEnvironment ?? throw new ArgumentNullException(nameof(hostEnvironment));
             _internetAvailability = internetAvailability ?? throw new ArgumentNullException(nameof(internetAvailability));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-            _sessionFilePath = Path.Combine(_hostEnvironment.ContentRootPath, "down-sync.json");
+            _sessionFilePath = Path.Combine(DirectoryUtilities.GetExecutingAssemblyDirectory(), "down-sync.json");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
