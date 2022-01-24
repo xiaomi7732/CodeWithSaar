@@ -108,6 +108,7 @@ namespace CodeNameK.ViewModels
             DownSyncQueueLength = _syncService.DownSyncQueueLength;
             downSyncProgress.ProgressChanged += DownSyncProgress_ProgressChanged;
 
+            IsSyncEnabled = _userPreferenceService.UserPreference.EnableSync;
             _userPreferenceService.UserPreferenceChanged += OnUserPreferenceChanged;
 
             _signInStatus = string.Empty;
