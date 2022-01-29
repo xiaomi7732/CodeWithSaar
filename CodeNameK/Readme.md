@@ -4,16 +4,16 @@
 
 [CodeNameK on YouTube](https://youtube.com/playlist?list=PLxWo8vu0UTZ28_GwEGdjwExCHDKx1WCua).
 
-## Beta1 for Desktop is released
+## Beta2 for Desktop is released
 
-Refer to the release page here: [Number It 1.0.0-beta1](https://github.com/xiaomi7732/CodeWithSaar/releases/tag/NumbetIt.1.0.0-beta1) for details, or [download it now](https://github.com/xiaomi7732/CodeWithSaar/releases/download/NumbetIt.1.0.0-beta1/NumberIt.1.0.0-beta1.win10-x64.zip).
+Refer to the release page here: [Number It 1.0.0-beta2](https://github.com/xiaomi7732/CodeWithSaar/releases/tag/NumbetIt.1.0.0-beta2) for details, or download it now: [NumberIt.1.0.0-beta2.7z](https://github.com/xiaomi7732/CodeWithSaar/releases/download/NumbetIt.1.0.0-beta2/NumberIt.1.0.0-beta2.win10-x64.7z).
 
 * To run the application:
   * Extract the zip file to anywhere on your PC.
   * Run the exe at: public/win10-x64/CodeNameK.WPF.exe
 
 * A screenshot when for the running application:
-![BetaPreviewScreenShot](./images/BetaPreview.png)
+![BetaPreviewScreenShot](./images/Beta2.png)
 
 * File issues at [issues](https://github.com/xiaomi7732/CodeWithSaar/issues).
 
