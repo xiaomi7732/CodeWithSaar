@@ -29,7 +29,9 @@
                 <TextBlock Text="Data Folder: " />
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="{Binding DataFolderPath}" />
+                <Hyperlink NavigateUri="{Binding DataFolderPath}" Command="{Binding ShowDataFolderPathCommand}">
+                    <TextBlock Text="{Binding DataFolderShortName}" ToolTip="Click to open data folder." />
+                </Hyperlink>
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Text="Sync Status:" />

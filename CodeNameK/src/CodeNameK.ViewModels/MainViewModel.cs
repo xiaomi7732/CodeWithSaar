@@ -22,6 +22,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -98,6 +100,7 @@ namespace CodeNameK.ViewModels
             IsSyncEnabled = _userPreferenceService.UserPreference.EnableSync;
             EnableSyncCommand = new AsyncRelayCommand(EnableSyncAsync, p => !IsSyncEnabled, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(EnableSyncCommand)}").Reveal);
             DisableSyncCommand = new AsyncRelayCommand(DisableSyncAsync, p => IsSyncEnabled, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(DisableSyncCommand)}").Reveal);
+            ShowDataFolderPathCommand = new RelayCommand(ShowDataFolderPath);
 
             SelectedDateRangeOption = DateRangeOptions.First();
             _selectedDateRangeOption = SelectedDateRangeOption;
@@ -225,7 +228,20 @@ namespace CodeNameK.ViewModels
                 {
                     _dataFolderPath = value;
                     RaisePropertyChanged();
+                    RaisePropertyChanged(nameof(DataFolderShortName));
                 }
+            }
+        }
+
+        public string? DataFolderShortName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(DataFolderPath))
+                {
+                    return null;
+                }
+                return Path.GetFileName(DataFolderPath);
             }
         }
 
@@ -644,6 +660,23 @@ namespace CodeNameK.ViewModels
         private async Task DisableSyncAsync(object? parameter)
         {
             await _userPreferenceService.DisableSyncAsync(default).ConfigureAwait(false);
+        }
+
+        public ICommand ShowDataFolderPathCommand { get; }
+        private void ShowDataFolderPath()
+        {
+            string path = DataFolderPath;
+            if (!string.IsNullOrEmpty(path) && Directory.Exists(path))
+            {
+                try
+                {
+                    Process.Start("explorer.exe", DataFolderPath);
+                }
+                catch (Exception ex)
+                {
+                    _errorRevealerFactory.CreateInstance().Reveal(ex);
+                }
+            }
         }
 
         private async Task RequestInitialSync()
