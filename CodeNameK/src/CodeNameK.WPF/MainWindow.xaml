@@ -50,13 +50,13 @@
                 <TextBlock Text="{Binding UpSyncStateText}" />
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="U:" />
+                <Image Source="/Assets/ArrowsUp64.png" Stretch="Fill" Width="16" Height="16" ToolTip="Uploading Count" />
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Text="{Binding UpSyncQueueLength}" />
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="D:" />
+                <Image Source="/Assets/ArrowsDown64.png" Stretch="Fill" Width="16" Height="16" ToolTip="Downloading Count" />
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Text="{Binding DownSyncQueueLength}" />

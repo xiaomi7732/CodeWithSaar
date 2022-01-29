@@ -38,6 +38,8 @@
     <None Include="appsettings.debug.jsonc" CopyToOutputDirectory="PreserveNewest" Condition="'$(Configuration)'=='Debug'" />
   </ItemGroup>
   <ItemGroup>
+	<Resource Include="Assets\ArrowsDown64.png" />
+	<Resource Include="Assets\ArrowsUp64.png" />
 	<Resource Include="Assets\Idea.png" />
     <Resource Include="Assets\icon128.png" />
   </ItemGroup>
