@@ -14,6 +14,11 @@ namespace CodeNameK.ViewModels
             remove { CommandManager.RequerySuggested -= value; }
         }
 
+        public RelayCommand(Action execute)
+        {
+            _execute = (value) => execute();
+        }
+
         public RelayCommand(Action<object?> execute, Func<object?, bool>? canExecute = null)
         {
             _execute = execute;
