@@ -16,11 +16,19 @@
                 <MenuItem Header="_Sync" Command="{Binding SyncCommand}" />
                 <MenuItem Header="_Cancel Sign In" Command="{Binding CancelSignInCommand}" />
                 <Separator />
-                <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
+                <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
             </MenuItem>
             <MenuItem Header="_Options">
-                <MenuItem Header="_Enable Sync" Command="{Binding EnableSyncCommand}" Visibility="{Binding IsSyncEnabled, Converter={StaticResource InverseBoolToVisConverter}}" />
-                <MenuItem Header="_Disable Sync" Command="{Binding DisableSyncCommand}" Visibility="{Binding IsSyncEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <MenuItem Header="Enable _Sync" Command="{Binding EnableSyncCommand}" Visibility="{Binding IsSyncEnabled, Converter={StaticResource InverseBoolToVisConverter}}" />
+                <MenuItem Header="Disable _Sync" Command="{Binding DisableSyncCommand}" Visibility="{Binding IsSyncEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </MenuItem>
+            <MenuItem Header="Abou_t">
+                <MenuItem Header="_GitHub" Command="{Binding OpenUriCommand}" CommandParameter="https://github.com/xiaomi7732/CodeWithSaar/tree/main/CodeNameK" />
+                <MenuItem Header="_YouTube" Command="{Binding OpenUriCommand}" CommandParameter="https://www.youtube.com/c/CodewithSaar" />
+                <MenuItem Header="Twitter (@_CodeWithSaar)" Command="{Binding OpenUriCommand}" CommandParameter="https://twitter.com/codewithsaar" />
+                <MenuItem Header="Twitter (@_SaarShen)" Command="{Binding OpenUriCommand}" CommandParameter="https://twitter.com/saarshen" />
+                <MenuItem Header="_Buy me a coffee" Command="{Binding OpenUriCommand}" CommandParameter="https://www.buymeacoffee.com/codewithsaar" />
+                <MenuItem Header="_Discord" Command="{Binding OpenUriCommand}" CommandParameter="https://discord.com/invite/H8ZqDgczQb" />
             </MenuItem>
         </Menu>
         <!--Status bar-->

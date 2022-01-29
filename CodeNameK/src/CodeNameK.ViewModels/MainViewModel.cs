@@ -101,6 +101,7 @@ namespace CodeNameK.ViewModels
             EnableSyncCommand = new AsyncRelayCommand(EnableSyncAsync, p => !IsSyncEnabled, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(EnableSyncCommand)}").Reveal);
             DisableSyncCommand = new AsyncRelayCommand(DisableSyncAsync, p => IsSyncEnabled, exceptionCallback: _errorRevealerFactory.CreateInstance($"Unhandled Exception Invoking {nameof(DisableSyncCommand)}").Reveal);
             ShowDataFolderPathCommand = new RelayCommand(ShowDataFolderPath);
+            OpenUriCommand = new RelayCommand(OpenUri);
 
             SelectedDateRangeOption = DateRangeOptions.First();
             _selectedDateRangeOption = SelectedDateRangeOption;
@@ -675,6 +676,22 @@ namespace CodeNameK.ViewModels
                 catch (Exception ex)
                 {
                     _errorRevealerFactory.CreateInstance().Reveal(ex);
+                }
+            }
+        }
+
+        public ICommand OpenUriCommand { get; }
+        public void OpenUri(object? uri)
+        {
+            if (uri is string uriString)
+            {
+                if (Uri.TryCreate(uriString, UriKind.Absolute, out Uri targetUri))
+                {
+                    Process.Start(new ProcessStartInfo()
+                    {
+                        FileName = targetUri.AbsoluteUri,
+                        UseShellExecute = true,
+                    });
                 }
             }
         }
