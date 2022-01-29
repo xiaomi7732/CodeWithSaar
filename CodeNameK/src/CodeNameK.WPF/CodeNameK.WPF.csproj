@@ -10,14 +10,17 @@
     <RuntimeIdentifiers>win10-x64;win10-x86</RuntimeIdentifiers>
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
+    <ApplicationIcon>Assets\icon128.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'DEBUG'">
     <OutputType>Exe</OutputType>
     <DisableWinExeOutputInference>true</DisableWinExeOutputInference>
   </PropertyGroup>
   <ItemGroup>
+    <Resource Include="Assets\icon128.ico" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\CodeNameK.ViewModels\CodeNameK.ViewModels.csproj" />
-    <!-- <ProjectReference Include="..\..\..\..\fork-WpfToolkit\WpfToolkit\WPF.Themes\DotNetProjects.WPF.Themes.csproj" /> -->
     <!-- <ProjectReference Include="..\..\..\..\fork-livechart-2\src\skiasharp\LiveChartsCore.SkiaSharp.WPF\LiveChartsCore.SkiaSharpView.WPF.csproj" /> -->
     
   </ItemGroup>
@@ -38,8 +41,9 @@
     <None Include="appsettings.debug.jsonc" CopyToOutputDirectory="PreserveNewest" Condition="'$(Configuration)'=='Debug'" />
   </ItemGroup>
   <ItemGroup>
-	<None Remove="icon128.png" />
-    <Resource Include="icon128.png" />
+	<Resource Include="Assets\ArrowsDown64.png" />
+	<Resource Include="Assets\ArrowsUp64.png" />
+	<Resource Include="Assets\Idea.png" />
+    <Resource Include="Assets\icon128.png" />
   </ItemGroup>
-
 </Project>

@@ -3,7 +3,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:CodeNameK.WPF" 
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF" xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase" 
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" TextElement.Foreground="{DynamicResource MaterialDesignBody}" Background="{DynamicResource MaterialDesignPaper}" TextElement.FontWeight="Normal" TextElement.FontSize="14" mc:Ignorable="d"
-        Title="NumberIt" Height="800" Width="1024" Icon="/icon128.png">
+        Title="NumberIt" Height="800" Width="1024" Icon="/Assets/icon128.png">
     <Window.Resources>
         <DataTemplate x:Key="categoryItemTemplate">
             <TextBlock Text="{Binding Id}" ToolTip="{Binding Id}" />
@@ -16,11 +16,19 @@
                 <MenuItem Header="_Sync" Command="{Binding SyncCommand}" />
                 <MenuItem Header="_Cancel Sign In" Command="{Binding CancelSignInCommand}" />
                 <Separator />
-                <MenuItem Header="_Exit" Command="{Binding ExitCommand}" />
+                <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
             </MenuItem>
             <MenuItem Header="_Options">
-                <MenuItem Header="_Enable Sync" Command="{Binding EnableSyncCommand}" Visibility="{Binding IsSyncEnabled, Converter={StaticResource InverseBoolToVisConverter}}" />
-                <MenuItem Header="_Disable Sync" Command="{Binding DisableSyncCommand}" Visibility="{Binding IsSyncEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <MenuItem Header="Enable _Sync" Command="{Binding EnableSyncCommand}" Visibility="{Binding IsSyncEnabled, Converter={StaticResource InverseBoolToVisConverter}}" />
+                <MenuItem Header="Disable _Sync" Command="{Binding DisableSyncCommand}" Visibility="{Binding IsSyncEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </MenuItem>
+            <MenuItem Header="Abou_t">
+                <MenuItem Header="_GitHub" Command="{Binding OpenUriCommand}" CommandParameter="https://github.com/xiaomi7732/CodeWithSaar/tree/main/CodeNameK" />
+                <MenuItem Header="_YouTube" Command="{Binding OpenUriCommand}" CommandParameter="https://www.youtube.com/c/CodewithSaar" />
+                <MenuItem Header="Twitter (@_CodeWithSaar)" Command="{Binding OpenUriCommand}" CommandParameter="https://twitter.com/codewithsaar" />
+                <MenuItem Header="Twitter (@_SaarShen)" Command="{Binding OpenUriCommand}" CommandParameter="https://twitter.com/saarshen" />
+                <MenuItem Header="_Buy me a coffee" Command="{Binding OpenUriCommand}" CommandParameter="https://www.buymeacoffee.com/codewithsaar" />
+                <MenuItem Header="_Discord" Command="{Binding OpenUriCommand}" CommandParameter="https://discord.com/invite/H8ZqDgczQb" />
             </MenuItem>
         </Menu>
         <!--Status bar-->
@@ -29,7 +37,9 @@
                 <TextBlock Text="Data Folder: " />
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="{Binding DataFolderPath}" />
+                <Hyperlink NavigateUri="{Binding DataFolderPath}" Command="{Binding ShowDataFolderPathCommand}">
+                    <TextBlock Text="{Binding DataFolderShortName}" ToolTip="Click to open data folder." />
+                </Hyperlink>
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Text="Sync Status:" />
@@ -50,13 +60,13 @@
                 <TextBlock Text="{Binding UpSyncStateText}" />
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="U:" />
+                <Image Source="/Assets/ArrowsUp64.png" Stretch="Fill" Width="16" Height="16" ToolTip="Uploading Count" />
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Text="{Binding UpSyncQueueLength}" />
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="D:" />
+                <Image Source="/Assets/ArrowsDown64.png" Stretch="Fill" Width="16" Height="16" ToolTip="Downloading Count" />
             </StatusBarItem>
             <StatusBarItem>
                 <TextBlock Text="{Binding DownSyncQueueLength}" />
@@ -145,16 +155,16 @@
                     <Button Grid.Column="2" ToolTip="Use mouse scroller to zoom in. Click here to reset zoom." Command="{Binding ResetZoomCommand}"
                             Style="{StaticResource MaterialDesignFlatButton}">_Reset Zoom</Button>
                     <TextBlock Grid.Column="3" Margin="0 0 8 0" VerticalAlignment="Center">
-                        <Bold>> Tips</Bold>
+                        <Image Source="/Assets/Idea.png" Width="20" Stretch="Uniform" />
                         <TextBlock.ToolTip>
                             <StackPanel Orientation="Vertical">
                                 <TextBlock>
                                     <Bold>Mouse wheel</Bold>
-                                    to zoom in/out.
+                                    to zoom in/out. (5 more points)
                                 </TextBlock>
                                 <TextBlock>
-                                    <Bold>Click down + move</Bold>
-                                    to move the chart.
+                                    <Bold>Click down + ◀️/▶️</Bold>
+                                    to move the chart when zoomed in.
                                 </TextBlock>
                                 <TextBlock>
                                     <Bold>Ctrl+Click</Bold>
