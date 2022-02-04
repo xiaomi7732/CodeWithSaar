@@ -1,6 +1,12 @@
 # Welcome to Code w/ Saar
 
-This is the codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.com/channel/UCFVGdkhRh174GKg9gVEhY6A).
+* This is the codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.com/channel/UCFVGdkhRh174GKg9gVEhY6A).
+
+You are welcome to have a converstaion with me:
+
+* DM/Follow me on twitter [@CodeWithSaar](https://twitter.com/CodeWithSaar).
+* Join [the discord server](https://discord.gg/H8ZqDgczQb).
+* If you want, [Buy me a coffee](https://www.buymeacoffee.com/codewithsaar).
 
 ## Announcements
 
