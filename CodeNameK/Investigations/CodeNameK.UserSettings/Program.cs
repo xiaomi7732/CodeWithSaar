@@ -19,11 +19,19 @@ configuration.IsSyncEnabled = true;
 await writer.WriteConfigurationAsync(configuration, default);
 consumer.PrintSyncSettings();
 
+consumer.UserConfigurationChanged += OnUserConfigurationChanged;
 
+Console.WriteLine("Press any key to exit.");
+Console.ReadKey(true);
+
+void OnUserConfigurationChanged(object? sender, UserConfiguration e)
+{
+    Console.WriteLine($"New sync settings: {e.IsSyncEnabled}");
+}
 
 IServiceCollection Bootstrap()
 {
-    IConfiguration configuration = new ConfigurationBuilder().AddJsonFile(UserConfiguration.FileName, optional: false, reloadOnChange: false)
+    IConfiguration configuration = new ConfigurationBuilder().AddJsonFile(UserConfiguration.FileName, optional: false, reloadOnChange: true)
         .Build();
     IServiceCollection services = new ServiceCollection();
     services.AddOptions<UserConfiguration>().Bind(configuration.GetSection("UserConfiguration"));
