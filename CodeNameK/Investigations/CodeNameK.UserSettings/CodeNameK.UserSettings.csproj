@@ -16,6 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="./appsettings.jsonc" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="./usersettings.jsonc" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

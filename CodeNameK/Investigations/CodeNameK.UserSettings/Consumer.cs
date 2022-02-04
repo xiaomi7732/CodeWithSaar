@@ -15,5 +15,10 @@ namespace UserSettingsDemo
         {
             Console.WriteLine($"Is sync enabled: {_options.Value.IsSyncEnabled}");
         }
+
+        public UserConfiguration GetOptions()
+        {
+            return _options.Value;
+        }
     }
 }
