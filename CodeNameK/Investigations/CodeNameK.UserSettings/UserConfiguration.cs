@@ -1,7 +1,11 @@
-namespace UserSettingsDemo;
+using System.Reflection;
 
-public class UserConfiguration
+namespace UserSettingsDemo;
+class UserConfiguration
 {
-    public const string FileName = "usersettings.jsonc";
+    public static readonly string FilePath = Path.Combine(
+    Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, // exe folder
+        "usersettings.jsonc"    // filename
+    );
     public bool IsSyncEnabled { get; set; } = false;
 }

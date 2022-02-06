@@ -2,7 +2,7 @@ using Microsoft.Extensions.Options;
 
 namespace UserSettingsDemo
 {
-    public class Consumer
+    class Consumer
     {
         private readonly IOptionsMonitor<UserConfiguration> _options;
         public event EventHandler<UserConfiguration>? UserConfigurationChanged;
