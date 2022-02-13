@@ -1,14 +1,12 @@
 using CodeNameK.DataContracts;
 
-namespace CodeNameK.Contracts
+namespace CodeNameK.Contracts;
+public record DownSyncRequest : SyncRequestBase<DataPointPathInfo>
 {
-    public class DownSyncRequest
-    {
-        public DataPointPathInfo Payload { get; }
+    public override DataPointPathInfo Payload { get; }
 
-        public DownSyncRequest(DataPointPathInfo payload)
-        {
-            Payload = payload;
-        }
+    public DownSyncRequest(DataPointPathInfo payload)
+    {
+        Payload = payload;
     }
 }
