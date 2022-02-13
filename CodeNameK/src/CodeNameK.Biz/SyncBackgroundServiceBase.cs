@@ -9,22 +9,23 @@ using System.Threading.Tasks;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
 using CodeNameK.Core.Utilities;
+using CodeNameK.DAL.Interfaces;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace CodeNameK.BIZ;
 
-public abstract class SyncBackgroundServiceBase<TRequest> : BackgroundService
+public abstract class SyncBackgroundServiceBase<TRequest> : BackgroundService, ISyncQueueRequestService<TRequest>
     where TRequest : SyncRequestBase<DataPointPathInfo>
 {
     private bool _disposed = false;
     private readonly Channel<TRequest> _channel;
-    private readonly ISync _syncService;
     private readonly InternetAvailability _internetAvailability;
     private readonly IBizUserPreferenceService _userPreferenceService;
     private readonly ILogger _logger;
     private IProgress<(int, string)>? _progressReporter;
+    private ITokenCredentialManager<OneDriveCredentialStatus> _oneDriveTokenManager;
 
     private ManualResetEventSlim? _syncEnabledFlag = new ManualResetEventSlim(false);
 
@@ -43,10 +44,10 @@ public abstract class SyncBackgroundServiceBase<TRequest> : BackgroundService
 
     public SyncBackgroundServiceBase(
         Channel<TRequest> channel,
-        ISync syncService,
         InternetAvailability internetAvailability,
         IBizUserPreferenceService userPreferenceService,
         string persistentFileName,
+        ITokenCredentialManager<OneDriveCredentialStatus> oneDriveTokenManager,
         ILogger<SyncBackgroundServiceBase<TRequest>> logger)
     {
         if (string.IsNullOrEmpty(persistentFileName))
@@ -54,9 +55,9 @@ public abstract class SyncBackgroundServiceBase<TRequest> : BackgroundService
             throw new ArgumentException($"'{nameof(persistentFileName)}' cannot be null or empty.", nameof(persistentFileName));
         }
         _channel = channel ?? throw new ArgumentNullException(nameof(channel));
-        _syncService = syncService ?? throw new ArgumentNullException(nameof(syncService));
         _internetAvailability = internetAvailability ?? throw new ArgumentNullException(nameof(internetAvailability));
         _userPreferenceService = userPreferenceService ?? throw new ArgumentNullException(nameof(userPreferenceService));
+        _oneDriveTokenManager = oneDriveTokenManager ?? throw new ArgumentNullException(nameof(oneDriveTokenManager));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         _persistentFileFullPath = Path.Combine(DirectoryUtilities.GetExecutingAssemblyDirectory(), persistentFileName);
@@ -67,6 +68,7 @@ public abstract class SyncBackgroundServiceBase<TRequest> : BackgroundService
 
     private void UserPreferenceChanged(object sender, UserPreference e)
     {
+        _logger.LogDebug("Detected User Preference changed. Is sync enabled: {enableSync}", e.EnableSync);
         if (e.EnableSync)
         {
             _syncEnabledFlag?.Set();
@@ -74,6 +76,19 @@ public abstract class SyncBackgroundServiceBase<TRequest> : BackgroundService
         else
         {
             _syncEnabledFlag?.Reset();
+        }
+    }
+
+    /// <summary>
+    /// Writes a payload into the target queue.
+    /// </summary>
+    /// <param name="payload">The payload for uploading / download.</param>
+    public async ValueTask WriteRequestAsync(DataPointPathInfo payload, CancellationToken cancellationToken)
+    {
+        if (await _channel.Writer.WaitToWriteAsync(cancellationToken))
+        {
+            await _channel.Writer.WriteAsync(CreateRequestFromDataModel(payload), cancellationToken);
+            ReportProgress("New item enqueued.");
         }
     }
 
@@ -116,7 +131,14 @@ public abstract class SyncBackgroundServiceBase<TRequest> : BackgroundService
 
             // Ensure sign in
             ReportProgress("Check signIn status");
-            await _syncService.WaitForSignInSuccessAsync(stoppingToken).ConfigureAwait(false);
+            await _oneDriveTokenManager.SigningWaiter.ConfigureAwait(false);
+
+            // Double check to see if sync is still enabled.
+            if (!_userPreferenceService.UserPreference.EnableSync)
+            {
+                _logger.LogDebug("Sync has since been disabled. Skip cycle");
+                continue;
+            }
 
             // Start sync
             DataPointPathInfo input = (await _channel.Reader.ReadAsync(stoppingToken).ConfigureAwait(false)).Payload;

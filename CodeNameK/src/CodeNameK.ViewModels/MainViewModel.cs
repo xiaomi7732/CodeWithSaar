@@ -55,10 +55,10 @@ namespace CodeNameK.ViewModels
             DataPointViewModel dataPointOperator,
             InternetAvailability internetAvailability,
             IErrorRevealerFactory errorRevealer,
-            BackgroundSyncProgress<UpSyncBackgroundService> upSyncProgress,
-            BackgroundSyncProgress<DownSyncBackgroundService> downSyncProgress,
             IBizUserPreferenceService userPreferenceService,
             IOptions<LocalStoreOptions> localStoreOptions,
+            DownSyncBackgroundService downSyncBackgroundService,
+            UpSyncBackgroundService upSyncBackgroundService,
             ILogger<MainViewModel> logger)
                 : base(errorRevealer)
         {
@@ -106,12 +106,12 @@ namespace CodeNameK.ViewModels
             SelectedDateRangeOption = DateRangeOptions.First();
             _selectedDateRangeOption = SelectedDateRangeOption;
 
-            UpSyncQueueLength = _syncService.UpSyncQueueLength;
-            upSyncProgress.ProgressChanged += BackgroundSyncProgress_ProgressChanged;
+            UpSyncQueueLength = 0;
+            upSyncBackgroundService.ReportProgressTo(UpSyncProgress_ProgressChanged);
             RequestInitialSync().FireWithExceptionHandler(OnSyncImpException);
 
-            DownSyncQueueLength = _syncService.DownSyncQueueLength;
-            downSyncProgress.ProgressChanged += DownSyncProgress_ProgressChanged;
+            DownSyncQueueLength = 0;
+            downSyncBackgroundService.ReportProgressTo(DownSyncProgress_ProgressChanged);
 
             _userPreferenceService.UserPreferenceChanged += OnUserPreferenceChanged;
 
@@ -685,7 +685,7 @@ namespace CodeNameK.ViewModels
         {
             if (uri is string uriString)
             {
-                if (Uri.TryCreate(uriString, UriKind.Absolute, out Uri targetUri))
+                if (Uri.TryCreate(uriString, UriKind.Absolute, out Uri? targetUri))
                 {
                     Process.Start(new ProcessStartInfo()
                     {
@@ -797,9 +797,9 @@ namespace CodeNameK.ViewModels
             await UpdateSeriesAsync(default).ConfigureAwait(false);
         }
 
-        private void BackgroundSyncProgress_ProgressChanged(object? sender, (string, int) args)
+        private void UpSyncProgress_ProgressChanged((int, string) args)
         {
-            (string text, int queueLength) = args;
+            (int queueLength, string text) = args;
             Dispatch(() =>
             {
                 UpSyncStateText = text;
@@ -808,9 +808,9 @@ namespace CodeNameK.ViewModels
             });
         }
 
-        private void DownSyncProgress_ProgressChanged(object? sender, (string, int) args)
+        private void DownSyncProgress_ProgressChanged((int, string) args)
         {
-            (string text, int queueLength) = args;
+            (int queueLength, string text) = args;
             Dispatch(() =>
             {
                 UpSyncStateText = text;

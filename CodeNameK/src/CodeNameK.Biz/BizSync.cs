@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
@@ -23,10 +22,8 @@ namespace CodeNameK.BIZ
         private readonly IOneDriveSync _oneDriveSync;
         private readonly ITokenCredentialManager<OneDriveCredentialStatus> _oneDriveTokenManager;
         private readonly ILocalPathProvider _localPathProvider;
-        private readonly Channel<UpSyncRequest> _upSyncChannel;
-        private readonly Channel<DownSyncRequest> _downSyncChannel;
-        private readonly IProgress<(string, int)> _upSyncProgress;
-        private readonly IProgress<(string, int)> _downSyncProgress;
+        private readonly ISyncQueueRequestService<UpSyncRequest> _upSyncChannel;
+        private readonly ISyncQueueRequestService<DownSyncRequest> _downSyncChannel;
         private readonly IBizUserPreferenceService _userPreferenceService;
         private readonly SyncOptions _options;
         private readonly ILogger _logger;
@@ -37,10 +34,8 @@ namespace CodeNameK.BIZ
             IOneDriveSync oneDriveSync,
             ITokenCredentialManager<OneDriveCredentialStatus> oneDriveTokenManager,
             ILocalPathProvider localPathProvider,
-            Channel<UpSyncRequest> upSyncChannel,
-            Channel<DownSyncRequest> downSyncChannel,
-            BackgroundSyncProgress<UpSyncBackgroundService> upSyncProgress,
-            BackgroundSyncProgress<DownSyncBackgroundService> downSyncProgress,
+            ISyncQueueRequestService<UpSyncRequest> upSyncChannel,
+            ISyncQueueRequestService<DownSyncRequest> downSyncChannel,
             IBizUserPreferenceService userPreferenceService,
             IOptions<SyncOptions> options,
             ILogger<BizSync> logger)
@@ -55,15 +50,9 @@ namespace CodeNameK.BIZ
             _localPathProvider = localPathProvider ?? throw new ArgumentNullException(nameof(localPathProvider));
             _upSyncChannel = upSyncChannel ?? throw new ArgumentNullException(nameof(upSyncChannel));
             _downSyncChannel = downSyncChannel ?? throw new ArgumentNullException(nameof(downSyncChannel));
-            _upSyncProgress = upSyncProgress ?? throw new ArgumentNullException(nameof(upSyncProgress));
-            _downSyncProgress = downSyncProgress ?? throw new ArgumentNullException(nameof(downSyncProgress));
             _userPreferenceService = userPreferenceService ?? throw new ArgumentNullException(nameof(userPreferenceService));
             _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         }
-
-        public int UpSyncQueueLength => _upSyncChannel.Reader.Count;
-
-        public int DownSyncQueueLength => _downSyncChannel.Reader.Count;
 
         public async Task<bool> SignInAsync(CancellationToken cancellationToken)
         {
@@ -120,11 +109,7 @@ namespace CodeNameK.BIZ
             {
                 if (!_localPathProvider.PhysicalFileExists(dataInfo))
                 {
-                    if (await _downSyncChannel.Writer.WaitToWriteAsync(cancellationToken))
-                    {
-                        await _downSyncChannel.Writer.WriteAsync(new DownSyncRequest(dataInfo), cancellationToken);
-                        _downSyncProgress.Report(("Down sync added", _downSyncChannel.Reader.Count));
-                    }
+                    await _downSyncChannel.WriteRequestAsync(dataInfo, cancellationToken);
                 }
             }
         }
@@ -148,11 +133,7 @@ namespace CodeNameK.BIZ
 
         public async ValueTask EnqueueUpSyncAsync(UpSyncRequest request, CancellationToken cancellationToken = default)
         {
-            if (await _upSyncChannel.Writer.WaitToWriteAsync(cancellationToken))
-            {
-                await _upSyncChannel.Writer.WriteAsync(request, cancellationToken);
-                _upSyncProgress.Report(("Up sync added.", _upSyncChannel.Reader.Count));
-            }
+            await _upSyncChannel.WriteRequestAsync(request.Payload, cancellationToken);
         }
 
         public async IAsyncEnumerable<Category> PeekRemoteCategoriesAsync([EnumeratorCancellation] CancellationToken cancellationToken)
