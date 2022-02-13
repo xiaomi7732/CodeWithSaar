@@ -24,10 +24,13 @@ public static class BizRegister
 
         services.AddSingleton<Channel<UpSyncRequest>>(p => Channel.CreateUnbounded<UpSyncRequest>());
         services.AddSingleton<Channel<DownSyncRequest>>(p => Channel.CreateUnbounded<DownSyncRequest>());
-        services.AddSingleton<BackgroundSyncProgress<UpSyncBackgroundService>>();
-        services.AddSingleton<BackgroundSyncProgress<DownSyncBackgroundService>>();
-        services.AddHostedService<UpSyncBackgroundService>();
-        services.AddHostedService<DownSyncBackgroundService>();
+
+        services.AddSingleton<UpSyncBackgroundService>();
+        services.AddSingleton<ISyncQueueRequestService<UpSyncRequest>>(p => p.GetRequiredService<UpSyncBackgroundService>());
+        services.AddHostedService<UpSyncBackgroundService>(p => p.GetRequiredService<UpSyncBackgroundService>());
+        services.AddSingleton<DownSyncBackgroundService>();
+        services.AddSingleton<ISyncQueueRequestService<DownSyncRequest>>(p => p.GetRequiredService<DownSyncBackgroundService>());
+        services.AddHostedService<DownSyncBackgroundService>(p => p.GetRequiredService<DownSyncBackgroundService>());
 
         services.AddSingleton<IBizUserPreferenceService, BizUserPreferenceService>();
         return services;

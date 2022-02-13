@@ -2,12 +2,12 @@ using CodeNameK.DataContracts;
 
 namespace CodeNameK.Contracts
 {
-    public record UpSyncRequest
+    public record UpSyncRequest : SyncRequestBase<DataPointPathInfo>
     {
         public UpSyncRequest(DataPointPathInfo payload)
         {
             Payload = payload;
         }
-        public DataPointPathInfo Payload { get; }
+        public override DataPointPathInfo Payload { get; }
     }
 }
