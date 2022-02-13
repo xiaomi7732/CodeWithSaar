@@ -107,14 +107,15 @@ namespace CodeNameK.ViewModels
             _selectedDateRangeOption = SelectedDateRangeOption;
 
             UpSyncQueueLength = 0;
-            upSyncBackgroundService.ReportProgressTo(UpSyncProgress_ProgressChanged);
-            RequestInitialSync().FireWithExceptionHandler(OnSyncImpException);
-
             DownSyncQueueLength = 0;
-            downSyncBackgroundService.ReportProgressTo(DownSyncProgress_ProgressChanged);
-
+            Dispatch(()=>{
+                upSyncBackgroundService.ReportProgressTo(new Progress<(int, string)>(UpSyncProgress_ProgressChanged));
+                downSyncBackgroundService.ReportProgressTo(new Progress<(int, string)>(DownSyncProgress_ProgressChanged));
+                return 0;
+            });
+            
+            RequestInitialSync().FireWithExceptionHandler(OnSyncImpException);
             _userPreferenceService.UserPreferenceChanged += OnUserPreferenceChanged;
-
             _signInStatus = string.Empty;
         }
 
