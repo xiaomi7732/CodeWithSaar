@@ -108,12 +108,14 @@ namespace CodeNameK.ViewModels
 
             UpSyncQueueLength = 0;
             DownSyncQueueLength = 0;
-            Dispatch(()=>{
+            Dispatch(() =>
+            {
+                // Dispatch this because the ctor of Progress<T> captures the synchronization context and will always send the progress back onto it.
                 upSyncBackgroundService.ReportProgressTo(new Progress<(int, string)>(UpSyncProgress_ProgressChanged));
                 downSyncBackgroundService.ReportProgressTo(new Progress<(int, string)>(DownSyncProgress_ProgressChanged));
                 return 0;
             });
-            
+
             RequestInitialSync().FireWithExceptionHandler(OnSyncImpException);
             _userPreferenceService.UserPreferenceChanged += OnUserPreferenceChanged;
             _signInStatus = string.Empty;
