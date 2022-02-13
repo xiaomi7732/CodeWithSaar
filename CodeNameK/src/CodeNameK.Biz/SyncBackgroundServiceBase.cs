@@ -96,9 +96,9 @@ public abstract class SyncBackgroundServiceBase<TRequest> : BackgroundService, I
     /// Sets up a progress handler.
     /// </summary>
     /// <exception cref="System.ArgumentNullException">Throws if progressChangedHandler is null.</exception>
-    public void ReportProgressTo(Action<(int, string)> progressChangedHandler)
+    public void ReportProgressTo(IProgress<(int, string)> progressChangedHandler)
     {
-        _progressReporter = new Progress<(int, string)>(progressChangedHandler);
+        _progressReporter = progressChangedHandler;
     }
 
     /// <summary>
