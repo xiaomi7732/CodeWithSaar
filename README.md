@@ -8,6 +8,13 @@ You are welcome to have a converstaion with me:
 * Join [the discord server](https://discord.gg/H8ZqDgczQb).
 * If you want, [Buy me a coffee](https://www.buymeacoffee.com/codewithsaar).
 
+```mermaid
+stateDiagram-v2
+    Learning --> Coding
+    Coding --> Debugging
+    Debugging --> Learning
+```
+
 ## Announcements
 
 * 1/30/2022: **NumberIt** _(CodeNameK)_ 1.0.0-beta2 is released. [Details](./CodeNameK/Readme.md).
