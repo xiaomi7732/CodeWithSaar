@@ -37,7 +37,15 @@ namespace CodeNameK.DAL
         [Obsolete("This is for deubgging only", error: false)]
         public static IServiceCollection RegisterDataAccessModuleForAndroid(this IServiceCollection services)
         {
+            services.AddScoped<DataPointOperator>();
+            services.AddScoped<IDataWriter<DataPoint>>(p => p.GetRequiredService<DataPointOperator>());
+            services.AddScoped<IDataReader<DataPoint>>(p => p.GetRequiredService<DataPointOperator>());
+
             services.AddScoped<ILocalPathProvider, LocalPathProvider>();
+            services.AddScoped<DataRepo>();
+            services.AddScoped<ICategoryRepo>(p => p.GetRequiredService<DataRepo>());
+            services.AddScoped<IDataPointRepo>(p => p.GetRequiredService<DataRepo>());
+
             return services;
         }
     }
