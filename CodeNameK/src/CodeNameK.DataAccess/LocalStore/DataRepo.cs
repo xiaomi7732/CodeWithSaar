@@ -16,7 +16,6 @@ namespace CodeNameK.DAL
     public class DataRepo : IDataPointRepo, ICategoryRepo
     {
         private readonly IDataWriter<DataPoint> _dataPointWriter;
-        private readonly IDataReader<DataPoint> _dataPointReader;
         private readonly ILocalPathProvider _localPathService;
         private readonly ILogger _logger;
 
@@ -28,7 +27,6 @@ namespace CodeNameK.DAL
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dataPointWriter = dataPointWriter ?? throw new ArgumentNullException(nameof(dataPointWriter));
-            _dataPointReader = dataPointReader ?? throw new ArgumentNullException(nameof(dataPointReader));
             _localPathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
         }
 
