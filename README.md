@@ -1,10 +1,10 @@
 # Welcome to Code w/ Saar
 
-* This is the codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.com/channel/UCFVGdkhRh174GKg9gVEhY6A).
+* This is the codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.com/c/CodewithSaar).
 
-You are welcome to have a converstaion with me:
+You are welcome to have a conversation with me:
 
-* DM/Follow me on twitter [@CodeWithSaar](https://twitter.com/CodeWithSaar).
+* Follow me on twitter [@CodeWithSaar](https://twitter.com/CodeWithSaar).
 * Join [the discord server](https://discord.gg/H8ZqDgczQb).
 * If you want, [Buy me a coffee](https://www.buymeacoffee.com/codewithsaar).
 
@@ -17,6 +17,7 @@ stateDiagram-v2
 
 ## Announcements
 
+* 3/2/2022: **Stack Beauty**  is online, check it out: <https://stack.codewithsaar.net>.
 * 1/30/2022: **NumberIt** _(CodeNameK)_ 1.0.0-beta2 is released. [Details](./CodeNameK/Readme.md).
 * 1/8/2022: **NumberIt** _(CodeNameK)_ 1.0.0-beta1 is released. [Details](./CodeNameK/Readme.md).
 * 12/31/2021: **NumberIt** _(CodeNameK)_ release page is established. [Details](./CodeNameK/Readme.md).
@@ -28,6 +29,7 @@ stateDiagram-v2
 
 ## Advanced
 
+* [Stack Beauty GitHub Repo](https://github.com/xiaomi7732/StackBeauty) | [Live Site](stack.codewithsaar.net)
 * [NumberIt - CodeNameK](./CodeNameK/Readme.md) | [YouTube Playlist](https://youtube.com/playlist?list=PLxWo8vu0UTZ28_GwEGdjwExCHDKx1WCua)
 * [JWT Auth for AspNetCore WebAPI](./Auth.AspNetCore.WebApi/README.md) | [NuGet package](https://www.nuget.org/packages/CodeWithSaar.JWTAuthentication.WebAPI)
 * [Two-way named pipe stream wrapper](./IPC/README.md) | [NuGet package](https://www.nuget.org/packages/CodeWithSaar.IPC)
