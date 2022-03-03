@@ -1,11 +1,12 @@
 # Welcome to Code with Saar
 
-This is the codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.com/c/CodewithSaar).
-  * I build .NET project and I share real world project experience with you to help building code skills to the next level!
+I build .NET project and I share real world project experience with you to help building code skills to the next level!
 
-Feel free to have a conversation with me:
+This is the primary codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.com/c/CodewithSaar). Here, I share projects, code examples and links to the vidoes.
 
-* Follow me on twitter [@CodeWithSaar](https://twitter.com/CodeWithSaar).
+To connect with me:
+
+* On twitter [@CodeWithSaar](https://twitter.com/CodeWithSaar).
 * Join [the discord server](https://discord.gg/H8ZqDgczQb).
 * If you want, [Buy me a coffee](https://www.buymeacoffee.com/codewithsaar).
 
@@ -25,14 +26,24 @@ stateDiagram-v2
 * 1/8/2022: **NumberIt** _(CodeNameK)_ 1.0.0-beta1 is released. [Details](./CodeNameK/Readme.md).
 * 12/31/2021: **NumberIt** _(CodeNameK)_ release page is established. [Details](./CodeNameK/Readme.md).
 
-## Getting Started
+## Projects
+
+* [Stack Beauty GitHub Repo](https://github.com/xiaomi7732/StackBeauty)  [Live Site](stack.codewithsaar.net)
+* [NumberIt - CodeNameK](./CodeNameK/Readme.md)  [YouTube Playlist](https://youtube.com/playlist?list=PLxWo8vu0UTZ28_GwEGdjwExCHDKx1WCua)
+  * [Introduction](https://youtu.be/7kG__DQlrGE)
+* [Two-way named pipe stream wrapper](./IPC/README.md) [NuGet package](https://www.nuget.org/packages/CodeWithSaar.IPC)
+* [JWT Auth for AspNetCore WebAPI](./Auth.AspNetCore.WebApi/README.md) [NuGet package](https://www.nuget.org/packages/CodeWithSaar.JWTAuthentication.WebAPI)
+
+## Video Index
+
+### Getting Started
 
 * [How to download .NET](https://youtu.be/O_Un6_2mhL0)
 * [How to Build C# Projects](https://youtu.be/yJ-buQg09Qc)
 * [C# project](https://youtu.be/uQrs6ioZfzs)
 * [Project reference](https://youtu.be/pJETdpS5PR8)
 
-## Fundamentals
+### Fundamentals
 
 * C# Language Features
   * Computed Properties [Doc](./ComputedProperty) [Video](https://youtu.be/lO622PQuPBc)
@@ -64,7 +75,7 @@ stateDiagram-v2
     * [Two way data synchronization challenge](https://youtu.be/g1wyDi254Yw)
     * [Immutable - an extraordinary strategy for two-way synchronization](https://youtu.be/psYWy6KJTyg)
 
-## Advanced Topics
+### Advanced Topics
 
 * Authentication / Authorization - [Playlist](https://www.youtube.com/playlist?list=PLxWo8vu0UTZ2wXMBepa6DUGepJJJoBiUf)
   * [JWT Authentication Overview](https://youtu.be/Ph8ddTRQ0eo)
@@ -90,16 +101,3 @@ stateDiagram-v2
   * [Benchmark: High performance logging in .NET](https://youtu.be/NDm_VPwaDjI)
 
 * [ASP.NET Core Pipeline](https://youtu.be/K9sBI9ZFxRA)
-
-## Projects
-
-* [Stack Beauty GitHub Repo](https://github.com/xiaomi7732/StackBeauty)  [Live Site](stack.codewithsaar.net)
-* [NumberIt - CodeNameK](./CodeNameK/Readme.md)  [YouTube Playlist](https://youtube.com/playlist?list=PLxWo8vu0UTZ28_GwEGdjwExCHDKx1WCua)
-  * [Introduction](https://youtu.be/7kG__DQlrGE)
-* [Two-way named pipe stream wrapper](./IPC/README.md) [NuGet package](https://www.nuget.org/packages/CodeWithSaar.IPC)
-* [JWT Auth for AspNetCore WebAPI](./Auth.AspNetCore.WebApi/README.md) [NuGet package](https://www.nuget.org/packages/CodeWithSaar.JWTAuthentication.WebAPI)
-
-
-* JWT authentication for WebAPI full example
-  * [Readme](./JWTFullExample/README.md)
-  * [YouTube video](https://youtu.be/tLgdbTqQp7Q) Available on 5/3/2021
