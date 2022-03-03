@@ -35,7 +35,7 @@ stateDiagram-v2
 ## Fundamentals
 
 * C# Language Features
-  * Computed Properties | [Doc](./ComputedProperty) | [Video](https://youtu.be/lO622PQuPBc)
+  * Computed Properties [Doc](./ComputedProperty) [Video](https://youtu.be/lO622PQuPBc)
   * [Extension Method](https://youtu.be/RH4B_i-nq44)
   * [C# Delegate](https://youtu.be/L5SN2-agGaY)
 
@@ -54,7 +54,7 @@ stateDiagram-v2
     * [Graph APIs: How to Use OAuth 2.0 to Access Microsoft GraphAPI/OneDrive](https://youtu.be/NljQx11YqNY)
     * [Graph APIs: Use Microsoft Graph .NET SDK with Azure.Identity](https://youtu.be/xh0uu4z9-rE)
     * [Graph APIs: Upload large file w/ progress to OneDrive](https://youtu.be/yuoAWP3wn80)
-    * Deep Clone with Serializer | [Doc](./DeepCloneWithSerializer/README.md) | [Video](https://youtu.be/MpM5NIyq18I)
+    * Deep Clone with Serializer [Doc](./DeepCloneWithSerializer/README.md) [Video](https://youtu.be/MpM5NIyq18I)
     * [Benchmark: Manual Serialization vs Json Serializer](https://youtu.be/5R3yXyKWk98)
 
   * Practice system design
@@ -93,13 +93,13 @@ stateDiagram-v2
 
 ## Projects
 
-* [Stack Beauty GitHub Repo](https://github.com/xiaomi7732/StackBeauty) | [Live Site](stack.codewithsaar.net)
-* [NumberIt - CodeNameK](./CodeNameK/Readme.md) | [YouTube Playlist](https://youtube.com/playlist?list=PLxWo8vu0UTZ28_GwEGdjwExCHDKx1WCua)
+* [Stack Beauty GitHub Repo](https://github.com/xiaomi7732/StackBeauty)  [Live Site](stack.codewithsaar.net)
+* [NumberIt - CodeNameK](./CodeNameK/Readme.md)  [YouTube Playlist](https://youtube.com/playlist?list=PLxWo8vu0UTZ28_GwEGdjwExCHDKx1WCua)
   * [Introduction](https://youtu.be/7kG__DQlrGE)
-* [Two-way named pipe stream wrapper](./IPC/README.md) | [NuGet package](https://www.nuget.org/packages/CodeWithSaar.IPC)
-* [JWT Auth for AspNetCore WebAPI](./Auth.AspNetCore.WebApi/README.md) | [NuGet package](https://www.nuget.org/packages/CodeWithSaar.JWTAuthentication.WebAPI)
+* [Two-way named pipe stream wrapper](./IPC/README.md) [NuGet package](https://www.nuget.org/packages/CodeWithSaar.IPC)
+* [JWT Auth for AspNetCore WebAPI](./Auth.AspNetCore.WebApi/README.md) [NuGet package](https://www.nuget.org/packages/CodeWithSaar.JWTAuthentication.WebAPI)
 
 
 * JWT authentication for WebAPI full example
   * [Readme](./JWTFullExample/README.md)
-  * [YouTube video](https://youtu.be/tLgdbTqQp7Q) | Available on 5/3/2021
+  * [YouTube video](https://youtu.be/tLgdbTqQp7Q) Available on 5/3/2021
