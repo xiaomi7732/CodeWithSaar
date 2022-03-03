@@ -18,6 +18,7 @@ stateDiagram-v2
     Coding --> Debugging
     Debugging --> Learning
 ```
+<p align='center'>If you can't seen the chart above, copy and paste it in a <strong>mermaid viewer</strong>.</p>
 
 ## Announcements
 
