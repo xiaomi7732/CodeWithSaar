@@ -102,3 +102,7 @@ stateDiagram-v2
   * [Benchmark: High performance logging in .NET](https://youtu.be/NDm_VPwaDjI)
 
 * [ASP.NET Core Pipeline](https://youtu.be/K9sBI9ZFxRA)
+
+### Mobile / Xamarin
+
+* [Access File System](https://youtu.be/7YJHBX1abfs)
