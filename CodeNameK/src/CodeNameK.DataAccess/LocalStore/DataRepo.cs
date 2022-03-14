@@ -28,6 +28,7 @@ namespace CodeNameK.DAL
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _dataPointWriter = dataPointWriter ?? throw new ArgumentNullException(nameof(dataPointWriter));
             _localPathService = pathService ?? throw new ArgumentNullException(nameof(pathService));
+            _logger.LogInformation("{type} created.", nameof(DataRepo));
         }
 
         public Task<string> AddCategoryAsync(Category category, CancellationToken cancellationToken)

@@ -26,7 +26,7 @@
     <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
     <AndroidUseAapt2>true</AndroidUseAapt2>
     <AndroidHttpClientHandlerType>Xamarin.Android.Net.AndroidClientHandler</AndroidHttpClientHandlerType>
-	<Nullable>enable</Nullable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -121,6 +121,10 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.7.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\CodeWithSaar.Extensions.Logging.Android\CodeWithSaar.Extensions.Logging.Android\CodeWithSaar.Extensions.Logging.Android.csproj">
+      <Project>{04cfa742-40a9-4fd0-8eed-73e34876ef5a}</Project>
+      <Name>CodeWithSaar.Extensions.Logging.Android</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CodeNameK.Contracts\CodeNameK.Contracts.csproj">
       <Project>{D7304060-6B6B-4F10-A4FB-C583B51F1CD1}</Project>
       <Name>CodeNameK.Contracts</Name>

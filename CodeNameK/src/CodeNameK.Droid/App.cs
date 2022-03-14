@@ -4,6 +4,7 @@ using Android.App;
 using Android.Runtime;
 using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.DAL;
+using CodeWithSaar.Extensions.Logging.Android;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
@@ -38,7 +39,11 @@ public class App : Application
 
     private static void AddServices(IServiceCollection services)
     {
-        services.AddLogging();
+        services.AddLogging(loggerBuilder =>
+        {
+            loggerBuilder.AddAndroid();
+        });
+
         services.AddOptions<LocalStoreOptions>().Configure(localStoreOption =>
         {
             bool isReadonly = AndroidEnvironment.MediaMountedReadOnly.Equals(AndroidEnvironment.ExternalStorageState);
