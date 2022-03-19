@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -53,7 +54,7 @@ namespace CodeNameK.ViewModels
 
             LocalDate = localDateTime.Date;
             TimeSpan = localDateTime - LocalDate;
-            Value = newModelNull ? null : newModel.Value;
+            Value = newModelNull ? null : newModel.Value.ToString(CultureInfo.InvariantCulture);
         }
 
         private DateTime _localDate;
@@ -96,11 +97,11 @@ namespace CodeNameK.ViewModels
             }
         }
 
-        private double? _value;
+        private string? _value;
         /// <summary>
         /// Gets or sets the value for the data point
         /// </summary>
-        public double? Value
+        public string? Value
         {
             get
             {
@@ -151,7 +152,17 @@ namespace CodeNameK.ViewModels
             {
                 throw new InvalidOperationException("No selected category!");
             }
-            DataPoint newItem = BuildDataPoint(targetCategory);
+
+            DataPoint newItem;
+            try
+            {
+                newItem = BuildDataPoint(targetCategory);
+            }
+            catch (InvalidCastException ex)
+            {
+                _errorRevealerFactory.CreateInstance(string.Empty).Reveal(ex.Message, "Failed adding a data piont");
+                return;
+            }
 
             _logger.LogInformation("Adding a data point into category: {category}", newItem.Category?.Id);
             OperationResult<DataPoint> addResult = await _dataPointBiz.AddAsync(newItem, default).ConfigureAwait(false);
@@ -232,12 +243,17 @@ namespace CodeNameK.ViewModels
                 throw new ArgumentNullException(nameof(category));
             }
 
+            if (!double.TryParse(Value, out double newValue))
+            {
+                throw new InvalidCastException($"Value {Value} is not a valid number");
+            }
+
             return new DataPoint()
             {
                 Id = _id,
                 Category = category,
                 WhenUTC = IsCurrentDateTimeMode ? DateTime.UtcNow : BuildWhenUTC(),
-                Value = this.Value ?? 0,
+                Value = newValue,
             };
         }
 
