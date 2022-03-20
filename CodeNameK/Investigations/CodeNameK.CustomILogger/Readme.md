@@ -37,3 +37,5 @@ This is an example of building a Custom ILogger Provider. YouTube videos:
   * Run it directly to see if there log output;
   * Update MyLogger implementation, add a timestamp to each logging entry;
   * Output LogLevel;
+
+* Delete the fork when you are done with it.
