@@ -4,10 +4,21 @@ namespace CodeWithSaar.CustomLogger;
 
 public class MyLogger : ILogger
 {
-    public IDisposable BeginScope<TState>(TState state)
+    private readonly string _categoryName;
+    private readonly Func<MyLoggerOptions> _getOptions;
+
+    public MyLogger(string categoryName, Func<MyLoggerOptions> getOptions)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrEmpty(categoryName))
+        {
+            throw new ArgumentException($"'{nameof(categoryName)}' cannot be null or empty.", nameof(categoryName));
+        }
+
+        _categoryName = categoryName;
+        _getOptions = getOptions ?? throw new ArgumentNullException(nameof(getOptions));
     }
+
+    public IDisposable BeginScope<TState>(TState state) => new MemoryStream();
 
     public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
 
@@ -17,9 +28,11 @@ public class MyLogger : ILogger
                             Exception? exception,
                             Func<TState, Exception?, string> formatter)
     {
-        using(Stream outputStream = File.Open("output.log", FileMode.Append))
+        string fileName = _getOptions().OutputFilePath;
+        using(Stream outputStream = File.Open(fileName, FileMode.Append))
         using(StreamWriter streamWriter = new StreamWriter(outputStream))
         {
+            streamWriter.Write($"[{_categoryName}, {logLevel}] ");
             streamWriter.WriteLine(formatter(state, exception));
         }
     }
