@@ -85,6 +85,11 @@ stateDiagram-v2
   * [End to End Example](https://youtu.be/tLgdbTqQp7Q)
   * [GraphAPI Auth: How to Use OAuth 2.0 to Access Microsoft GraphAPI/OneDrive](https://youtu.be/NljQx11YqNY)
 
+* Logging
+  * [.NET (C#) Logging with ILogger](https://youtu.be/gRdi7Z-T9JI)
+  * [Benchmark: High performance logging in .NET](https://youtu.be/NDm_VPwaDjI)
+  * [How to implement custom logging provider for file](https://youtu.be/3RUpYR4dZM4)
+
 * [Dependency Injection](./DI)
   * [Learn DI by printing a JSON dog](https://youtu.be/YnBPjt2dBWk)
   * [DI in .NET Core & ASP.NET Core](https://youtu.be/cYV1JmWiTHQ)
@@ -96,10 +101,6 @@ stateDiagram-v2
   * [Options pattern](https://youtu.be/fUSuD84Pr0U)
   * [Option in Depth](https://youtu.be/CnPAhy6M00U)
   * [C# Configuration Providers](https://youtu.be/LbPGciA_NDk)
-
-* Logging
-  * [.NET (C#) Logging with ILogger](https://youtu.be/gRdi7Z-T9JI)
-  * [Benchmark: High performance logging in .NET](https://youtu.be/NDm_VPwaDjI)
 
 * [ASP.NET Core Pipeline](https://youtu.be/K9sBI9ZFxRA)
 
