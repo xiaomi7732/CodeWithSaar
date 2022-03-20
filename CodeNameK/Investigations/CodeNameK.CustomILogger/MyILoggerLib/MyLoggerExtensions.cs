@@ -12,17 +12,6 @@ public static class MyLoggerExtensions
         builder.Services.TryAddEnumerable(
             ServiceDescriptor.Singleton<ILoggerProvider, MyLoggerProvider>()
         );
-
-        LoggerProviderOptions.RegisterProviderOptions
-            <MyLoggerOptions, MyLoggerProvider>(builder.Services);
-
-        return builder;
-    }
-
-    public static ILoggingBuilder AddFile(this ILoggingBuilder builder, Action<MyLoggerOptions> configure)
-    {
-        builder.AddFile();
-        builder.Services.Configure(configure);
         return builder;
     }
 }
