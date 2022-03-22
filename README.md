@@ -2,7 +2,10 @@
 
 I build .NET project and I share real world project experience with you to help building code skills to the next level!
 
-This is the primary codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.com/c/CodewithSaar). Here, I share projects, code examples and links to the vidoes.
+This is the primary codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.com/c/CodewithSaar). Here, I share projects, code examples and links to the videos.
+
+<!-- BLOG-POST-LIST:START -->
+<!-- BLOG-POST-LIST:END -->
 
 To connect with me:
 
