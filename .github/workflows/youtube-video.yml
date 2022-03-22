@@ -1,7 +1,7 @@
 name: Latest YouTube video workflow
 on:
-  schedule: # Run workflow automatically
-    - cron: '0 16 * * *' # Runs at 16:00 UTC every day
+  # schedule: # Run workflow automatically
+    # - cron: '0 16 * * *' # Runs at 16:00 UTC every day
   workflow_dispatch: # Run workflow manually (without waiting for the cron to be called), through the Github Actions Workflow page directly
 
 jobs:
@@ -16,3 +16,8 @@ jobs:
         with:
           feed_list: "https://www.youtube.com/feeds/videos.xml?channel_id=UCFVGdkhRh174GKg9gVEhY6A"
           gh_token: ${{ secrets.GH_KEY }}
+          comment_tag_name: "YOUTUBE"
+          custom_tags: "channelId/yt:channelId/,videoId/yt:videoId/"
+          date_format: "mmm d, yyyy"
+          template: '<table><tr><td><a href="$url"><img width="140px" src="https://i.ytimg.com/vi/$videoId/mqdefault.jpg"></a></td>$newline<td><a href="$url">$title</a><br/>$date</td></tr></table>$newline'
+          committer_email: "xiaomi7732@hotmail.com"
