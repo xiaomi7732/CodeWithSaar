@@ -1,9 +1,11 @@
+using System;
 using System.Threading.Channels;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
 using CodeNameK.Contracts.CustomOptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CodeNameK.BIZ;
 public static class BizRegister
@@ -33,6 +35,14 @@ public static class BizRegister
         services.AddHostedService<DownSyncBackgroundService>(p => p.GetRequiredService<DownSyncBackgroundService>());
 
         services.AddSingleton<IBizUserPreferenceService, BizUserPreferenceService>();
+        return services;
+    }
+
+    [Obsolete("This is for deubgging only", error: false)]
+    public static IServiceCollection RegisterBizModuleForAndroid(this IServiceCollection services)
+    { 
+        services.TryAddScoped<ICategory, BizCategory>();
+
         return services;
     }
 }

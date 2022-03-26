@@ -2,6 +2,7 @@
 
 using Android.App;
 using Android.Runtime;
+using CodeNameK.BIZ;
 using CodeNameK.Contracts.CustomOptions;
 using CodeNameK.DAL;
 using CodeWithSaar.Extensions.Logging.Android;
@@ -65,6 +66,7 @@ public class App : Application
         });
 #pragma warning disable CS0618 // For testing purpose
         services.RegisterDataAccessModuleForAndroid();
+        services.RegisterBizModuleForAndroid();
 #pragma warning restore CS0618 // Type or member is obsolete
     }
 

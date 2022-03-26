@@ -20,7 +20,7 @@ namespace CodeNameK.Droid
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
-        private IServiceProvider _serviceProvider;
+        private IServiceProvider? _serviceProvider;
 
         protected override void OnCreate(Bundle? savedInstanceState)
         {
