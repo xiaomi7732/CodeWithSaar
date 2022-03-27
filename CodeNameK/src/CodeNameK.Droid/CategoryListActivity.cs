@@ -27,15 +27,13 @@ namespace CodeNameK.Droid
             ICategory categoryBiz = GetRequiredService<ICategory>();
             _categories = categoryBiz.GetAllCategories().ToList();
 #if DEBUG
-            _categories.Add(new Category()
+            for (int i = 0; i < 1000; i++)
             {
-                Id = "Test Category 1",
-            });
-
-            _categories.Add(new Category()
-            {
-                Id = "Test Category 2",
-            });
+                _categories.Add(new Category()
+                {
+                    Id = "Test Category " + (i + 1),
+                });
+            }
 #endif
 
             // Instantiate the adapter and pass in its data source:
