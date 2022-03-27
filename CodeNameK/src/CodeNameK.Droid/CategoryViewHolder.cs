@@ -1,8 +1,8 @@
 ﻿#nullable enable
 
-using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
+using AndroidX.RecyclerView.Widget;
 
 namespace CodeNameK.Droid
 {

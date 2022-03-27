@@ -1,7 +1,7 @@
 ﻿#nullable enable
 
-using Android.Support.V7.Widget;
 using Android.Views;
+using AndroidX.RecyclerView.Widget;
 using CodeNameK.DataContracts;
 using System;
 using System.Collections.Generic;

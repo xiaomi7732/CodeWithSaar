@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace CodeNameK.Droid
 {
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
+    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = false)]
     public class MainActivity : AppCompatActivity
     {
         private IServiceProvider? _serviceProvider;
