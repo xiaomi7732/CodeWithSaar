@@ -3,6 +3,7 @@
 using Android.Views;
 using Android.Widget;
 using AndroidX.RecyclerView.Widget;
+using System;
 
 namespace CodeNameK.Droid
 {
@@ -10,9 +11,10 @@ namespace CodeNameK.Droid
     {
         public TextView? CategoryCaption { get; set; }
 
-        public CategoryViewHolder(View itemView) : base(itemView)
+        public CategoryViewHolder(View itemView, Action<int>? clickCallback = null) : base(itemView)
         {
             CategoryCaption = itemView.FindViewById<TextView>(Resource.Id.CategoryItemCaption);
+            itemView.Click += (sender, e) => clickCallback?.Invoke(LayoutPosition);
         }
     }
 }

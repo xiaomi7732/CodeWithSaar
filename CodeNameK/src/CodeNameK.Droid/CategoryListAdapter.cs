@@ -11,6 +11,7 @@ namespace CodeNameK.Droid
     internal class CategoryListAdapter : RecyclerView.Adapter
     {
         private readonly IReadOnlyList<Category> _categories;
+        public event Action<int>? OnItemClicked;
 
         public CategoryListAdapter(IReadOnlyList<Category> categories)
         {
@@ -39,7 +40,7 @@ namespace CodeNameK.Droid
             {
                 throw new InvalidOperationException("Failed inflating view for category");
             }
-            CategoryViewHolder viewHolder = new CategoryViewHolder(itemView);
+            CategoryViewHolder viewHolder = new CategoryViewHolder(itemView, OnItemClicked);
 
             return viewHolder;
         }
