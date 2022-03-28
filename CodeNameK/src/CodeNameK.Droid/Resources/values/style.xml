@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="Theme.Custom1" parent="Theme.Material3.Dark">
+		<!--Task bar color-->
+		<item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+		<item name="android:colorPrimary">@color/colorPrimary</item>
+		<!--Background for content-->
+		<item name="android:colorBackground">@color/colorBackground</item>
+		<item name="android:colorAccent">@color/colorAccent</item>
+	</style>
+</resources>
