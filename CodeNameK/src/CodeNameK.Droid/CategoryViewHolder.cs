@@ -11,10 +11,14 @@ namespace CodeNameK.Droid
     {
         public TextView? CategoryCaption { get; set; }
 
-        public CategoryViewHolder(View itemView, Action<int>? clickCallback = null) : base(itemView)
+        public CategoryViewHolder(View itemView, Action<int>? clickCallback = null, Action<int, int>? swapper = null) : base(itemView)
         {
             CategoryCaption = itemView.FindViewById<TextView>(Resource.Id.CategoryItemCaption);
-            itemView.Click += (sender, e) => clickCallback?.Invoke(LayoutPosition);
+            itemView.Click += (sender, e) =>
+            {
+                clickCallback?.Invoke(LayoutPosition);
+                swapper?.Invoke(LayoutPosition, 0);
+            };
         }
     }
 }

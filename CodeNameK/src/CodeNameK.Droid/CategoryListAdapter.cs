@@ -10,10 +10,10 @@ namespace CodeNameK.Droid
 {
     internal class CategoryListAdapter : RecyclerView.Adapter
     {
-        private readonly IReadOnlyList<Category> _categories;
+        private readonly IList<Category> _categories;
         public event Action<int>? OnItemClicked;
 
-        public CategoryListAdapter(IReadOnlyList<Category> categories)
+        public CategoryListAdapter(IList<Category> categories)
         {
             _categories = categories ?? throw new ArgumentNullException(nameof(categories));
         }
@@ -40,9 +40,16 @@ namespace CodeNameK.Droid
             {
                 throw new InvalidOperationException("Failed inflating view for category");
             }
-            CategoryViewHolder viewHolder = new CategoryViewHolder(itemView, OnItemClicked);
-
+            CategoryViewHolder viewHolder = new CategoryViewHolder(itemView, OnItemClicked, SwapItem);
             return viewHolder;
+        }
+
+        private void SwapItem(int from, int to)
+        {
+            Category temp = _categories[to];
+            _categories[to] = _categories[from];
+            _categories[from] = temp;
+            NotifyItemMoved(from, to);
         }
     }
 }

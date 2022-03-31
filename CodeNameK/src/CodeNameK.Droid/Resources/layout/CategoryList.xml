@@ -8,5 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/CategoryListRecyclerView"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:clipToPadding="true"/>
 </LinearLayout>
