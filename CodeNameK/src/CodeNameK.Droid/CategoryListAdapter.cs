@@ -3,6 +3,7 @@
 using Android.Views;
 using AndroidX.RecyclerView.Widget;
 using CodeNameK.DataContracts;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -11,11 +12,16 @@ namespace CodeNameK.Droid
     internal class CategoryListAdapter : RecyclerView.Adapter
     {
         private readonly IList<Category> _categories;
+        private readonly ILoggerFactory _loggerFactory;
+
         public event Action<int>? OnItemClicked;
 
-        public CategoryListAdapter(IList<Category> categories)
+        public CategoryListAdapter(
+            IList<Category> categories,
+            ILoggerFactory loggerFactory)
         {
             _categories = categories ?? throw new ArgumentNullException(nameof(categories));
+            _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
         public override int ItemCount => _categories.Count;
@@ -40,7 +46,11 @@ namespace CodeNameK.Droid
             {
                 throw new InvalidOperationException("Failed inflating view for category");
             }
-            CategoryViewHolder viewHolder = new CategoryViewHolder(itemView, OnItemClicked, SwapItem);
+            CategoryViewHolder viewHolder = new CategoryViewHolder(
+                itemView,
+                _loggerFactory.CreateLogger<CategoryViewHolder>(),
+                OnItemClicked,
+                SwapItem);
             return viewHolder;
         }
 

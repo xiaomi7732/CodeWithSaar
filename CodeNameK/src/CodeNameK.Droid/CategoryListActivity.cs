@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using Android.App;
+using Android.Content;
 using Android.OS;
 using AndroidX.RecyclerView.Widget;
 using CodeNameK.BIZ.Interfaces;
@@ -41,7 +42,9 @@ namespace CodeNameK.Droid
 #endif
 
             // Instantiate the adapter and pass in its data source:
-            CategoryListAdapter adapter = _adapter = new CategoryListAdapter(categoryList);
+            CategoryListAdapter adapter = _adapter = new CategoryListAdapter(
+                categoryList,
+                GetRequiredService<ILoggerFactory>());
 
             // Set our view from the "categorylist" layout resource:
             SetContentView(Resource.Layout.CategoryList);
@@ -78,7 +81,16 @@ namespace CodeNameK.Droid
 
         private void CategoryItemClicked(int index)
         {
-            _logger?.LogInformation("Category {index} is clicked. Id: {categoryId}", index, _categories?[index].Id);
+            try
+            {
+                _logger?.LogInformation("Category {index} is clicked. Id: {categoryId}", index, _categories?[index].Id);
+                Intent intent = new Intent(this, typeof(MainActivity));
+                StartActivity(intent);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Failed clicking category item.");
+            }
         }
     }
 }
