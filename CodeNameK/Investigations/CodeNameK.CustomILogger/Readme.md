@@ -70,4 +70,4 @@ This is an example of building a Custom ILogger Provider. YouTube videos:
     [2022-04-02 15:24:44 Microsoft.Hosting.Lifetime, Information] Now listening on: http://localhost:5175
     ```
 
-    * Make it work by specify the format in `appsettings.json`.
+    * Make it work by specifying the format in `appsettings.json`.
