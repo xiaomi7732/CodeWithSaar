@@ -1,4 +1,0 @@
-[UseCustomILogger.Controllers.WeatherForecastController, Information] Hello my first information at: 03/20/2022 00:31:46
-[UseCustomILogger.Controllers.WeatherForecastController, Warning] Hello my first warning at: 03/20/2022 00:31:46
-[UseCustomILogger.Controllers.WeatherForecastController, Information] Hello my first information at: 03/20/2022 00:31:56
-[UseCustomILogger.Controllers.WeatherForecastController, Warning] Hello my first warning at: 03/20/2022 00:31:56
