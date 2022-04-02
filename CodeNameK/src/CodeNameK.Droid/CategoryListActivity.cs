@@ -3,6 +3,7 @@
 using Android.App;
 using Android.Content;
 using Android.OS;
+using AndroidX.AppCompat.Widget;
 using AndroidX.RecyclerView.Widget;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.DataContracts;
@@ -13,7 +14,7 @@ using System.Linq;
 
 namespace CodeNameK.Droid
 {
-    [Activity(Label = nameof(CategoryListActivity), MainLauncher = true)]
+    [Activity(Label = "@string/category_list_activity_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
     public class CategoryListActivity : KActivityBase
     {
         private List<Category>? _categories;
@@ -22,9 +23,8 @@ namespace CodeNameK.Droid
         private RecyclerView.LayoutManager? _layoutManager;
         private ILogger? _logger;
 
-        protected override void OnCreate(Bundle? savedInstanceState)
+        protected override void OnCreating(Bundle? savedInstanceState)
         {
-            base.OnCreate(savedInstanceState);
             // Create logger
             _logger = GetRequiredService<ILogger<CategoryListActivity>>();
 
@@ -47,7 +47,7 @@ namespace CodeNameK.Droid
                 GetRequiredService<ILoggerFactory>());
 
             // Set our view from the "categorylist" layout resource:
-            SetContentView(Resource.Layout.CategoryList);
+            SetContentView(Resource.Layout.ActivityCategory);
 
             // Get our RecyclerView layout:
             RecyclerView recyclerView = FindViewById<RecyclerView>(Resource.Id.CategoryListRecyclerView) ?? throw new ArgumentException("Not able to find view by id. ", nameof(Resource.Id.CategoryListRecyclerView));

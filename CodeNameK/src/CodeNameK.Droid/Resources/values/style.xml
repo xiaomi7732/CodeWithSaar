@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<style name="Theme.Custom1" parent="Theme.Material3.Dark">
-		<!--Task bar color-->
-		<item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
-		<item name="android:colorPrimary">@color/colorPrimary</item>
-		<!--Background for content-->
-		<item name="android:colorBackground">@color/colorBackground</item>
-		<item name="android:colorAccent">@color/colorAccent</item>
+
+
+	<!-- Base application theme. -->
+
+	<style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+		<!-- Customize your theme here. -->
+		<item name="colorPrimary">@color/colorPrimary</item>
+		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+		<item name="colorAccent">@color/colorAccent</item>
 	</style>
+
+	<style name="AppTheme.NoActionBar">
+		<item name="windowActionBar">false</item>
+		<item name="windowNoTitle">true</item>
+	</style>
+
+	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+
+	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
+
 </resources>

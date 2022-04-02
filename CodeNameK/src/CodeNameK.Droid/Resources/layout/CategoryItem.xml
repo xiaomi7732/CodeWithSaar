@@ -18,7 +18,6 @@
         android:layout_height="match_parent"
         android:id="@+id/CategoryItemCaption"
         android:minHeight="@dimen/abc_text_size_body_1_material"
-        android:text="Hello"
         android:gravity="center_vertical"
         android:layout_marginTop="12dp"
         android:textStyle="bold" 
