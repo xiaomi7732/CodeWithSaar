@@ -4,9 +4,12 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using AndroidX.AppCompat.Widget;
+using AndroidX.CoordinatorLayout.Widget;
 using AndroidX.RecyclerView.Widget;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.DataContracts;
+using Google.Android.Material.AppBar;
+using Google.Android.Material.FloatingActionButton;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -32,12 +35,15 @@ namespace CodeNameK.Droid
             ICategory categoryBiz = GetRequiredService<ICategory>();
             List<Category> categoryList = _categories = categoryBiz.GetAllCategories().ToList();
 #if DEBUG
-            for (int i = 0; i < 1000; i++)
+            if (categoryList.Count == 0)
             {
-                _categories.Add(new Category()
+                for (int i = 0; i < 100; i++)
                 {
-                    Id = "Test Category " + (i + 1),
-                });
+                    _categories.Add(new Category()
+                    {
+                        Id = "Test Category " + (i + 1),
+                    });
+                }
             }
 #endif
 
@@ -59,6 +65,18 @@ namespace CodeNameK.Droid
 
             // Plug the adapter into the RecyclerView:
             recyclerView.SetAdapter(adapter);
+
+            // FAB
+            FloatingActionButton? fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
+            // TODO: Update fab
+        }
+
+        protected override void OnCreated(Bundle? savedInstanceState)
+        {
+            SupportActionBar?.SetDisplayHomeAsUpEnabled(true);
+            SupportActionBar?.SetDisplayShowHomeEnabled(true);
+
+            base.OnCreated(savedInstanceState);
         }
 
         protected override void OnResume()
