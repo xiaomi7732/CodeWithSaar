@@ -51,6 +51,7 @@
         app:srcCompat="@android:drawable/ic_input_add"
         app:layout_anchor="@id/toolbar_layout"
         app:layout_anchorGravity="bottom|right|end"
+        app:backgroundTint="@color/colorAccent" 
         />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
