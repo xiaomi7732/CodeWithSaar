@@ -2,12 +2,16 @@
 
 using Android.OS;
 using AndroidX.AppCompat.App;
-using AndroidX.AppCompat.Widget;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace CodeNameK.Droid
 {
+    /// <summary>
+    /// A thin wrapper for AppCompatActivity.
+    /// Primary provides the service provider and the logger.
+    /// </summary>
     public abstract class KActivityBase : AppCompatActivity
     {
         private IServiceProvider? _serviceProvider = null;
@@ -19,32 +23,51 @@ namespace CodeNameK.Droid
         /// <exception cref="InvalidProgramException"></exception>
         protected override void OnCreate(Bundle? savedInstanceState)
         {
-            _serviceProvider = ((App?)Application)?.ServiceProvider ?? throw new InvalidProgramException("Service Provider doesn't exist.");
-            OnCreating(savedInstanceState);
             base.OnCreate(savedInstanceState);
-            OnCreated(savedInstanceState);
+            _serviceProvider = ((App?)Application)?.ServiceProvider ?? throw new InvalidProgramException("Service Provider doesn't exist.");
+            Logger.LogInformation("Lifetime Method: {name}, is savedInstanceState null: {isSavedInstanceStateNull}", nameof(OnCreate), savedInstanceState is null);
         }
 
-        /// <summary>
-        /// Activities to get the view ready before OnCreate.
-        /// </summary>
-        /// <param name="savedInstanceState"></param>
-        protected abstract void OnCreating(Bundle? savedInstanceState);
-
-        /// <summary>
-        /// Get the resource id for toolbar to set support action bar.
-        /// </summary>
-        /// <returns></returns>
-        protected virtual int GetToolbarResId() => Resource.Id.toolbar;
-
-        /// <summary>
-        /// Activities post OnCreate.
-        /// </summary>
-        /// <param name="savedInstanceState"></param>
-        protected virtual void OnCreated(Bundle? savedInstanceState)
+        protected override void OnStart()
         {
-            Toolbar? toolbar = FindViewById<Toolbar>(GetToolbarResId());
-            SetSupportActionBar(toolbar);
+            base.OnStart();
+            Logger.LogInformation("Lifetime Method: {name}", nameof(OnStart));
+        }
+
+        protected override void OnResume()
+        {
+            base.OnResume();
+            Logger.LogInformation("Lifetime Method: {name}", nameof(OnResume));
+        }
+
+        protected override void OnRestoreInstanceState(Bundle savedInstanceState)
+        {
+            base.OnRestoreInstanceState(savedInstanceState);
+            Logger.LogInformation("Lifetime Method: {name}", nameof(OnRestoreInstanceState));
+        }
+
+        protected override void OnSaveInstanceState(Bundle outState)
+        {
+            Logger.LogInformation("Lifetime Method: {name}", nameof(OnSaveInstanceState));
+            base.OnSaveInstanceState(outState);
+        }
+
+        protected override void OnPause()
+        {
+            Logger.LogInformation("Lifetime Method: {name}", nameof(OnPause));
+            base.OnPause();
+        }
+
+        protected override void OnStop()
+        {
+            Logger.LogInformation("Lifetime Method: {name}", nameof(OnStop));
+            base.OnStop();
+        }
+
+        protected override void OnDestroy()
+        {
+            Logger.LogInformation("Lifetime Method: {name}, Is finishing: {isFinishing}", nameof(OnDestroy), IsFinishing);
+            base.OnDestroy();
         }
 
         /// <summary>
@@ -77,5 +100,21 @@ namespace CodeNameK.Droid
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or the logger instance for current class.
+        /// </summary>
+        protected ILogger Logger
+        {
+            get
+            {
+                return GetLoggerInstance();
+            }
+        }
+
+        /// <summary>
+        /// Gets logger instance from logging providers.
+        /// </summary>
+        protected abstract ILogger GetLoggerInstance();
     }
 }

@@ -3,6 +3,7 @@
 using Android.App;
 using Android.Content;
 using Android.OS;
+using AndroidX.AppCompat.Widget;
 using AndroidX.Lifecycle;
 using AndroidX.RecyclerView.Widget;
 using CodeNameK.Droid.ViewModels;
@@ -18,17 +19,21 @@ namespace CodeNameK.Droid
         private CategoryListAdapter? _adapter;
         private RecyclerView? _recyclerView;
         private FloatingActionButton? _fab;
-        private ILogger? _logger;
         private CategoryListViewModel? _categoryListViewModel;
 
-        protected override void OnCreating(Bundle? savedInstanceState)
+
+        protected override void OnCreate(Bundle? savedInstanceState)
         {
-            // Create logger
-            _logger = GetRequiredService<ILogger<CategoryListActivity>>();
+            base.OnCreate(savedInstanceState);
 
             // Set our view from the "categorylist" layout resource:
-            
             SetContentView(Resource.Layout.activity_category);
+
+            // Setup toolbar
+            Toolbar? toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
+            SetSupportActionBar(toolbar);
+            SupportActionBar?.SetDisplayHomeAsUpEnabled(false);
+            SupportActionBar?.SetDisplayShowHomeEnabled(true);
 
             // FAB
             _fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
@@ -38,18 +43,8 @@ namespace CodeNameK.Droid
             // Plug in the linear layout manager:
             _recyclerView.SetLayoutManager(new LinearLayoutManager(this));
 
-
             // Setup viewmodel
             _categoryListViewModel = new ViewModelProvider(this).Get(Java.Lang.Class.FromType(typeof(CategoryListViewModel))) as CategoryListViewModel;
-            if (savedInstanceState is not null)
-            {
-                // Restore
-                _logger.LogInformation("Resotre in OnCreate");
-            }
-            else
-            {
-                _logger.LogInformation("First time in OnCreate");
-            }
         }
 
         protected override void OnStart()
@@ -63,14 +58,6 @@ namespace CodeNameK.Droid
 
             // Plug the adapter into the RecyclerView:
             _recyclerView!.SetAdapter(_adapter);
-        }
-
-        protected override void OnCreated(Bundle? savedInstanceState)
-        {
-            SupportActionBar?.SetDisplayHomeAsUpEnabled(true);
-            SupportActionBar?.SetDisplayShowHomeEnabled(true);
-
-            base.OnCreated(savedInstanceState);
         }
 
         protected override void OnResume()
@@ -97,13 +84,13 @@ namespace CodeNameK.Droid
         {
             try
             {
-                _logger?.LogInformation("Category {index} is clicked. Id: {categoryId}", index, _categoryListViewModel?.Categories?[index].Id);
+                Logger.LogInformation("Category {index} is clicked. Id: {categoryId}", index, _categoryListViewModel?.Categories?[index].Id);
                 Intent intent = new Intent(this, typeof(MainActivity));
                 StartActivity(intent);
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "Failed clicking category item.");
+                Logger.LogError(ex, "Failed clicking category item.");
             }
         }
 
@@ -113,7 +100,7 @@ namespace CodeNameK.Droid
         /// <param name="category"></param>
         void IAddCategoryDialogEventListener.OnOKClicked(string category)
         {
-            _logger!.LogInformation("Adding category clicked. Content: {value}", category);
+            Logger.LogInformation("Adding category clicked. Content: {value}", category);
         }
 
         /// <summary>
@@ -122,7 +109,12 @@ namespace CodeNameK.Droid
         /// <param name="category"></param>
         void IAddCategoryDialogEventListener.OnCancelClicked(string category)
         {
-            _logger!.LogInformation("Cancel adding category clicked. Content: {value}", category);
+            Logger.LogInformation("Cancel adding category clicked. Content: {value}", category);
+        }
+
+        protected override ILogger GetLoggerInstance()
+        {
+            return GetRequiredService<ILogger<CategoryListActivity>>();
         }
     }
 }
