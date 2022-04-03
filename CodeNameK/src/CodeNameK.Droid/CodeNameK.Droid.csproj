@@ -62,6 +62,7 @@
     <Reference Include="System.Numerics.Vectors" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddCategoryDialogFragment.cs" />
     <Compile Include="App.cs" />
     <Compile Include="CategoryListActivity.cs" />
     <Compile Include="CategoryListAdapter.cs" />

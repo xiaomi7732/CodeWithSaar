@@ -81,17 +81,8 @@ namespace CodeNameK.Droid
 
         private void OnFabClicked(object sender, EventArgs e)
         {
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-            AlertDialog? dialog = dialogBuilder.Create();
-            if (dialog is null)
-            {
-                return;
-            }
-            dialog.SetTitle(GetString(Resource.String.category_list_add_category_title));
-            dialog.SetMessage("Simple Alert");
-            dialog.SetButton(GetString(Resource.String.ok), (sender, e) => { });
-            dialog.SetButton2(GetString(Resource.String.cancel), (sender, e) => { });
-            dialog.Show();
+            AndroidX.Fragment.App.DialogFragment addCategoryDialog = new AddCategoryDialogFragment();
+            addCategoryDialog.Show(SupportFragmentManager, "AddCategoryDialog");
         }
 
         protected override void OnPause()
@@ -105,7 +96,7 @@ namespace CodeNameK.Droid
         {
             try
             {
-                _logger?.LogInformation("Category {index} is clicked. Id: {categoryId}", index, _categories?[index].Id);
+                _logger?.LogInformation("Category {index} is clicked. Id: {categoryId}", index, _categoryListViewModel?.Categories?[index].Id);
                 Intent intent = new Intent(this, typeof(MainActivity));
                 StartActivity(intent);
             }
