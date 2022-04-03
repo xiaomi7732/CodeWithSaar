@@ -3,12 +3,9 @@
 using Android.App;
 using Android.Content;
 using Android.OS;
-using AndroidX.AppCompat.Widget;
-using AndroidX.CoordinatorLayout.Widget;
 using AndroidX.RecyclerView.Widget;
 using CodeNameK.BIZ.Interfaces;
 using CodeNameK.DataContracts;
-using Google.Android.Material.AppBar;
 using Google.Android.Material.FloatingActionButton;
 using Microsoft.Extensions.Logging;
 using System;
@@ -24,6 +21,7 @@ namespace CodeNameK.Droid
         private CategoryListAdapter? _adapter;
         private RecyclerView? _recyclerView;
         private RecyclerView.LayoutManager? _layoutManager;
+        private FloatingActionButton? _fab;
         private ILogger? _logger;
 
         protected override void OnCreating(Bundle? savedInstanceState)
@@ -67,8 +65,7 @@ namespace CodeNameK.Droid
             recyclerView.SetAdapter(adapter);
 
             // FAB
-            FloatingActionButton? fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
-            // TODO: Update fab
+            _fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
         }
 
         protected override void OnCreated(Bundle? savedInstanceState)
@@ -82,19 +79,30 @@ namespace CodeNameK.Droid
         protected override void OnResume()
         {
             base.OnResume();
-            if (_adapter is not null)
+            _adapter!.OnItemClicked += CategoryItemClicked;
+            _fab!.Click += OnFabClicked;
+        }
+
+        private void OnFabClicked(object sender, EventArgs e)
+        {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+            AlertDialog? dialog = dialogBuilder.Create();
+            if (dialog is null)
             {
-                _adapter.OnItemClicked += CategoryItemClicked;
+                return;
             }
+            dialog.SetTitle(GetString(Resource.String.category_list_add_category_title));
+            dialog.SetMessage("Simple Alert");
+            dialog.SetButton(GetString(Resource.String.ok), (sender, e) => { });
+            dialog.SetButton2(GetString(Resource.String.cancel), (sender, e) => { });
+            dialog.Show();
         }
 
         protected override void OnPause()
         {
             base.OnPause();
-            if (_adapter is not null)
-            {
-                _adapter.OnItemClicked -= CategoryItemClicked;
-            }
+            _adapter!.OnItemClicked -= CategoryItemClicked;
+            _fab!.Click -= OnFabClicked;
         }
 
         private void CategoryItemClicked(int index)
