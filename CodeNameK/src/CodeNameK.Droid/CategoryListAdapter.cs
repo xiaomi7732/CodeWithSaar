@@ -49,17 +49,8 @@ namespace CodeNameK.Droid
             CategoryViewHolder viewHolder = new CategoryViewHolder(
                 itemView,
                 _loggerFactory.CreateLogger<CategoryViewHolder>(),
-                OnItemClicked,
-                SwapItem);
+                OnItemClicked);
             return viewHolder;
-        }
-
-        private void SwapItem(int from, int to)
-        {
-            Category temp = _categories[to];
-            _categories[to] = _categories[from];
-            _categories[from] = temp;
-            NotifyItemMoved(from, to);
         }
     }
 }
