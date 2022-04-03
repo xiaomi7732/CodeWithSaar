@@ -13,7 +13,7 @@ using System;
 namespace CodeNameK.Droid
 {
     [Activity(Label = "@string/category_list_activity_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
-    public class CategoryListActivity : KActivityBase
+    public class CategoryListActivity : KActivityBase, IAddCategoryDialogEventListener
     {
         private CategoryListAdapter? _adapter;
         private RecyclerView? _recyclerView;
@@ -104,6 +104,24 @@ namespace CodeNameK.Droid
             {
                 _logger?.LogError(ex, "Failed clicking category item.");
             }
+        }
+
+        /// <summary>
+        /// Invokes when ok button clicked on add category dialog.
+        /// </summary>
+        /// <param name="category"></param>
+        void IAddCategoryDialogEventListener.OnOKClicked(string category)
+        {
+            _logger!.LogInformation("Adding category clicked. Content: {value}", category);
+        }
+
+        /// <summary>
+        /// Invokes when cancel button clicked on add category dialog.
+        /// </summary>
+        /// <param name="category"></param>
+        void IAddCategoryDialogEventListener.OnCancelClicked(string category)
+        {
+            _logger!.LogInformation("Cancel adding category clicked. Content: {value}", category);
         }
     }
 }
