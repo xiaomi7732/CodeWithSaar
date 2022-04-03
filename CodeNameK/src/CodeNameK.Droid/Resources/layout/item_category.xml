@@ -16,7 +16,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/CategoryItemCaption"
+        android:id="@+id/category_item_caption"
         android:minHeight="@dimen/abc_text_size_body_1_material"
         android:gravity="center_vertical"
         android:layout_marginTop="12dp"

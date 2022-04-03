@@ -40,7 +40,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/categorylist" />
+    <include layout="@layout/collection_category" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

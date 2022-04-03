@@ -41,7 +41,7 @@ namespace CodeNameK.Droid
         public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
         {
             // Inflate the View for the category
-            View? itemView = LayoutInflater.From(parent.Context)?.Inflate(Resource.Layout.CategoryItem, parent, attachToRoot: false);
+            View? itemView = LayoutInflater.From(parent.Context)?.Inflate(Resource.Layout.item_category, parent, attachToRoot: false);
             if (itemView is null)
             {
                 throw new InvalidOperationException("Failed inflating view for category");

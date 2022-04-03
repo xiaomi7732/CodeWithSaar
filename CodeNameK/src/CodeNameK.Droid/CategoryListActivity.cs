@@ -27,13 +27,14 @@ namespace CodeNameK.Droid
             _logger = GetRequiredService<ILogger<CategoryListActivity>>();
 
             // Set our view from the "categorylist" layout resource:
-            SetContentView(Resource.Layout.ActivityCategory);
+            
+            SetContentView(Resource.Layout.activity_category);
 
             // FAB
             _fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
 
             // Get our RecyclerView layout:
-            _recyclerView = FindViewById<RecyclerView>(Resource.Id.CategoryListRecyclerView) ?? throw new ArgumentException("Not able to find view by id. ", nameof(Resource.Id.CategoryListRecyclerView));
+            _recyclerView = FindViewById<RecyclerView>(Resource.Id.category_list_recycler_view) ?? throw new ArgumentException("Not able to find view by id. ", nameof(Resource.Id.category_list_recycler_view));
             // Plug in the linear layout manager:
             _recyclerView.SetLayoutManager(new LinearLayoutManager(this));
 

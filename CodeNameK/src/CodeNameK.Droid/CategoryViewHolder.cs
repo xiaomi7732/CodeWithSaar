@@ -22,7 +22,7 @@ namespace CodeNameK.Droid
             Action<int>? clickCallback = null)
             : base(itemView)
         {
-            CategoryCaption = itemView.FindViewById<TextView>(Resource.Id.CategoryItemCaption);
+            CategoryCaption = itemView.FindViewById<TextView>(Resource.Id.category_item_caption);
             itemView.Click += OnItemClick;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _clickCallback = clickCallback;
