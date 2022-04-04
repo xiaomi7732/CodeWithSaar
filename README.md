@@ -4,19 +4,19 @@ I build .NET project and I share real world project experience with you to help 
 
 This is the primary codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.com/c/CodewithSaar). Here, I share projects, code examples and links to the videos.
 
-## New uploads
+## New videos
 
 <!-- BLOG-POST-LIST:START -->
-- [How to implement a custom logging provider for files &lpar;1/2&rpar; CodeNameK - 14](https://www.youtube.com/watch?v=3RUpYR4dZM4)
+- [How to implement a custom logging provider for files (2/2) CodeNameK - 15](https://youtu.be/3Z3yemyikNc)
+- [How to implement a custom logging provider for files (1/2) CodeNameK - 14](https://www.youtube.com/watch?v=3RUpYR4dZM4)
 - [Access Android File System by Xamarin CodeNameK - 13](https://www.youtube.com/watch?v=7YJHBX1abfs)
 - [IDisposable is IMPORTANT CodeNameK - 12](https://www.youtube.com/watch?v=IjjHp8PWbn4)
 - [How to implement User Options with IOptionsMonitor and JsonSerializer CodeNameK - 11](https://www.youtube.com/watch?v=TcHkM5332Ho)
-- [Why async void is evil? How to use it safely when needed? CodeNameK - 10](https://www.youtube.com/watch?v=Ny8us1qb-E0)
 <!-- BLOG-POST-LIST:END -->
 
 To connect with me:
 
-* On twitter [@CodeWithSaar](https://twitter.com/CodeWithSaar).
+* Twitter [@CodeWithSaar](https://twitter.com/CodeWithSaar).
 * Join [the discord server](https://discord.gg/H8ZqDgczQb).
 * If you want, [Buy me a coffee](https://www.buymeacoffee.com/codewithsaar).
 
@@ -39,8 +39,8 @@ stateDiagram-v2
 
 ## Projects
 
-* [Stack Beauty GitHub Repo](https://github.com/xiaomi7732/StackBeauty)  [Live Site](stack.codewithsaar.net)
-* [NumberIt - CodeNameK](./CodeNameK/Readme.md)  [YouTube Playlist](https://youtube.com/playlist?list=PLxWo8vu0UTZ28_GwEGdjwExCHDKx1WCua)
+* Stack Beauty: [GitHub Repo](https://github.com/xiaomi7732/StackBeauty) [Live Site](stack.codewithsaar.net)
+* NumberIt - CodeNameK: [Readme](./CodeNameK/Readme.md) / [YouTube Playlist](https://youtube.com/playlist?list=PLxWo8vu0UTZ28_GwEGdjwExCHDKx1WCua)
   * [Introduction](https://youtu.be/7kG__DQlrGE)
 * [Two-way named pipe stream wrapper](./IPC/README.md) [NuGet package](https://www.nuget.org/packages/CodeWithSaar.IPC)
 * [JWT Auth for AspNetCore WebAPI](./Auth.AspNetCore.WebApi/README.md) [NuGet package](https://www.nuget.org/packages/CodeWithSaar.JWTAuthentication.WebAPI)
@@ -99,6 +99,7 @@ stateDiagram-v2
   * [.NET (C#) Logging with ILogger](https://youtu.be/gRdi7Z-T9JI)
   * [Benchmark: High performance logging in .NET](https://youtu.be/NDm_VPwaDjI)
   * [How to implement custom logging provider for file](https://youtu.be/3RUpYR4dZM4)
+  * [How to support user configuration for a logging provider](https://youtu.be/3Z3yemyikNc)
 
 * [Dependency Injection](./DI)
   * [Learn DI by printing a JSON dog](https://youtu.be/YnBPjt2dBWk)
