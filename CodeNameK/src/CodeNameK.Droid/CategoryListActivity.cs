@@ -81,6 +81,8 @@ namespace CodeNameK.Droid
 
         private void OnFabClicked(object sender, EventArgs e)
         {
+            AddCategoryDialogFragment addCategoryDialog = new AddCategoryDialogFragment();
+            addCategoryDialog.Show(SupportFragmentManager, nameof(AddCategoryDialogFragment));
         }
 
         protected override void OnPause()
