@@ -13,7 +13,7 @@ using System;
 namespace CodeNameK.Droid
 {
     [Activity(Label = "@string/category_list_activity_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
-    public class CategoryListActivity : KActivityBase
+    public class CategoryListActivity : KActivityBase, IAddCategoryDialogListener
     {
         private CategoryListAdapter? _adapter;
         private RecyclerView? _recyclerView;
@@ -104,6 +104,11 @@ namespace CodeNameK.Droid
             {
                 _logger?.LogError(ex, "Failed clicking category item.");
             }
+        }
+
+        void IAddCategoryDialogListener.OnOKClicked()
+        {
+            _logger!.LogInformation("OK button is clicked!");
         }
     }
 }
