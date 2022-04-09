@@ -69,8 +69,8 @@
     <Compile Include="CategoryViewHolder.cs" />
     <Compile Include="KActivityBase.cs" />
     <Compile Include="MainActivity.cs" />
-    <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="ViewModels\CategoryListViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +162,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\ActivityCategory.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\dialog_content_add_category.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

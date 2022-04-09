@@ -106,9 +106,9 @@ namespace CodeNameK.Droid
             }
         }
 
-        void IAddCategoryDialogListener.OnOKClicked()
+        void IAddCategoryDialogListener.OnOKClicked(string newValue)
         {
-            _logger!.LogInformation("OK button is clicked!");
+            _logger!.LogInformation("OK button is clicked! New value: {newValue}", newValue);
         }
     }
 }

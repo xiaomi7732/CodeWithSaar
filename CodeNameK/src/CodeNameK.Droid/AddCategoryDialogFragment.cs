@@ -1,5 +1,7 @@
 ﻿using Android.Content;
 using Android.OS;
+using Android.Views;
+using Android.Widget;
 using AndroidX.AppCompat.App;
 using AndroidX.Fragment.App;
 using System;
@@ -8,12 +10,13 @@ namespace CodeNameK.Droid
 {
     public interface IAddCategoryDialogListener
     {
-        void OnOKClicked();
+        void OnOKClicked(string newValue);
     }
 
     internal class AddCategoryDialogFragment : DialogFragment
     {
         IAddCategoryDialogListener _listener;
+        private EditText _newCategoryEditText;
         public AddCategoryDialogFragment()
         {
             // Making sure a default ctor exists.
@@ -21,11 +24,15 @@ namespace CodeNameK.Droid
 
         public override Android.App.Dialog OnCreateDialog(Bundle savedInstanceState)
         {
+            View dialogContentView = LayoutInflater.Inflate(Resource.Layout.dialog_content_add_category, null);
+            _newCategoryEditText = dialogContentView.FindViewById<EditText>(Resource.Id.editTextAddCategory);
             AlertDialog.Builder builder = new AlertDialog.Builder(Context);
+            builder.SetView(dialogContentView);
             builder.SetMessage("Hello message");
             builder.SetTitle("Dialog in Fragment");
             builder.SetPositiveButton(Resource.String.ok, (sender, e) => {
-                _listener?.OnOKClicked();
+                string newCategory = _newCategoryEditText.Text;
+                _listener?.OnOKClicked(newCategory);
             });
 
             return builder.Create();
