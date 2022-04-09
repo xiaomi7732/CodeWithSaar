@@ -7,6 +7,7 @@ using AndroidX.AppCompat.Widget;
 using AndroidX.Lifecycle;
 using AndroidX.RecyclerView.Widget;
 using CodeNameK.BIZ.Interfaces;
+using CodeNameK.Contracts;
 using CodeNameK.Core.Utilities;
 using CodeNameK.DataContracts;
 using CodeNameK.Droid.ViewModels;
@@ -105,10 +106,17 @@ namespace CodeNameK.Droid
         {
             Logger.LogInformation("Adding category clicked. Content: {value}", category);
             ICategory categoryBiz = GetRequiredService<ICategory>();
-            categoryBiz.AddCategoryAsync(new Category() { Id = category }).FireWithExceptionHandler(ShowExceptionMessage, () =>
+            categoryBiz.AddCategoryAsync(new Category() { Id = category }).FireWithHandlers<OperationResult<Category>>(onSuccess: (result) =>
             {
-                Snackbar.Make(_fab, $"New category: {category}", Snackbar.LengthLong).Show();
-            });
+                if (result is not null && result.IsSuccess)
+                {
+                    Snackbar.Make(_fab, $"New category: {category}", Snackbar.LengthLong).Show();
+                }
+                else
+                {
+                    Snackbar.Make(_fab, $"Failed: {result?.Reason}", Snackbar.LengthLong).Show();
+                }
+            }, onException: ShowExceptionMessage, continueOnSychronizationContext: false);
         }
 
         /// <summary>
@@ -120,9 +128,12 @@ namespace CodeNameK.Droid
             Logger.LogInformation("Cancel adding category clicked. Content: {value}", category);
         }
 
+        /// <summary>
+        /// Shows exceptions.
+        /// </summary>
         private void ShowExceptionMessage(Exception ex)
         {
-
+            Snackbar.Make(_fab, $"Error: {ex.Message}", Snackbar.LengthIndefinite).Show();
         }
 
         protected override ILogger GetLoggerInstance()
