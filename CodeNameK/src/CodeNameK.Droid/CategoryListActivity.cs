@@ -6,8 +6,12 @@ using Android.OS;
 using AndroidX.AppCompat.Widget;
 using AndroidX.Lifecycle;
 using AndroidX.RecyclerView.Widget;
+using CodeNameK.BIZ.Interfaces;
+using CodeNameK.Core.Utilities;
+using CodeNameK.DataContracts;
 using CodeNameK.Droid.ViewModels;
 using Google.Android.Material.FloatingActionButton;
+using Google.Android.Material.Snackbar;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -20,7 +24,6 @@ namespace CodeNameK.Droid
         private RecyclerView? _recyclerView;
         private FloatingActionButton? _fab;
         private CategoryListViewModel? _categoryListViewModel;
-
 
         protected override void OnCreate(Bundle? savedInstanceState)
         {
@@ -101,6 +104,11 @@ namespace CodeNameK.Droid
         void IAddCategoryDialogEventListener.OnOKClicked(string category)
         {
             Logger.LogInformation("Adding category clicked. Content: {value}", category);
+            ICategory categoryBiz = GetRequiredService<ICategory>();
+            categoryBiz.AddCategoryAsync(new Category() { Id = category }).FireWithExceptionHandler(ShowExceptionMessage, () =>
+            {
+                Snackbar.Make(_fab, $"New category: {category}", Snackbar.LengthLong).Show();
+            });
         }
 
         /// <summary>
@@ -110,6 +118,11 @@ namespace CodeNameK.Droid
         void IAddCategoryDialogEventListener.OnCancelClicked(string category)
         {
             Logger.LogInformation("Cancel adding category clicked. Content: {value}", category);
+        }
+
+        private void ShowExceptionMessage(Exception ex)
+        {
+
         }
 
         protected override ILogger GetLoggerInstance()

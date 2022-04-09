@@ -10,11 +10,13 @@ namespace CodeNameK.Core.Utilities
         /// </summary>
         /// <param name="task">The target task.</param>
         /// <param name="exceptionHandler">The exception handler.</param>
+        /// <param name="onSuccess">Success callback.</param>
         /// <param name="continueOnCapturedContext"></param>
         /// <exception cref="ArgumentNullException"></exception>
         public static async void FireWithExceptionHandler(
             this Task task,
-            Action<Exception>? exceptionHandler = null)
+            Action<Exception>? exceptionHandler = null,
+            Action? onSuccess = null)
         {
             if (task is null)
             {
@@ -24,6 +26,7 @@ namespace CodeNameK.Core.Utilities
             try
             {
                 await task;
+                onSuccess?.Invoke();
             }
             catch (Exception ex)
             {
