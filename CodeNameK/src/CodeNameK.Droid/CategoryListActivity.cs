@@ -106,11 +106,14 @@ namespace CodeNameK.Droid
         {
             Logger.LogInformation("Adding category clicked. Content: {value}", category);
             ICategory categoryBiz = GetRequiredService<ICategory>();
-            categoryBiz.AddCategoryAsync(new Category() { Id = category }).FireWithHandlers<OperationResult<Category>>(onSuccess: (result) =>
+            categoryBiz.AddCategoryAsync(new Category() { Id = category }).FireWithHandlers(onSuccess: (result) =>
             {
                 if (result is not null && result.IsSuccess)
                 {
                     Snackbar.Make(_fab, $"New category: {category}", Snackbar.LengthLong).Show();
+                    _categoryListViewModel!.Categories.Add(result.Entity!);
+                    _categoryListViewModel!.SortCategories();
+                    _adapter!.NotifyDataSetChanged();
                 }
                 else
                 {

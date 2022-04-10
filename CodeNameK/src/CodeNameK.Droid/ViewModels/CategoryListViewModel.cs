@@ -38,8 +38,8 @@ namespace CodeNameK.Droid.ViewModels
 
         private void LoadCategories()
         {
-            ICategory categoryBiz =_application.ServiceProvider.GetRequiredService<ICategory>();
-            _categories = categoryBiz.GetAllCategories().ToList();
+            ICategory categoryBiz = _application.ServiceProvider.GetRequiredService<ICategory>();
+            _categories = categoryBiz.GetAllCategories().OrderBy(item => item.Id, StringComparer.OrdinalIgnoreCase).ToList();
 #if DEBUG
             if (_categories.Count == 0)
             {
@@ -52,6 +52,11 @@ namespace CodeNameK.Droid.ViewModels
                 }
             }
 #endif
+        }
+
+        public void SortCategories()
+        {
+            _categories?.Sort(CategoryIdOrdinalIgnoreCaseComparer.Instance);
         }
     }
 }
