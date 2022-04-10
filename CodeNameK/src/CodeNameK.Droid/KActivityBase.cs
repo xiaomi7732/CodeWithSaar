@@ -36,6 +36,13 @@ namespace CodeNameK.Droid
             Logger.LogInformation("Lifetime Method: {name}", nameof(OnStart));
         }
 
+        protected override void OnRestart()
+        {
+            base.OnRestart();
+            _serviceScope = _serviceProvider!.CreateScope();
+            Logger.LogInformation("Lifetime Method: {name}", nameof(OnRestart));
+        }
+
         protected override void OnResume()
         {
             base.OnResume();
