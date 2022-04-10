@@ -15,6 +15,7 @@ namespace CodeNameK.Droid
     public abstract class KActivityBase : AppCompatActivity
     {
         private IServiceProvider? _serviceProvider = null;
+        private IServiceScope? _serviceScope = null;
 
         /// <summary>
         /// Activities upon creating the view.
@@ -25,6 +26,7 @@ namespace CodeNameK.Droid
         {
             base.OnCreate(savedInstanceState);
             _serviceProvider = ((App?)Application)?.ServiceProvider ?? throw new InvalidProgramException("Service Provider doesn't exist.");
+            _serviceScope = _serviceProvider.CreateScope();
             Logger.LogInformation("Lifetime Method: {name}, is savedInstanceState null: {isSavedInstanceStateNull}", nameof(OnCreate), savedInstanceState is null);
         }
 
@@ -61,6 +63,8 @@ namespace CodeNameK.Droid
         protected override void OnStop()
         {
             Logger.LogInformation("Lifetime Method: {name}", nameof(OnStop));
+            _serviceScope?.Dispose();
+            _serviceScope = null;
             base.OnStop();
         }
 
@@ -81,11 +85,11 @@ namespace CodeNameK.Droid
         protected T GetRequiredService<T>()
             where T : notnull
         {
-            if (_serviceProvider is null)
+            if (_serviceScope is null)
             {
                 throw new InvalidOperationException("Service provider hasn't been initialized. Have you called OnCreate yet?");
             }
-            return _serviceProvider.GetRequiredService<T>();
+            return _serviceScope.ServiceProvider.GetRequiredService<T>();
         }
 
         protected override void Dispose(bool disposing)
@@ -98,6 +102,9 @@ namespace CodeNameK.Droid
                     disposableServiceProvider.Dispose();
                     _serviceProvider = null;
                 }
+
+                _serviceScope?.Dispose();
+                _serviceScope = null;
             }
         }
 
@@ -115,6 +122,10 @@ namespace CodeNameK.Droid
         /// <summary>
         /// Gets logger instance from logging providers.
         /// </summary>
-        protected abstract ILogger GetLoggerInstance();
+        private ILogger GetLoggerInstance()
+        {
+            ILoggerFactory loggerFactory = _serviceProvider!.GetRequiredService<ILoggerFactory>();
+            return loggerFactory.CreateLogger(GetType().FullName);
+        }
     }
 }

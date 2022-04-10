@@ -7,7 +7,6 @@ using AndroidX.AppCompat.Widget;
 using AndroidX.Lifecycle;
 using AndroidX.RecyclerView.Widget;
 using CodeNameK.BIZ.Interfaces;
-using CodeNameK.Contracts;
 using CodeNameK.Core.Utilities;
 using CodeNameK.DataContracts;
 using CodeNameK.Droid.ViewModels;
@@ -110,14 +109,18 @@ namespace CodeNameK.Droid
             {
                 if (result is not null && result.IsSuccess)
                 {
-                    Snackbar.Make(_fab, $"New category: {category}", Snackbar.LengthLong).Show();
+                    string message = $"New category: {category}";
+                    Snackbar.Make(_fab, message, Snackbar.LengthLong).Show();
+                    Logger.LogInformation(message);
                     _categoryListViewModel!.Categories.Add(result.Entity!);
                     _categoryListViewModel!.SortCategories();
                     _adapter!.NotifyDataSetChanged();
                 }
                 else
                 {
-                    Snackbar.Make(_fab, $"Failed: {result?.Reason}", Snackbar.LengthLong).Show();
+                    string errorReason = $"Failed: {result?.Reason}";
+                    Snackbar.Make(_fab, errorReason, Snackbar.LengthLong).Show();
+                    Logger.LogError(errorReason);
                 }
             }, onException: ShowExceptionMessage, continueOnSychronizationContext: false);
         }
@@ -137,11 +140,7 @@ namespace CodeNameK.Droid
         private void ShowExceptionMessage(Exception ex)
         {
             Snackbar.Make(_fab, $"Error: {ex.Message}", Snackbar.LengthIndefinite).Show();
-        }
-
-        protected override ILogger GetLoggerInstance()
-        {
-            return GetRequiredService<ILogger<CategoryListActivity>>();
+            Logger.LogError(ex, ex.Message);
         }
     }
 }
