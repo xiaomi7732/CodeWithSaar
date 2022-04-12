@@ -32,6 +32,9 @@ stateDiagram-v2
 
 ## Announcements
 
+* 4/12/2022: Spin off another reprository for custom logging providers:
+    * Repo: <https://github.com/xiaomi7732/CodeWithSaar.Extensions.Logging>.
+    * NuGet: [CodeWithSaar.Extensions.Logging.File](https://www.nuget.org/packages/CodeWithSaar.Extensions.Logging.File).
 * 3/2/2022: **Stack Beauty**  is online, check it out: <https://stack.codewithsaar.net>.
 * 1/30/2022: **NumberIt** _(CodeNameK)_ 1.0.0-beta2 is released. [Details](./CodeNameK/Readme.md).
 * 1/8/2022: **NumberIt** _(CodeNameK)_ 1.0.0-beta1 is released. [Details](./CodeNameK/Readme.md).
