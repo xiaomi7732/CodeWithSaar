@@ -1,6 +1,6 @@
 # Welcome
 
-I build .NET project and I share real world project experience with you to help building code skills to the next level!
+I build .NET projects and I share real world project experience with you to help improving coding skills!
 
 This is the primary codebase for my [YouTube channel <img src="./images/youtube-icon.200x140.png" width="20" /> Code w/ Saar](https://www.youtube.com/c/CodewithSaar). Here, I share projects, code examples and links to the videos.
 
