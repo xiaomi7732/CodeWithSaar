@@ -16,6 +16,7 @@ This is the primary codebase for my [YouTube channel <img src="./images/youtube-
 
 ## <img src="./images/connected-people.png" width="20" /> Connect with me
 
+* GitHub <img src="./images/github-icon.png" width="16" /> [CodeWithSaar](https://github.com/xiaomi7732/CodeWithSaar)
 * Twitter <img src="./images/twitter-icon.200x140.png" width="20" /> [@CodeWithSaar](https://twitter.com/CodeWithSaar).
 * Join [the discord server <img src="./images/discord-icon.200x146.png" width="20" />](https://discord.gg/H8ZqDgczQb).
 * If you want, [Buy me a coffee](https://www.buymeacoffee.com/codewithsaar).
