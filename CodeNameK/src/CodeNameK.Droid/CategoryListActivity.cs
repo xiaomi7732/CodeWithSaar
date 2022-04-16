@@ -88,7 +88,16 @@ namespace CodeNameK.Droid
             try
             {
                 Logger.LogInformation("Category {index} is clicked. Id: {categoryId}", index, _categoryListViewModel?.Categories?[index].Id);
-                Intent intent = new Intent(this, typeof(MainActivity));
+                Category category = _categoryListViewModel!.Categories[index];
+                if (string.IsNullOrEmpty(category?.Id))
+                {
+                    throw new InvalidOperationException("Category id is null.");
+                }
+                Intent intent = new Intent(this, typeof(NumbersActivity));
+                string key = this.MakeIntentKeyForApp(GetString(Resource.String.key_category_name));
+                string categoryId = category?.Id!;
+                Logger.LogInformation("Intent extra: {key} = {value}", key, categoryId);
+                intent.PutExtra(key, categoryId);
                 StartActivity(intent);
             }
             catch (Exception ex)
