@@ -1,10 +1,10 @@
-# Welcome to Code with Saar
+# Welcome
 
 I build .NET project and I share real world project experience with you to help building code skills to the next level!
 
-This is the primary codebase for my [YouTube channel: Code w/ Saar](https://www.youtube.com/c/CodewithSaar). Here, I share projects, code examples and links to the videos.
+This is the primary codebase for my [YouTube channel <img src="./images/youtube-icon.200x140.png" width="20" /> Code w/ Saar](https://www.youtube.com/c/CodewithSaar). Here, I share projects, code examples and links to the videos.
 
-## New videos
+## <img src="./images/tv-show.png" width="20" /> New videos
 
 <!-- BLOG-POST-LIST:START -->
 - [How to implement a custom logging provider for files (2/2) CodeNameK - 15](https://youtu.be/3Z3yemyikNc)
@@ -14,10 +14,10 @@ This is the primary codebase for my [YouTube channel: Code w/ Saar](https://www.
 - [How to implement User Options with IOptionsMonitor and JsonSerializer CodeNameK - 11](https://www.youtube.com/watch?v=TcHkM5332Ho)
 <!-- BLOG-POST-LIST:END -->
 
-To connect with me:
+## <img src="./images/connected-people.png" width="20" /> Connect with me
 
-* Twitter [@CodeWithSaar](https://twitter.com/CodeWithSaar).
-* Join [the discord server](https://discord.gg/H8ZqDgczQb).
+* Twitter <img src="./images/twitter-icon.200x140.png" width="20" /> [@CodeWithSaar](https://twitter.com/CodeWithSaar).
+* Join [the discord server <img src="./images/discord-icon.200x146.png" width="20" />](https://discord.gg/H8ZqDgczQb).
 * If you want, [Buy me a coffee](https://www.buymeacoffee.com/codewithsaar).
 
 Keep coding, keep improving:
@@ -30,7 +30,7 @@ stateDiagram-v2
 ```
 <p align='center'>If you can't seen the chart above, copy and paste it in a <strong>mermaid viewer</strong>.</p>
 
-## Announcements
+## <img src="./images/announcement.png" width="16" /> Announcements
 
 * 4/12/2022: Spin off another reprository for custom logging providers:
     * Repo: <https://github.com/xiaomi7732/CodeWithSaar.Extensions.Logging>.
@@ -40,15 +40,22 @@ stateDiagram-v2
 * 1/8/2022: **NumberIt** _(CodeNameK)_ 1.0.0-beta1 is released. [Details](./CodeNameK/Readme.md).
 * 12/31/2021: **NumberIt** _(CodeNameK)_ release page is established. [Details](./CodeNameK/Readme.md).
 
-## Projects
+## <img src="./images/lifecycle.png" width="20" /> Projects
 
-* Stack Beauty: [GitHub Repo](https://github.com/xiaomi7732/StackBeauty) [Live Site](stack.codewithsaar.net)
-* NumberIt - CodeNameK: [Readme](./CodeNameK/Readme.md) / [YouTube Playlist](https://youtube.com/playlist?list=PLxWo8vu0UTZ28_GwEGdjwExCHDKx1WCua)
-  * [Introduction](https://youtu.be/7kG__DQlrGE)
+* [CodeWithSaar.Extensions.Logging.File](https://github.com/xiaomi7732/CodeWithSaar.Extensions.Logging/blob/main/CodeWithSaar.Extensions.Logging.File/Readme.MD) - Enable file logging in ASP.NET Core applications by one line of code.
+  * [Repository](https://github.com/xiaomi7732/CodeWithSaar.Extensions.Logging/blob/main/CodeWithSaar.Extensions.Logging.File/Readme.MD)
+  * [NuGet package](https://www.nuget.org/packages/CodeWithSaar.Extensions.Logging.File)
+* Stack Beauty
+  * [GitHub Repo](https://github.com/xiaomi7732/StackBeauty) 
+  * [Live Site](stack.codewithsaar.net)
+* NumberIt - CodeNameK:
+  * [Readme](./CodeNameK/Readme.md)
+  * [Introduction video on YouTube](https://youtu.be/7kG__DQlrGE)
+  * [YouTube Playlist](https://youtube.com/playlist?list=PLxWo8vu0UTZ28_GwEGdjwExCHDKx1WCua)
 * [Two-way named pipe stream wrapper](./IPC/README.md) [NuGet package](https://www.nuget.org/packages/CodeWithSaar.IPC)
 * [JWT Auth for AspNetCore WebAPI](./Auth.AspNetCore.WebApi/README.md) [NuGet package](https://www.nuget.org/packages/CodeWithSaar.JWTAuthentication.WebAPI)
 
-## Video Index
+## <img src="./images/youtube-icon.200x140.png" width="20"/> Video Index
 
 ### Getting Started
 
