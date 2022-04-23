@@ -1,3 +1,5 @@
 <resources>
 	<dimen name="std_margin">16dp</dimen>
+	<dimen name="std_primary_text_size">16sp</dimen>
+	<dimen name="std_secondary_text_size">14sp</dimen>
 </resources>

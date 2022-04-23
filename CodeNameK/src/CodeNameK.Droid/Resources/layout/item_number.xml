@@ -1,34 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="1dp"
-    android:minHeight="@dimen/abc_list_item_height_small_material"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:focusable="true"
-    android:clickable="true"
-    android:foreground="?android:attr/selectableItemBackground"
-    tools:gridSpec="1|8|#0093eeff|K:#ee8700ff:16,l:72,l:16,r|S:#83ee00ff:16,0,l:16,56,l:16,0,r">
+    android:layout_width="match_parent"
+    android:layout_height="72dp">
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/textView_date_time"
-        android:minHeight="@dimen/abc_text_size_body_1_material"
-        android:gravity="center_vertical"
-        android:layout_marginTop="12dp"
-        android:textStyle="bold" 
-        />
+        android:id="@+id/text_view_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="TextView"
+        android:textSize="@dimen/std_primary_text_size"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/hg_32"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/textView_value"
-        android:minHeight="@dimen/abc_text_size_body_1_material"
-        android:gravity="center_vertical"
-        android:layout_marginTop="12dp"
-        android:textStyle="bold" 
-        />
-</LinearLayout>
+        android:id="@+id/text_view_timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="TextView"
+        android:textSize="@dimen/std_secondary_text_size"
+        app:layout_constraintBottom_toTopOf="@+id/hg_52"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/hg_32"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="32dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/hg_52"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="52dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
