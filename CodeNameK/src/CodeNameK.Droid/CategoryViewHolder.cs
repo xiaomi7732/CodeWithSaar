@@ -14,7 +14,7 @@ namespace CodeNameK.Droid
         private readonly ILogger _logger;
         private readonly Action<int>? _clickCallback;
 
-        public TextView? CategoryCaption { get; set; }
+        public TextView? CategoryCaption { get; }
 
         public CategoryViewHolder(
             View itemView,

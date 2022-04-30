@@ -3,10 +3,15 @@
 using Android.App;
 using Android.OS;
 using AndroidX.AppCompat.Widget;
+using AndroidX.Lifecycle;
 using AndroidX.RecyclerView.Widget;
+using CodeNameK.BIZ.Interfaces;
+using CodeNameK.DataContracts;
+using CodeNameK.Droid.ViewModels;
 using Google.Android.Material.FloatingActionButton;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 
 namespace CodeNameK.Droid
 {
@@ -16,6 +21,10 @@ namespace CodeNameK.Droid
         private string? _categoryName;
         private FloatingActionButton? _fab;
         private RecyclerView? _recyclerView;
+
+        private List<DataPoint> _dataPoints = new List<DataPoint>();
+
+        private NumbersViewModel? _numbersViewModel;
 
         protected override void OnCreate(Bundle? savedInstanceState)
         {
@@ -57,6 +66,11 @@ namespace CodeNameK.Droid
             _recyclerView.SetLayoutManager(new LinearLayoutManager(this));
 
             // Setup viewmodel
+            //IDataPoint _dataPoints = GetRequiredService<IDataPoint>();
+            //_dataPoints.GetDataPoints(new Category() { Id = _categoryName }); 
+
+            _numbersViewModel = new ViewModelProvider(this).Get(Java.Lang.Class.FromType(typeof(NumbersViewModel))) as NumbersViewModel;
+            
             // _categoryListViewModel = new ViewModelProvider(this).Get(Java.Lang.Class.FromType(typeof(CategoryListViewModel))) as CategoryListViewModel;
         }
 
