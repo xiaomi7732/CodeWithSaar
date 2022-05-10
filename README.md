@@ -33,7 +33,9 @@ stateDiagram-v2
 
 ## <img src="./images/announcement.png" width="16" /> Announcements
 
-* 4/12/2022: Spin off another reprository for custom logging providers:
+* 5/10/2022: Project Asset CLI - visualize project / NuGet dependencies
+    * Repo: <https://github.com/xiaomi7732/CodeWithSaar.Extensions.ProjectAssets>
+* 4/12/2022: Spin off another repository for custom logging providers:
     * Repo: <https://github.com/xiaomi7732/CodeWithSaar.Extensions.Logging>.
     * NuGet: [CodeWithSaar.Extensions.Logging.File](https://www.nuget.org/packages/CodeWithSaar.Extensions.Logging.File).
 * 3/2/2022: **Stack Beauty**  is online, check it out: <https://stack.codewithsaar.net>.
@@ -43,6 +45,7 @@ stateDiagram-v2
 
 ## <img src="./images/lifecycle.png" width="20" /> Projects
 
+* [Project Assets CLI](https://github.com/xiaomi7732/CodeWithSaar.Extensions.ProjectAssets) - Visualize NuGet package & project dependencies
 * [CodeWithSaar.Extensions.Logging.File](https://github.com/xiaomi7732/CodeWithSaar.Extensions.Logging/blob/main/CodeWithSaar.Extensions.Logging.File/Readme.MD) - Enable file logging in ASP.NET Core applications by one line of code.
     * [Repository](https://github.com/xiaomi7732/CodeWithSaar.Extensions.Logging/blob/main/CodeWithSaar.Extensions.Logging.File/Readme.MD)
     * [NuGet package](https://www.nuget.org/packages/CodeWithSaar.Extensions.Logging.File)
