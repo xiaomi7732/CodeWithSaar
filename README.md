@@ -29,7 +29,7 @@ stateDiagram-v2
     Coding --> Debugging
     Debugging --> Learning
 ```
-<p align='center'>If you can't seen the chart above, copy and paste it in a <strong>mermaid viewer</strong>.</p>
+<p align='center'>If you can't seen the chart above, copy and paste it in a <strong><a href="https://mermaid.live" target="_blank">mermaid viewer</a></strong>.</p>
 
 ## <img src="./images/announcement.png" width="16" /> Announcements
 
