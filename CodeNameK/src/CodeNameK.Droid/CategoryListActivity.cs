@@ -4,11 +4,13 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using AndroidX.AppCompat.Widget;
+using AndroidX.Core.Widget;
 using AndroidX.Lifecycle;
 using AndroidX.RecyclerView.Widget;
 using CodeNameK.Core.Utilities;
 using CodeNameK.DataContracts;
 using CodeNameK.Droid.ViewModels;
+using Google.Android.Material.AppBar;
 using Google.Android.Material.FloatingActionButton;
 using Google.Android.Material.Snackbar;
 using Microsoft.Extensions.Logging;
@@ -24,6 +26,8 @@ namespace CodeNameK.Droid
         private RecyclerView? _recyclerView;
         private FloatingActionButton? _fab;
         private CategoryListViewModel? _categoryListViewModel;
+        private AppBarLayout? _appBarLayout;
+        private NestedScrollView? _nestedScrollView;
 
         protected override void OnCreate(Bundle? savedInstanceState)
         {
@@ -38,6 +42,9 @@ namespace CodeNameK.Droid
             SupportActionBar?.SetDisplayHomeAsUpEnabled(false);
             SupportActionBar?.SetDisplayShowHomeEnabled(true);
 
+            // App bar layout
+            _appBarLayout = FindViewById<AppBarLayout>(Resource.Id.app_bar);
+            _nestedScrollView = FindViewById<NestedScrollView>(Resource.Id.nested_scroll_view);
             // FAB
             _fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
 
@@ -133,6 +140,7 @@ namespace CodeNameK.Droid
                     string message = $"New category: {category}";
                     Snackbar.Make(_fab, message, Snackbar.LengthLong).Show();
                     Logger.LogInformation(message);
+                    ScrollToCategory(category);
                 }
                 else
                 {
@@ -141,6 +149,16 @@ namespace CodeNameK.Droid
                     Logger.LogError(errorReason);
                 }
             }, onException: ShowExceptionMessage, continueOnSychronizationContext: false);
+        }
+
+        private void ScrollToCategory(string categoryName)
+        {
+            // The scroll to is not accurate
+            int itemPosition = _categoryListViewModel!.Categories.FindIndex(c => string.Equals(c.Id, categoryName, StringComparison.OrdinalIgnoreCase));
+            int scrollY = itemPosition * (int)Resources!.GetDimension(Resource.Dimension.std_list_item_height);
+
+            _appBarLayout!.SetExpanded(expanded: false, animate: true);
+            _nestedScrollView!.ScrollTo(0, scrollY);
         }
 
         /// <summary>
