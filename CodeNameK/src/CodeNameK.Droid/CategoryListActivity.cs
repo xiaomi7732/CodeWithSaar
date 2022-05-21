@@ -6,7 +6,6 @@ using Android.OS;
 using AndroidX.AppCompat.Widget;
 using AndroidX.Lifecycle;
 using AndroidX.RecyclerView.Widget;
-using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Core.Utilities;
 using CodeNameK.DataContracts;
 using CodeNameK.Droid.ViewModels;
@@ -14,6 +13,7 @@ using Google.Android.Material.FloatingActionButton;
 using Google.Android.Material.Snackbar;
 using Microsoft.Extensions.Logging;
 using System;
+using System.ComponentModel;
 
 namespace CodeNameK.Droid
 {
@@ -50,6 +50,14 @@ namespace CodeNameK.Droid
             _categoryListViewModel = new ViewModelProvider(this).Get(Java.Lang.Class.FromType(typeof(CategoryListViewModel))) as CategoryListViewModel;
         }
 
+        private void OnCategoryListViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (string.Equals(e.PropertyName, nameof(_categoryListViewModel.Categories), StringComparison.Ordinal))
+            {
+                _adapter!.NotifyDataSetChanged();
+            }
+        }
+
         protected override void OnStart()
         {
             base.OnStart();
@@ -66,6 +74,9 @@ namespace CodeNameK.Droid
         protected override void OnResume()
         {
             base.OnResume();
+            _categoryListViewModel!.PropertyChanged += OnCategoryListViewModelPropertyChanged;
+            _categoryListViewModel!.LoadCategories();
+
             _adapter!.OnItemClicked += CategoryItemClicked;
             _fab!.Click += OnFabClicked;
         }
@@ -79,6 +90,7 @@ namespace CodeNameK.Droid
         protected override void OnPause()
         {
             base.OnPause();
+            _categoryListViewModel!.PropertyChanged -= OnCategoryListViewModelPropertyChanged;
             _adapter!.OnItemClicked -= CategoryItemClicked;
             _fab!.Click -= OnFabClicked;
         }
@@ -88,7 +100,7 @@ namespace CodeNameK.Droid
             try
             {
                 Logger.LogInformation("Category {index} is clicked. Id: {categoryId}", index, _categoryListViewModel?.Categories?[index].Id);
-                Category category = _categoryListViewModel!.Categories[index];
+                Category? category = _categoryListViewModel!.Categories?[index];
                 if (string.IsNullOrEmpty(category?.Id))
                 {
                     throw new InvalidOperationException("Category id is null.");
@@ -113,17 +125,14 @@ namespace CodeNameK.Droid
         void IAddCategoryDialogEventListener.OnOKClicked(string category)
         {
             Logger.LogInformation("Adding category clicked. Content: {value}", category);
-            ICategory categoryBiz = GetRequiredService<ICategory>();
-            categoryBiz.AddCategoryAsync(new Category() { Id = category }).FireWithHandlers(onSuccess: (result) =>
+
+            _categoryListViewModel!.AddCategoryAsync(category, default).FireWithHandlers(onSuccess: (result) =>
             {
-                if (result is not null && result.IsSuccess)
+                if (result.IsSuccess)
                 {
                     string message = $"New category: {category}";
                     Snackbar.Make(_fab, message, Snackbar.LengthLong).Show();
                     Logger.LogInformation(message);
-                    _categoryListViewModel!.Categories.Add(result.Entity!);
-                    _categoryListViewModel!.SortCategories();
-                    _adapter!.NotifyDataSetChanged();
                 }
                 else
                 {

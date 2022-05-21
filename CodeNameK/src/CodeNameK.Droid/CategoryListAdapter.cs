@@ -20,8 +20,8 @@ namespace CodeNameK.Droid
             IList<Category> categories,
             ILoggerFactory loggerFactory)
         {
-            _categories = categories ?? throw new ArgumentNullException(nameof(categories));
             _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+            _categories = categories ?? throw new ArgumentNullException(nameof(categories));
         }
 
         public override int ItemCount => _categories.Count;

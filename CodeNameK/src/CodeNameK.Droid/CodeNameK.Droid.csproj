@@ -76,6 +76,7 @@
     <Compile Include="NumbersViewHolder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
+    <Compile Include="ViewModels\AndroidViewModelBase.cs" />
     <Compile Include="ViewModels\CategoryListViewModel.cs" />
     <Compile Include="ViewModels\NumbersViewModel.cs" />
   </ItemGroup>

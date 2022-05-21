@@ -1,45 +1,39 @@
 ﻿#nullable enable
 
 using Android.App;
-using AndroidX.Lifecycle;
 using CodeNameK.BIZ.Interfaces;
+using CodeNameK.Contracts;
 using CodeNameK.DataContracts;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CodeNameK.Droid.ViewModels
 {
-    internal class CategoryListViewModel : AndroidViewModel
+    internal class CategoryListViewModel : AndroidViewModelBase
     {
-        private readonly App _application;
-        private List<Category>? _categories;
+        private readonly List<Category> _categories;
         public CategoryListViewModel(Application application) : base(application)
         {
-            if (application is not App app)
-            {
-                throw new InvalidCastException("Can't cast Application instance to App instance.");
-            }
-            _application = app;
+            _categories = new List<Category>();
         }
 
         public List<Category> Categories
         {
             get
             {
-                if (_categories is null)
-                {
-                    LoadCategories();
-                }
-                return _categories!;
+                return _categories;
             }
         }
 
-        private void LoadCategories()
+
+        public void LoadCategories()
         {
-            ICategory categoryBiz = _application.ServiceProvider.GetRequiredService<ICategory>();
-            _categories = categoryBiz.GetAllCategories().OrderBy(item => item.Id, StringComparer.OrdinalIgnoreCase).ToList();
+            ICategory categoryBiz = GetRequiredService<ICategory>();
+            _categories.Clear();
+            _categories.AddRange(categoryBiz.GetAllCategories().OrderBy(item => item.Id, StringComparer.OrdinalIgnoreCase));
 #if DEBUG
             if (_categories.Count == 0)
             {
@@ -52,11 +46,21 @@ namespace CodeNameK.Droid.ViewModels
                 }
             }
 #endif
+            RaisePropertyChanged(nameof(Categories));
         }
 
-        public void SortCategories()
+        public async Task<OperationResult<Category>> AddCategoryAsync(string newCategoryName, CancellationToken cancellationToken)
         {
-            _categories?.Sort(CategoryIdOrdinalIgnoreCaseComparer.Instance);
+            Category newInstance = new Category() { Id = newCategoryName };
+            ICategory categoryBiz = GetRequiredService<ICategory>();
+            OperationResult<Category> operationResult = await categoryBiz.AddCategoryAsync(newInstance, overwrite: false, cancellationToken);
+            if (operationResult.IsSuccess)
+            {
+                _categories.Add(newInstance);
+                _categories.Sort(CategoryIdOrdinalIgnoreCaseComparer.Instance);
+                RaisePropertyChanged(nameof(Categories));
+            }
+            return operationResult;
         }
     }
 }
