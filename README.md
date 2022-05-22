@@ -1,5 +1,7 @@
 # Welcome
 
+[![page-deployment](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment)
+
 I build .NET projects and I share real world project experience with you to help improving coding skills!
 
 This is the primary codebase for my [YouTube channel <img src="./images/youtube-icon.200x140.png" width="20" /> Code w/ Saar](https://www.youtube.com/c/CodewithSaar). Here, I share projects, code examples and links to the videos.
@@ -33,6 +35,8 @@ stateDiagram-v2
 
 ## <img src="./images/announcement.png" width="16" /> Announcements
 
+* 5/22/2022: Cosmos Sync CLI - easily sync/backup Azure CosmosDB containers
+    * Repo: <https://github.com/xiaomi7732/CosmosSync>
 * 5/10/2022: Project Asset CLI - visualize project / NuGet dependencies
     * Repo: <https://github.com/xiaomi7732/CodeWithSaar.Extensions.ProjectAssets>
 * 4/12/2022: Spin off another repository for custom logging providers:
