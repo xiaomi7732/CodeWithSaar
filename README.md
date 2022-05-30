@@ -9,11 +9,11 @@ This is the primary codebase for my [YouTube channel <img src="./images/youtube-
 ## <img src="./images/tv-show.png" width="20" /> New videos
 
 <!-- BLOG-POST-LIST:START -->
+* [Easy & Secure: Add Refresh token in .NET (C#) WebAPI with JWT Authentication](https://youtu.be/TWBXiCS0RYM)
 * [Learn Coordinator Layout to build a beautiful activity](https://youtu.be/olVAweQAxys)
 * [Xamarin Android Layout - what to master or to avoid in 2022](https://youtu.be/OzTwh1ZqFM4)
 * [How to build a Custom Dialog in Xamarin works with lifetime events - CodeNameK - 16](https://youtu.be/PVTBRHSKB-U)
 * [How to implement a custom logging provider for files (2/2) - CodeNameK - 15](https://youtu.be/3Z3yemyikNc)
-* [How to implement a custom logging provider for files (1/2) - CodeNameK - 14](https://www.youtube.com/watch?v=3RUpYR4dZM4)
 <!-- BLOG-POST-LIST:END -->
 
 ## <img src="./images/connected-people.png" width="20" /> Connect with me
@@ -106,10 +106,11 @@ stateDiagram-v2
 
 ### Advanced Topics
 
-* Authentication / Authorization - [Playlist](https://www.youtube.com/playlist?list=PLxWo8vu0UTZ2wXMBepa6DUGepJJJoBiUf)
+* Authentication / Authorization - [Playlist](https://www.youtube.com/playlist?list=PLxWo8vu0UTZ2wXMBepa6DUGepJJJoBiUf), [Demo Code](https://github.com/xiaomi7732/JWTAuthInWebApi)
     * [JWT Authentication Overview](https://youtu.be/Ph8ddTRQ0eo)
     * [Role Based Authorization](https://youtu.be/vMJZD3ls7Hc)
     * [Policy Based Authorization](https://youtu.be/NKNIOxcEOso)
+    * [JWT with Refresh Token](https://youtu.be/TWBXiCS0RYM)
     * [End to End Example](https://youtu.be/tLgdbTqQp7Q)
     * [GraphAPI Auth: How to Use OAuth 2.0 to Access Microsoft GraphAPI/OneDrive](https://youtu.be/NljQx11YqNY)
 
