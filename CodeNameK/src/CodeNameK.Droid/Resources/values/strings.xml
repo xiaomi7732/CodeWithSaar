@@ -1,6 +1,7 @@
 <resources>
 	<string name="ok">OK</string>
 	<string name="cancel">Cancel</string>
+	<string name="view">View</string>
     <string name="app_name">CodeNameK.Droid</string>
     <string name="action_settings">Settings</string>
 	<string name="category_list_activity_name">Categories</string>

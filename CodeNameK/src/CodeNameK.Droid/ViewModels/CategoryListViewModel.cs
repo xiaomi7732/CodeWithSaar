@@ -5,7 +5,7 @@ using CodeNameK.BIZ.Interfaces;
 using CodeNameK.Contracts;
 using CodeNameK.DataContracts;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,32 +14,28 @@ namespace CodeNameK.Droid.ViewModels
 {
     internal class CategoryListViewModel : AndroidViewModelBase
     {
-        private readonly List<Category> _categories;
         public CategoryListViewModel(Application application) : base(application)
         {
-            _categories = new List<Category>();
         }
 
-        public List<Category> Categories
-        {
-            get
-            {
-                return _categories;
-            }
-        }
+        public ObservableCollection<Category> Categories { get; } = new ObservableCollection<Category>();
 
 
         public void LoadCategories()
         {
             ICategory categoryBiz = GetRequiredService<ICategory>();
-            _categories.Clear();
-            _categories.AddRange(categoryBiz.GetAllCategories().OrderBy(item => item.Id, StringComparer.OrdinalIgnoreCase));
+            Categories.Clear();
+
+            foreach (Category item in categoryBiz.GetAllCategories().OrderBy(item => item.Id, StringComparer.OrdinalIgnoreCase))
+            {
+                Categories.Add(item);
+            }
 #if DEBUG
-            if (_categories.Count == 0)
+            if (Categories.Count == 0)
             {
                 for (int i = 0; i < 100; i++)
                 {
-                    _categories.Add(new Category()
+                    Categories.Add(new Category()
                     {
                         Id = "Test Category " + (i + 1),
                     });
@@ -56,11 +52,24 @@ namespace CodeNameK.Droid.ViewModels
             OperationResult<Category> operationResult = await categoryBiz.AddCategoryAsync(newInstance, overwrite: false, cancellationToken);
             if (operationResult.IsSuccess)
             {
-                _categories.Add(newInstance);
-                _categories.Sort(CategoryIdOrdinalIgnoreCaseComparer.Instance);
-                RaisePropertyChanged(nameof(Categories));
+                int index = FindIndexToInsert(newInstance);
+
+                if (index == -1)
+                {
+                    Categories.Add(newInstance);
+                }
+                else
+                {
+                    Categories.Insert(index, newInstance);
+                }
             }
             return operationResult;
+        }
+
+        private int FindIndexToInsert(Category category)
+        {
+            Category item = Categories.FirstOrDefault(item => string.Compare(item.Id, category.Id, StringComparison.OrdinalIgnoreCase) > 0);
+            return item is null ? -1 : Categories.IndexOf(item);
         }
     }
 }

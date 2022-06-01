@@ -15,6 +15,7 @@ using Google.Android.Material.FloatingActionButton;
 using Google.Android.Material.Snackbar;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 
 namespace CodeNameK.Droid
@@ -81,11 +82,19 @@ namespace CodeNameK.Droid
         protected override void OnResume()
         {
             base.OnResume();
-            _categoryListViewModel!.PropertyChanged += OnCategoryListViewModelPropertyChanged;
+            _categoryListViewModel!.Categories.CollectionChanged += OnCategoryCollectionChanged;
             _categoryListViewModel!.LoadCategories();
 
             _adapter!.OnItemClicked += CategoryItemClicked;
             _fab!.Click += OnFabClicked;
+        }
+
+        private void OnCategoryCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                _adapter?.NotifyItemInserted(e.NewStartingIndex);
+            }
         }
 
         private void OnFabClicked(object sender, EventArgs e)
@@ -97,7 +106,7 @@ namespace CodeNameK.Droid
         protected override void OnPause()
         {
             base.OnPause();
-            _categoryListViewModel!.PropertyChanged -= OnCategoryListViewModelPropertyChanged;
+            _categoryListViewModel!.Categories.CollectionChanged -= OnCategoryCollectionChanged;
             _adapter!.OnItemClicked -= CategoryItemClicked;
             _fab!.Click -= OnFabClicked;
         }
@@ -112,12 +121,7 @@ namespace CodeNameK.Droid
                 {
                     throw new InvalidOperationException("Category id is null.");
                 }
-                Intent intent = new Intent(this, typeof(NumbersActivity));
-                string key = this.MakeIntentKeyForApp(GetString(Resource.String.key_category_name));
-                string categoryId = category?.Id!;
-                Logger.LogInformation("Intent extra: {key} = {value}", key, categoryId);
-                intent.PutExtra(key, categoryId);
-                StartActivity(intent);
+                StartNumberActivity(category!);
             }
             catch (Exception ex)
             {
@@ -138,27 +142,20 @@ namespace CodeNameK.Droid
                 if (result.IsSuccess)
                 {
                     string message = $"New category: {category}";
-                    Snackbar.Make(_fab, message, Snackbar.LengthLong).Show();
+                    Snackbar.Make(_fab, message, Snackbar.LengthLong).SetAction(Resource.String.view, view =>
+                    {
+                        Category targetCategory = result.Entity!;
+                        StartNumberActivity(targetCategory);
+                    }).Show();
                     Logger.LogInformation(message);
-                    ScrollToCategory(category);
                 }
                 else
                 {
                     string errorReason = $"Failed: {result?.Reason}";
-                    Snackbar.Make(_fab, errorReason, Snackbar.LengthLong).Show();
+                    Snackbar.Make(_fab, errorReason, Snackbar.LengthIndefinite).Show();
                     Logger.LogError(errorReason);
                 }
             }, onException: ShowExceptionMessage, continueOnSychronizationContext: false);
-        }
-
-        private void ScrollToCategory(string categoryName)
-        {
-            // The scroll to is not accurate
-            int itemPosition = _categoryListViewModel!.Categories.FindIndex(c => string.Equals(c.Id, categoryName, StringComparison.OrdinalIgnoreCase));
-            int scrollY = itemPosition * (int)Resources!.GetDimension(Resource.Dimension.std_list_item_height);
-
-            _appBarLayout!.SetExpanded(expanded: false, animate: true);
-            _nestedScrollView!.ScrollTo(0, scrollY);
         }
 
         /// <summary>
@@ -177,6 +174,25 @@ namespace CodeNameK.Droid
         {
             Snackbar.Make(_fab, $"Error: {ex.Message}", Snackbar.LengthIndefinite).Show();
             Logger.LogError(ex, ex.Message);
+        }
+
+        private void StartNumberActivity(Category category)
+        {
+            string key = this.MakeIntentKeyForApp(GetString(Resource.String.key_category_name));
+            string categoryId = category.Id;
+            Logger.LogInformation("Intent extra: {key} = {value}", key, categoryId);
+            StartActivity<NumbersActivity>(intent =>
+            {
+                intent.PutExtra(key, categoryId);
+            });
+        }
+
+        private void StartActivity<T>(Action<Intent> intentAction)
+            where T : KActivityBase
+        {
+            Intent intent = new Intent(this, typeof(T));
+            intentAction?.Invoke(intent);
+            StartActivity(intent);
         }
     }
 }
