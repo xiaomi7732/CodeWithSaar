@@ -35,6 +35,7 @@ stateDiagram-v2
 
 ## <img src="./images/announcement.png" width="16" /> Announcements
 
+* 6/9/2022: Get container id by one line of code: [Repo](https://github.com/xiaomi7732/CGroupV2ContainerId), [NuGet](https://www.nuget.org/packages/CodeWithSaar.Extensions.ContainerId/)
 * 5/22/2022: Cosmos Sync CLI - easily sync/backup Azure CosmosDB containers
     * Repo: <https://github.com/xiaomi7732/CosmosSync>
 * 5/10/2022: Project Asset CLI - visualize project / NuGet dependencies
@@ -49,7 +50,8 @@ stateDiagram-v2
 
 ## <img src="./images/lifecycle.png" width="20" /> Projects
 
-* [Project Assets CLI](https://github.com/xiaomi7732/CodeWithSaar.Extensions.ProjectAssets) - Visualize NuGet package & project dependencies
+* [ContainerId](https://github.com/xiaomi7732/CGroupV2ContainerId) - Get container id inside container by one line of code.
+* [Project Assets CLI](https://github.com/xiaomi7732/CodeWithSaar.Extensions.ProjectAssets) - Visualize NuGet package & project dependencies.
 * [CodeWithSaar.Extensions.Logging.File](https://github.com/xiaomi7732/CodeWithSaar.Extensions.Logging/blob/main/CodeWithSaar.Extensions.Logging.File/Readme.MD) - Enable file logging in ASP.NET Core applications by one line of code.
     * [Repository](https://github.com/xiaomi7732/CodeWithSaar.Extensions.Logging/blob/main/CodeWithSaar.Extensions.Logging.File/Readme.MD)
     * [NuGet package](https://www.nuget.org/packages/CodeWithSaar.Extensions.Logging.File)
