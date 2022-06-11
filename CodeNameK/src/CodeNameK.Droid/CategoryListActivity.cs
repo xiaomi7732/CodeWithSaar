@@ -55,7 +55,7 @@ namespace CodeNameK.Droid
             _recyclerView.SetLayoutManager(new LinearLayoutManager(this));
 
             // Setup viewmodel
-            _categoryListViewModel = new ViewModelProvider(this).Get(Java.Lang.Class.FromType(typeof(CategoryListViewModel))) as CategoryListViewModel;
+            _categoryListViewModel = new ViewModelProvider(this).Get<CategoryListViewModel>();
         }
 
         private void OnCategoryListViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)

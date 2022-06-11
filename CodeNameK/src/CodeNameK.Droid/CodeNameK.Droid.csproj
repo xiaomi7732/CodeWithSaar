@@ -79,6 +79,7 @@
     <Compile Include="ViewModels\AndroidViewModelBase.cs" />
     <Compile Include="ViewModels\CategoryListViewModel.cs" />
     <Compile Include="ViewModels\NumbersViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
