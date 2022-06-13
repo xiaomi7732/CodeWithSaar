@@ -9,11 +9,11 @@ This is the primary codebase for my [YouTube channel <img src="./images/youtube-
 ## <img src="./images/tv-show.png" width="20" /> New videos
 
 <!-- BLOG-POST-LIST:START -->
+* [How to use async await to load data in Xamarin Activity - CodeNameK - 19](https://youtu.be/0wywqtTvZqg)
 * [Easy & Secure: Add Refresh token in .NET (C#) WebAPI with JWT Authentication](https://youtu.be/TWBXiCS0RYM)
 * [Learn Coordinator Layout to build a beautiful activity](https://youtu.be/olVAweQAxys)
 * [Xamarin Android Layout - what to master or to avoid in 2022](https://youtu.be/OzTwh1ZqFM4)
 * [How to build a Custom Dialog in Xamarin works with lifetime events - CodeNameK - 16](https://youtu.be/PVTBRHSKB-U)
-* [How to implement a custom logging provider for files (2/2) - CodeNameK - 15](https://youtu.be/3Z3yemyikNc)
 <!-- BLOG-POST-LIST:END -->
 
 ## <img src="./images/connected-people.png" width="20" /> Connect with me
@@ -141,4 +141,5 @@ stateDiagram-v2
 * [Xamarin Android Layout - what to master or to avoid in 2022](https://youtu.be/OzTwh1ZqFM4)
 * [Learn Coordinator Layout to build a beautiful activity](https://youtu.be/olVAweQAxys)
 * [How to build a Custom Dialog in Xamarin works with lifetime events](https://youtu.be/PVTBRHSKB-U)
+* [How to use async await to load data in Xamarin Activity](https://youtu.be/0wywqtTvZqg)
 * [Access File System](https://youtu.be/7YJHBX1abfs)
