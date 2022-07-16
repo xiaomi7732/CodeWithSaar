@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "d80a954a-b5fe-4573-bf17-1e87bd00ce4b",
+    "colId": "history",
+    "containerId": "",
+    "name": "https://localhost:8080/weatherforecast",
+    "url": "https://localhost:8080/weatherforecast",
+    "method": "GET",
+    "sortNum": 0,
+    "created": "2022-07-16T15:34:50.542Z",
+    "modified": "2022-07-16T15:36:53.398Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  }
+]

@@ -6,6 +6,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// builder.Services.AddCors(opt =>{
+//     opt.AddDefaultPolicy( p=>{
+//         p.WithOrigins("https://localhost:8081");
+//     });
+// });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -16,6 +22,16 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// app.UseCors();
+
+app.UseDefaultFiles(new DefaultFilesOptions
+{
+    DefaultFileNames = new string[]{
+        "index.html",
+    },
+});
+app.UseStaticFiles();
 
 app.UseAuthorization();
 
