@@ -18,9 +18,7 @@
         var weatherResponse = await fetch("https://localhost:8080/weatherforecast");
         var result = await weatherResponse.json();
         console.log(result);
-        if (!!result && !!result[0].summary) {
-            document.getElementById("result").innerText = result[0].summary;
-        }
+        document.getElementById("result").innerText = result[0].summary;
     }
 </script>
 

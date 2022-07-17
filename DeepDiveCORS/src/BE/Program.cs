@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Cors.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
@@ -6,11 +8,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// builder.Services.AddCors(opt =>{
-//     opt.AddDefaultPolicy( p=>{
-//         p.WithOrigins("https://localhost:8081");
-//     });
-// });
+// Adds a default policy for CORS
+builder.Services.AddCors(setup =>
+{
+    setup.AddDefaultPolicy(policyBuilder =>
+    {
+        policyBuilder.WithOrigins("https://localhost:8081");
+    });
+});
 
 var app = builder.Build();
 
@@ -23,15 +28,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// app.UseCors();
-
-app.UseDefaultFiles(new DefaultFilesOptions
-{
-    DefaultFileNames = new string[]{
-        "index.html",
-    },
-});
-app.UseStaticFiles();
+// Apply CORS on the request pipeline
+app.UseCors();
 
 app.UseAuthorization();
 

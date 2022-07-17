@@ -32,3 +32,7 @@ Notice, the url for backend is hard-coded to `https://localhost:8080` in the fro
 ```shell
 dotnet run --project src/HC
 ```
+
+## Reference
+
+- [Enable Cross-Origin Requests (CORS) in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-6.0)
