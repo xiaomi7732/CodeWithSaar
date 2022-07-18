@@ -9,11 +9,11 @@ This is the primary codebase for my [YouTube channel <img src="./images/youtube-
 ## <img src="./images/tv-show.png" width="20" /> New videos
 
 <!-- BLOG-POST-LIST:START -->
+* [ASP.NET Core WebAPI CORS error fixed and explained](https://youtu.be/3eFQkchyF2A)
 * [How to use async await to load data in Xamarin Activity - CodeNameK - 19](https://youtu.be/0wywqtTvZqg)
 * [Easy & Secure: Add Refresh token in .NET (C#) WebAPI with JWT Authentication](https://youtu.be/TWBXiCS0RYM)
 * [Learn Coordinator Layout to build a beautiful activity](https://youtu.be/olVAweQAxys)
 * [Xamarin Android Layout - what to master or to avoid in 2022](https://youtu.be/OzTwh1ZqFM4)
-* [How to build a Custom Dialog in Xamarin works with lifetime events - CodeNameK - 16](https://youtu.be/PVTBRHSKB-U)
 <!-- BLOG-POST-LIST:END -->
 
 ## <img src="./images/connected-people.png" width="20" /> Connect with me
@@ -25,13 +25,8 @@ This is the primary codebase for my [YouTube channel <img src="./images/youtube-
 
 Keep coding, keep improving:
 
-```mermaid
-stateDiagram-v2
-    Learning --> Coding
-    Coding --> Debugging
-    Debugging --> Learning
-```
-<p align='center'>If you can't seen the chart above, copy and paste it in a <strong><a href="https://mermaid.live" target="_blank">mermaid viewer</a></strong>.</p>
+[![](https://mermaid.ink/img/pako:eNo9T7sOwjAM_JXKcyshNjKwUDa2MmYxjQkRJEGpUxWq_jshfdx0vjud7RFarwgEdIxMtUEd0Fb9Xroi4UIYnHG6qKpjcfIq0dmYeZZrukWtN2cbs7kWQAmWgkWj0qrxn5TAD7IkQSSqMDwllLNucbjSwI35Zvewy5BuSiXxrdKZZ2XYBxB3fHVUAkb2zce1IDhEWkPLL0tq-gHpJUve)](https://mermaid.live/edit#pako:eNo9T7sOwjAM_JXKcyshNjKwUDa2MmYxjQkRJEGpUxWq_jshfdx0vjud7RFarwgEdIxMtUEd0Fb9Xroi4UIYnHG6qKpjcfIq0dmYeZZrukWtN2cbs7kWQAmWgkWj0qrxn5TAD7IkQSSqMDwllLNucbjSwI35Zvewy5BuSiXxrdKZZ2XYBxB3fHVUAkb2zce1IDhEWkPLL0tq-gHpJUve)
+
 
 ## <img src="./images/announcement.png" width="16" /> Announcements
 
@@ -80,6 +75,11 @@ stateDiagram-v2
     * Computed Properties [Doc](./ComputedProperty) [Video](https://youtu.be/lO622PQuPBc)
     * [Extension Method](https://youtu.be/RH4B_i-nq44)
     * [C# Delegate](https://youtu.be/L5SN2-agGaY)
+
+* ASP.NET Core
+
+    * [ASP.NET Core WebAPI CORS error fixed and explained](https://youtu.be/3eFQkchyF2A)
+    * [ASP.NET Core Pipeline](https://youtu.be/K9sBI9ZFxRA)
 
 * Important Theories for high quality code
 
@@ -133,8 +133,6 @@ stateDiagram-v2
     * [Options pattern](https://youtu.be/fUSuD84Pr0U)
     * [Option in Depth](https://youtu.be/CnPAhy6M00U)
     * [C# Configuration Providers](https://youtu.be/LbPGciA_NDk)
-
-* [ASP.NET Core Pipeline](https://youtu.be/K9sBI9ZFxRA)
 
 ### Mobile / Xamarin
 
