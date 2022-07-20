@@ -282,6 +282,7 @@ internal class QueryFishService
             return Task.FromResult(Enumerable.Empty<FishItem>());
         }
 
+        keyword = keyword.Trim();
         return Task.FromResult(_allFish.Where(f => f.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase)));
     }
 }
