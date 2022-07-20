@@ -1,0 +1,50 @@
+﻿@page "/search"
+@inject QueryFishService _queryFishService;
+@inject RecommendService _recommendationService;
+
+<h3>Search</h3>
+
+<div>
+    <input @bind-value="Keyword" />
+    <button @onclick="QueryFishAsync">Search</button>
+</div>
+
+<div>
+    @foreach (FishItem fish in _fishResult)
+    {
+        <div>Name: @fish.Name</div>
+        <div>Recommendation: @GetRecommendation(fish)</div>
+        <hr />
+    }
+</div>
+
+@code {
+    private string? _keyword;
+    private string? Keyword
+    {
+        get
+        {
+            return _keyword;
+        }
+        set
+        {
+            if (!string.Equals(_keyword, value, StringComparison.Ordinal))
+            {
+                _keyword = value;
+                _ = QueryFishAsync();
+            }
+        }
+    }
+
+    private IEnumerable<FishItem> _fishResult = Enumerable.Empty<FishItem>();
+
+    public async Task QueryFishAsync()
+    {
+        _fishResult = await _queryFishService.GetFishesByAsync(_keyword);
+    }
+
+    public string GetRecommendation(FishItem fish)
+    {
+        return _recommendationService.GetRecommendation(fish);
+    }
+}
