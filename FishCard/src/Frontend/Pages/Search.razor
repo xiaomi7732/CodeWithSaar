@@ -3,7 +3,7 @@
 @inject QueryFishService _queryFishService;
 @inject RecommendService _recommendationService;
 
-<h3>Search</h3>
+<h3>Fish Card</h3>
 
 <datalist id="fishNames">
     @if (_allFishNames is not null)
@@ -16,8 +16,13 @@
 </datalist>
 
 <div>
-    <input @bind-value="Keyword" placeholder="Search for a fish by name" autocomplete="no" list="fishNames" />
-    <button @onclick="QueryFishAsync">Search</button>
+    <div>
+        <img src="images/fish.png" alt="Fish card logo" width="200" loading="lazy" />
+    </div>
+    <div>
+        <input @bind-value="Keyword" placeholder="Search for a fish by name" autocomplete="no" list="fishNames" />
+        <button @onclick="QueryFishAsync">Search</button>
+    </div>
 </div>
 
 <div>
