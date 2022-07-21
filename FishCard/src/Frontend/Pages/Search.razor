@@ -53,7 +53,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _allFishNames = (await _queryFishService.GetAllFishesAsync()).Select(item => item.Name).ToArray();
+        _allFishNames = (await _queryFishService.GetAllFishesAsync())
+            .Select(item => item.Name)
+            .OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToArray();
     }
 
     public async Task QueryFishAsync()
