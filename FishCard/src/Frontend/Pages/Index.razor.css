@@ -1,0 +1,16 @@
+.content {
+    flex-direction: column;
+}
+
+.title
+{
+    display: flex;
+    justify-content: center;
+}
+
+.logo
+{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}

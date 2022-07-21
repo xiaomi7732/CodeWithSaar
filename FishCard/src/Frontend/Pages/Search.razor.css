@@ -1,0 +1,11 @@
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
+.searchForm {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: baseline;
+}

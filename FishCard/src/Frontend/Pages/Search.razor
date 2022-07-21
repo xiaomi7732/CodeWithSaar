@@ -3,7 +3,21 @@
 @inject QueryFishService _queryFishService;
 @inject RecommendService _recommendationService;
 
-<h3>Fish Card</h3>
+<div class="content">
+    <div class="searchForm">
+        <input @bind-value="Keyword" placeholder="Search for a fish by name" autocomplete="no" list="fishNames" />
+        <button type="button" @onclick="QueryFishAsync">Search</button>
+    </div>
+
+    <div>
+        @foreach (FishItem fish in _fishResult)
+        {
+            <div>Name: @fish.Name</div>
+            <div>Recommendation: @GetRecommendation(fish)</div>
+            <hr />
+        }
+    </div>
+</div>
 
 <datalist id="fishNames">
     @if (_allFishNames is not null)
@@ -14,25 +28,6 @@
         }
     }
 </datalist>
-
-<div>
-    <div>
-        <img src="images/fish.png" alt="Fish card logo" width="200" loading="lazy" />
-    </div>
-    <div>
-        <input @bind-value="Keyword" placeholder="Search for a fish by name" autocomplete="no" list="fishNames" />
-        <button @onclick="QueryFishAsync">Search</button>
-    </div>
-</div>
-
-<div>
-    @foreach (FishItem fish in _fishResult)
-    {
-        <div>Name: @fish.Name</div>
-        <div>Recommendation: @GetRecommendation(fish)</div>
-        <hr />
-    }
-</div>
 
 @code {
     private string[]? _allFishNames;
@@ -59,8 +54,8 @@
     protected override async Task OnInitializedAsync()
     {
         _allFishNames = (await _queryFishService.GetAllFishesAsync())
-            .Select(item => item.Name)
-            .OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToArray();
+        .Select(item => item.Name)
+        .OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToArray();
     }
 
     public async Task QueryFishAsync()
