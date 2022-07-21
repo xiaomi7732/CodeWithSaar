@@ -275,6 +275,9 @@ internal class QueryFishService
         },
     };
 
+    /// <summary>
+    /// Gets a list of fish items by keyword. The keyword needs to at least partially match the fish name. It is case insensitive.
+    /// </summary>
     public Task<IEnumerable<FishItem>> GetFishesByAsync(string? keyword)
     {
         if (string.IsNullOrWhiteSpace(keyword))
@@ -284,5 +287,13 @@ internal class QueryFishService
 
         keyword = keyword.Trim();
         return Task.FromResult(_allFish.Where(f => f.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    /// <summary>
+    /// Gets all the fish items.
+    /// </summary>
+    public Task<IEnumerable<FishItem>> GetAllFishesAsync()
+    {
+        return Task.FromResult(_allFish.AsEnumerable());
     }
 }

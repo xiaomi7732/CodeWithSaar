@@ -1,11 +1,22 @@
 ﻿@page "/search"
+@using System.Linq;
 @inject QueryFishService _queryFishService;
 @inject RecommendService _recommendationService;
 
 <h3>Search</h3>
 
+<datalist id="fishNames">
+    @if (_allFishNames is not null)
+    {
+        foreach (var name in _allFishNames)
+        {
+            <option value="@name" />
+        }
+    }
+</datalist>
+
 <div>
-    <input @bind-value="Keyword" placeholder="Search for a fish by name" />
+    <input @bind-value="Keyword" placeholder="Search for a fish by name" autocomplete="no" list="fishNames" />
     <button @onclick="QueryFishAsync">Search</button>
 </div>
 
@@ -19,6 +30,8 @@
 </div>
 
 @code {
+    private string[]? _allFishNames;
+
     private string? _keyword;
     private string? Keyword
     {
@@ -37,6 +50,11 @@
     }
 
     private IEnumerable<FishItem> _fishResult = Enumerable.Empty<FishItem>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _allFishNames = (await _queryFishService.GetAllFishesAsync()).Select(item => item.Name).ToArray();
+    }
 
     public async Task QueryFishAsync()
     {
