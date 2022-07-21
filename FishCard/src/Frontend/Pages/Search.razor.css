@@ -5,7 +5,45 @@
 
 .searchForm {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.searchForm>svg {
+    width: 32px;
+}
+
+.search-input-container {
+    display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: baseline;
+    margin-bottom: 32px;
+    border: 1px solid #999;
+    border-radius: 2px;
+    max-width: 95%;
+}
+
+.search-input-container>input {
+    border: hidden;
+    outline: none;
+}
+
+#search-icon-holder {
+    width: 32px;
+}
+
+#keyword-input {
+    flex-grow: 10;
+}
+
+@media screen and (min-width:600px) {
+    #keyword-input {
+        width: 450px;
+    }
+}
+
+button {
+    width: 80px;
+    border-width: 1px;
+    outline: 1px;
 }
