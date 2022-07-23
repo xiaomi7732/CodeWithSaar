@@ -36,7 +36,7 @@
     display: flex;
     flex-flow: row;
     align-content: center;
-    margin-bottom: 12px;
+    margin-bottom: 36px;
 }
 
 button {
@@ -49,6 +49,7 @@ button {
     flex-direction: row;
     flex-wrap: wrap;
     width: 100%;
+    max-width: 1000px;
 }
 
 .fish-card {
@@ -57,9 +58,17 @@ button {
     margin: 4px;
     max-width: 250px;
     background-color: var(--control-surface);
-    box-shadow: 2px 2px 1px  #ddd;
+    box-shadow: 2px 2px 1px #ddd;
 }
 
-h3{
+h3 {
     margin-top: 4px;
+}
+
+@media screen and (max-width: 480px) {
+    .fish-card {
+        width: 100%;
+        max-width: 480px;
+        flex-grow: 1;
+    }
 }
