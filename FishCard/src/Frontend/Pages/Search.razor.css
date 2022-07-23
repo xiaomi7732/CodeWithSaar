@@ -57,7 +57,7 @@ button {
     border: 1px dashed #999;
     padding: 16px;
     margin: 4px;
-    max-width: 250px;
+    width: 250px;
     background-color: var(--control-surface);
     box-shadow: 2px 2px 1px #ddd;
 }
@@ -66,10 +66,9 @@ h3 {
     margin-top: 4px;
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 600px) {
     .fish-card {
         width: 100%;
-        max-width: 480px;
         flex-grow: 1;
     }
 }
