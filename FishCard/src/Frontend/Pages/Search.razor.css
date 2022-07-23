@@ -50,6 +50,7 @@ button {
     flex-wrap: wrap;
     width: 100%;
     max-width: 1000px;
+    justify-content: space-evenly;
 }
 
 .fish-card {
