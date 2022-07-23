@@ -1,57 +1,65 @@
-.content {
-    display: flex;
-    flex-direction: column;
-}
-
-.searchForm {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.searchForm>svg {
-    width: 32px;
-}
-
 .search-input-container {
     display: flex;
     flex-direction: row;
-    justify-content: center;
     margin-bottom: 32px;
     border: 1px solid #999;
     border-radius: 20px;
-    max-width: 95%;
-    padding-top: 4px;
-    padding-bottom: 4px;
     background-color: transparent;
-    padding-right: 10px;
+    padding-right: 8px;
     padding-left: 4px;
-}
-
-.search-input-container>input {
-    border: hidden;
-    outline: none;
+    margin-top: 12px;
+    width: 100%;
+    min-width: 180px;
+    max-width: 500px;
+    background-color: var(--control-surface);
 }
 
 #search-icon-holder {
     width: 32px;
     margin-left: 4px;
     margin-right: 4px;
+    margin-top: 4px;
+    fill: #666;
+    flex-grow: 0;
 }
 
 #keyword-input {
-    flex-grow: 10;
-    width: 450px;
+    border: hidden;
+    outline: none;
+    background-color: transparent;
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 400px;
 }
 
-/* @media screen and (min-width:300px) {
-    #keyword-input {
-        width: 450px;
-    }
-} */
+#search-operations-container {
+    display: flex;
+    flex-flow: row;
+    align-content: center;
+    margin-bottom: 12px;
+}
 
 button {
-    width: 80px;
-    border-width: 1px;
-    outline: 1px;
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+#fish-card-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.fish-card {
+    border: 1px dashed #999;
+    padding: 16px;
+    margin: 4px;
+    max-width: 250px;
+    background-color: var(--control-surface);
+    box-shadow: 2px 2px 1px  #ddd;
+}
+
+h3{
+    margin-top: 4px;
 }
