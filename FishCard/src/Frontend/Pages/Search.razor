@@ -71,7 +71,8 @@
 
     public async Task QueryFishAsync()
     {
-        _fishResult = await _queryFishService.GetFishesByAsync(_keyword);
+        _fishResult = (await _queryFishService.GetFishesByAsync(_keyword))
+            .OrderBy(f => f.Name);
     }
 
     public string GetRecommendation(FishItem fish)
