@@ -41,6 +41,10 @@
 </datalist>
 
 @code {
+
+    [Parameter]
+    public EventCallback<string> OnKeywordChanged { get; set; }
+
     private string[]? _allFishNames;
 
     private string? _keyword;
@@ -55,6 +59,8 @@
             if (!string.Equals(_keyword, value, StringComparison.Ordinal))
             {
                 _keyword = value;
+                Console.WriteLine("New keyword encountered: {0}", value);
+                OnKeywordChanged.InvokeAsync(value);
                 _ = QueryFishAsync();
             }
         }
@@ -72,7 +78,7 @@
     public async Task QueryFishAsync()
     {
         _fishResult = (await _queryFishService.GetFishesByAsync(_keyword))
-            .OrderBy(f => f.Name);
+        .OrderBy(f => f.Name);
     }
 
     public string GetRecommendation(FishItem fish)
