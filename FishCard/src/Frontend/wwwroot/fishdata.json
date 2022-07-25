@@ -1,6 +1,18 @@
 [
     {
-        "name": "Tilefish from the Gulf of Mexico",
+        "name": "Bigeye Tuna",
+        "recommendLevel": "Avoid"
+    },
+    {
+        "name": "King mackerel",
+        "recommendLevel": "Avoid"
+    },
+    {
+        "name": "Marlin",
+        "recommendLevel": "Avoid"
+    },
+    {
+        "name": "Orange roughy",
         "recommendLevel": "Avoid"
     },
     {
@@ -12,20 +24,152 @@
         "recommendLevel": "Avoid"
     },
     {
-        "name": "Orange roughy",
+        "name": "Tilefish (Gulf of Mexico)",
         "recommendLevel": "Avoid"
     },
     {
-        "name": "Bigeye tuna",
-        "recommendLevel": "Avoid"
+        "name": "Anchovy",
+        "recommendLevel": "Best"
     },
     {
-        "name": "Marlin",
-        "recommendLevel": "Avoid"
+        "name": "Atlantic croaker",
+        "recommendLevel": "Best"
     },
     {
-        "name": "King mackerel",
-        "recommendLevel": "Avoid"
+        "name": "Atlantic mackerel",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Black sea bass",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Butterfish",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Catfish",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Clam",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Cod",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Crab",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Crawfish",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Flounder",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Haddock",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Hake",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Herring",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Lobster (American and spiny)",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Mullet",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Oyster",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Pacific chub mackerel",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Perch (Ocean, Fresh water)",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Pickerel",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Plaice",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Pollock",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Salmon",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Sardine",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Scallop",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Shad",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Shrimp",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Skate",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Smelt",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Sole",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Squid",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Tilapia",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Trout (Fresh water)",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Tuna (canned light, includes skipjack)",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Whitefish",
+        "recommendLevel": "Best"
+    },
+    {
+        "name": "Whiting",
+        "recommendLevel": "Best"
     },
     {
         "name": "Bluefish",
@@ -40,7 +184,7 @@
         "recommendLevel": "Good"
     },
     {
-        "name": "Chilean sea bass",
+        "name": "Chilean sea bass / Patagonian toothfish",
         "recommendLevel": "Good"
     },
     {
@@ -52,7 +196,7 @@
         "recommendLevel": "Good"
     },
     {
-        "name": "Mahi mahi",
+        "name": "Mahi mahi / dolphinfish)",
         "recommendLevel": "Good"
     },
     {
@@ -84,15 +228,15 @@
         "recommendLevel": "Good"
     },
     {
-        "name": "Tilefish from the Atlantic Ocean",
+        "name": "Tilefish (Atlantic Ocean)",
         "recommendLevel": "Good"
     },
     {
-        "name": "Albacore white tuna (canned, fresh or frozen)",
+        "name": "Tuna (Albacore/white, canned, fresh or frozen)",
         "recommendLevel": "Good"
     },
     {
-        "name": "Yellowfin tuna",
+        "name": "Tuna (Yellowfin)",
         "recommendLevel": "Good"
     },
     {
@@ -102,85 +246,5 @@
     {
         "name": "White croaker/Pacific croaker",
         "recommendLevel": "Good"
-    },
-    {
-        "name": "Wild salmon",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Shrimp",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Catfish",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Tilapia",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Sole",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Flounder",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Haddock",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Halibut",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Ocean perch",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Pollock",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Cod",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Canned light tuna",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Crab",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Crawfish",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Lobster",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Hake",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Clams",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Black sea bass",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Anchovies",
-        "recommendLevel": "Best"
-    },
-    {
-        "name": "Trout",
-        "recommendLevel": "Best"
     }
 ]
