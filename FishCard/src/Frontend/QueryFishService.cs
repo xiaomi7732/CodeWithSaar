@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using CodeWithSaar.FishCard.Models;
 
 namespace CodeWithSaar.FishCard;
@@ -40,8 +41,15 @@ internal class QueryFishService
     {
         if (_allFish is null)
         {
+            // JsonSerializerOptions options = new JsonSerializerOptions()
+            // {
+            //     PropertyNameCaseInsensitive = true,
+            // };
+            // options.Converters.Add(new EnumStringConverter());
+            // _allFish = await _httpClient.GetFromJsonAsync<FishItem[]>("fishdata.json", options);
             _allFish = await _httpClient.GetFromJsonAsync<FishItem[]>("fishdata.json");
         }
+
         if (_allFish is null)
         {
             return Enumerable.Empty<FishItem>();
