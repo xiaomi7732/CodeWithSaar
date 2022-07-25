@@ -41,12 +41,6 @@ internal class QueryFishService
     {
         if (_allFish is null)
         {
-            // JsonSerializerOptions options = new JsonSerializerOptions()
-            // {
-            //     PropertyNameCaseInsensitive = true,
-            // };
-            // options.Converters.Add(new EnumStringConverter());
-            // _allFish = await _httpClient.GetFromJsonAsync<FishItem[]>("fishdata.json", options);
             _allFish = await _httpClient.GetFromJsonAsync<FishItem[]>("fishdata.json");
         }
 
