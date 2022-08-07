@@ -2,9 +2,10 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "build frontend",
             "command": "dotnet",
             "type": "process",
+            "group": "build",
             "args": [
                 "build",
                 "${workspaceFolder}/src/Frontend/Frontend.csproj",
@@ -14,28 +15,30 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "publish",
+            "label": "build backend",
             "command": "dotnet",
             "type": "process",
+            "group": "build",
             "args": [
-                "publish",
-                "${workspaceFolder}/src/Frontend/Frontend.csproj",
+                "build",
+                "${workspaceFolder}/src/Backend/Backend.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "watch",
+            "label": "build model",
             "command": "dotnet",
             "type": "process",
+            "group": "build",
             "args": [
-                "watch",
-                "run",
-                "--project",
-                "${workspaceFolder}/src/Frontend/Frontend.csproj"
+                "build",
+                "${workspaceFolder}/src/Models/Models.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
-        }
+        },
     ]
 }
