@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".ScrollBasedActivity"
+    android:id="@+id/nested_scroll_view">
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/category_list_recycler_view"
+        android:scrollbars="vertical"
+        android:paddingTop="@dimen/abc_dialog_list_padding_top_no_title"
+        android:paddingBottom="@dimen/abc_dialog_list_padding_top_no_title"
+        android:clipToPadding="true"/>
+</androidx.core.widget.NestedScrollView>

@@ -1,23 +1,29 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32203.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.DataAccess", "CodeNameK.DataAccess\CodeNameK.DataAccess.csproj", "{A95012D0-B6E7-4CD8-A368-A3C45F00EE4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeNameK.DataAccess", "CodeNameK.DataAccess\CodeNameK.DataAccess.csproj", "{A95012D0-B6E7-4CD8-A368-A3C45F00EE4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.Contracts", "CodeNameK.Contracts\CodeNameK.Contracts.csproj", "{D7304060-6B6B-4F10-A4FB-C583B51F1CD1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeNameK.Contracts", "CodeNameK.Contracts\CodeNameK.Contracts.csproj", "{D7304060-6B6B-4F10-A4FB-C583B51F1CD1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.Cli", "CodeNameK.Cli\CodeNameK.Cli.csproj", "{050ED967-8EEB-4772-8AE9-D323A90096ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeNameK.Cli", "CodeNameK.Cli\CodeNameK.Cli.csproj", "{050ED967-8EEB-4772-8AE9-D323A90096ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.DataAccess.UnitTests", "CodeNameK.DataAccess.UnitTests\CodeNameK.DataAccess.UnitTests.csproj", "{93DCF840-77A0-4123-8225-59CB979FF03E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeNameK.DataAccess.UnitTests", "CodeNameK.DataAccess.UnitTests\CodeNameK.DataAccess.UnitTests.csproj", "{93DCF840-77A0-4123-8225-59CB979FF03E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.Biz", "CodeNameK.Biz\CodeNameK.Biz.csproj", "{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeNameK.Biz", "CodeNameK.Biz\CodeNameK.Biz.csproj", "{E158D0C3-EBCE-4715-8CE2-D07F485A94D3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.ViewModels", "CodeNameK.ViewModels\CodeNameK.ViewModels.csproj", "{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeNameK.ViewModels", "CodeNameK.ViewModels\CodeNameK.ViewModels.csproj", "{EB13C763-C7A9-42DB-A15D-A0847A7C3D2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.WPF", "CodeNameK.WPF\CodeNameK.WPF.csproj", "{5C2270C3-8BDE-44DB-9165-650B03120E9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeNameK.WPF", "CodeNameK.WPF\CodeNameK.WPF.csproj", "{5C2270C3-8BDE-44DB-9165-650B03120E9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.Biz.UnitTests", "CodeNameK.Biz.UnitTests\CodeNameK.Biz.UnitTests.csproj", "{7DA51B73-355D-405C-BC98-781B466529E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeNameK.Biz.UnitTests", "CodeNameK.Biz.UnitTests\CodeNameK.Biz.UnitTests.csproj", "{7DA51B73-355D-405C-BC98-781B466529E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeNameK.Droid", "CodeNameK.Droid\CodeNameK.Droid.csproj", "{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeWithSaar.Extensions.Logging.Android", "..\..\..\CodeWithSaar.Extensions.Logging.Android\CodeWithSaar.Extensions.Logging.Android\CodeWithSaar.Extensions.Logging.Android.csproj", "{04CFA742-40A9-4FD0-8EED-73E34876EF5A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeWithSaar.Extensions.Logging.Core", "..\..\..\CodeWithSaar.Extensions.Logging.Android\CodeWithSaar.Extensions.Logging.Core\CodeWithSaar.Extensions.Logging.Core.csproj", "{D661E61A-B3C8-44CC-91CD-F15E7915F7FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,9 +33,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A95012D0-B6E7-4CD8-A368-A3C45F00EE4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -128,5 +131,53 @@ Global
 		{7DA51B73-355D-405C-BC98-781B466529E3}.Release|x64.Build.0 = Release|Any CPU
 		{7DA51B73-355D-405C-BC98-781B466529E3}.Release|x86.ActiveCfg = Release|Any CPU
 		{7DA51B73-355D-405C-BC98-781B466529E3}.Release|x86.Build.0 = Release|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Debug|x64.Build.0 = Debug|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Debug|x64.Deploy.0 = Debug|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Debug|x86.Build.0 = Debug|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Debug|x86.Deploy.0 = Debug|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Release|x64.ActiveCfg = Release|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Release|x64.Build.0 = Release|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Release|x64.Deploy.0 = Release|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Release|x86.ActiveCfg = Release|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Release|x86.Build.0 = Release|Any CPU
+		{A0D330E5-D7FE-4AC1-A8EA-4BD0980FDE27}.Release|x86.Deploy.0 = Release|Any CPU
+		{04CFA742-40A9-4FD0-8EED-73E34876EF5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04CFA742-40A9-4FD0-8EED-73E34876EF5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04CFA742-40A9-4FD0-8EED-73E34876EF5A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{04CFA742-40A9-4FD0-8EED-73E34876EF5A}.Debug|x64.Build.0 = Debug|Any CPU
+		{04CFA742-40A9-4FD0-8EED-73E34876EF5A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{04CFA742-40A9-4FD0-8EED-73E34876EF5A}.Debug|x86.Build.0 = Debug|Any CPU
+		{04CFA742-40A9-4FD0-8EED-73E34876EF5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04CFA742-40A9-4FD0-8EED-73E34876EF5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04CFA742-40A9-4FD0-8EED-73E34876EF5A}.Release|x64.ActiveCfg = Release|Any CPU
+		{04CFA742-40A9-4FD0-8EED-73E34876EF5A}.Release|x64.Build.0 = Release|Any CPU
+		{04CFA742-40A9-4FD0-8EED-73E34876EF5A}.Release|x86.ActiveCfg = Release|Any CPU
+		{04CFA742-40A9-4FD0-8EED-73E34876EF5A}.Release|x86.Build.0 = Release|Any CPU
+		{D661E61A-B3C8-44CC-91CD-F15E7915F7FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D661E61A-B3C8-44CC-91CD-F15E7915F7FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D661E61A-B3C8-44CC-91CD-F15E7915F7FD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D661E61A-B3C8-44CC-91CD-F15E7915F7FD}.Debug|x64.Build.0 = Debug|Any CPU
+		{D661E61A-B3C8-44CC-91CD-F15E7915F7FD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D661E61A-B3C8-44CC-91CD-F15E7915F7FD}.Debug|x86.Build.0 = Debug|Any CPU
+		{D661E61A-B3C8-44CC-91CD-F15E7915F7FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D661E61A-B3C8-44CC-91CD-F15E7915F7FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D661E61A-B3C8-44CC-91CD-F15E7915F7FD}.Release|x64.ActiveCfg = Release|Any CPU
+		{D661E61A-B3C8-44CC-91CD-F15E7915F7FD}.Release|x64.Build.0 = Release|Any CPU
+		{D661E61A-B3C8-44CC-91CD-F15E7915F7FD}.Release|x86.ActiveCfg = Release|Any CPU
+		{D661E61A-B3C8-44CC-91CD-F15E7915F7FD}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E6D98DFF-DE73-4386-851E-3329D29DD2C3}
 	EndGlobalSection
 EndGlobal

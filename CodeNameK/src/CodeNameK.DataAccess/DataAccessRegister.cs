@@ -5,6 +5,7 @@ using CodeNameK.DAL.OneDrive;
 using CodeNameK.DataContracts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace CodeNameK.DAL
 {
@@ -30,6 +31,21 @@ namespace CodeNameK.DAL
             services.AddScoped<IOneDriveSync, OneDriveSync>();
 
             services.AddSingleton<IUserPreferenceManager>(p => UserPreferenceManager.Instance);
+            return services;
+        }
+
+        [Obsolete("This is for deubgging only", error: false)]
+        public static IServiceCollection RegisterDataAccessModuleForAndroid(this IServiceCollection services)
+        {
+            services.AddScoped<DataPointOperator>();
+            services.AddScoped<IDataWriter<DataPoint>>(p => p.GetRequiredService<DataPointOperator>());
+            services.AddScoped<IDataReader<DataPoint>>(p => p.GetRequiredService<DataPointOperator>());
+
+            services.AddScoped<ILocalPathProvider, LocalPathProvider>();
+            services.AddScoped<DataRepo>();
+            services.AddScoped<ICategoryRepo>(p => p.GetRequiredService<DataRepo>());
+            services.AddScoped<IDataPointRepo>(p => p.GetRequiredService<DataRepo>());
+
             return services;
         }
     }

@@ -1,0 +1,11 @@
+<resources>
+	<string name="ok">OK</string>
+	<string name="cancel">Cancel</string>
+	<string name="view">View</string>
+    <string name="app_name">CodeNameK.Droid</string>
+    <string name="action_settings">Settings</string>
+	<string name="category_list_activity_name">Categories</string>
+	<string name="category_list_add_category_title">Add a Category</string>
+	<string name="add_category_dialog_category_name_hint">Category Name</string>
+	<string name="key_category_name">f812c59f-34a5-4fc1-b079-d9c14e4de355</string>
+</resources>
