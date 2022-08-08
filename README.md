@@ -1,7 +1,4 @@
----
-title: "Learn C# online, code with Saar"
----
-
+# Learn C# online by coding with Saar
 [![page-deployment](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment)
 
 I build .NET projects and I share real world project experience with you to help improving coding skills!
