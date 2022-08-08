@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Blogging Like a Hacker
-permalink: www.codewithsaar.net
+permalink: codewithsaar.net
 ---
 
 [![page-deployment](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment)
