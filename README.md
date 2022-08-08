@@ -1,5 +1,4 @@
-# Welcome
-
+# Learn C# online by coding with Saar
 [![page-deployment](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment)
 
 I build .NET projects and I share real world project experience with you to help improving coding skills!
@@ -9,11 +8,11 @@ This is the primary codebase for my [YouTube channel <img src="./images/youtube-
 ## <img src="./images/tv-show.png" width="20" /> New videos
 
 <!-- BLOG-POST-LIST:START -->
+* [Learn Blazor by building fishcard | .NET fullstack dev - 001](https://youtu.be/bE0mNuyoLhk)
 * [ASP.NET Core WebAPI CORS error fixed and explained](https://youtu.be/3eFQkchyF2A)
 * [How to use async await to load data in Xamarin Activity - CodeNameK - 19](https://youtu.be/0wywqtTvZqg)
 * [Easy & Secure: Add Refresh token in .NET (C#) WebAPI with JWT Authentication](https://youtu.be/TWBXiCS0RYM)
 * [Learn Coordinator Layout to build a beautiful activity](https://youtu.be/olVAweQAxys)
-* [Xamarin Android Layout - what to master or to avoid in 2022](https://youtu.be/OzTwh1ZqFM4)
 <!-- BLOG-POST-LIST:END -->
 
 ## <img src="./images/connected-people.png" width="20" /> Connect with me
@@ -30,6 +29,7 @@ Keep coding, keep improving:
 
 ## <img src="./images/announcement.png" width="16" /> Announcements
 
+* 8/8/2022: [Blazor WASM site - Fishcard](https://fishcard.codewithsaar.net) - Search what fish to eat what fish to eat while pregnant.
 * 6/9/2022: Get container id by one line of code: [Repo](https://github.com/xiaomi7732/CGroupV2ContainerId), [NuGet](https://www.nuget.org/packages/CodeWithSaar.Extensions.ContainerId/)
 * 5/22/2022: Cosmos Sync CLI - easily sync/backup Azure CosmosDB containers
     * Repo: <https://github.com/xiaomi7732/CosmosSync>
@@ -45,6 +45,7 @@ Keep coding, keep improving:
 
 ## <img src="./images/lifecycle.png" width="20" /> Projects
 
+* [Fishcard](https://fishcard.codewithsaar.net) - Search what fish to eat what fish to eat while pregnant - Blazor Web Assembly.
 * [ContainerId](https://github.com/xiaomi7732/CGroupV2ContainerId) - Get container id inside container by one line of code.
 * [Project Assets CLI](https://github.com/xiaomi7732/CodeWithSaar.Extensions.ProjectAssets) - Visualize NuGet package & project dependencies.
 * [CodeWithSaar.Extensions.Logging.File](https://github.com/xiaomi7732/CodeWithSaar.Extensions.Logging/blob/main/CodeWithSaar.Extensions.Logging.File/Readme.MD) - Enable file logging in ASP.NET Core applications by one line of code.
@@ -133,6 +134,11 @@ Keep coding, keep improving:
     * [Options pattern](https://youtu.be/fUSuD84Pr0U)
     * [Option in Depth](https://youtu.be/CnPAhy6M00U)
     * [C# Configuration Providers](https://youtu.be/LbPGciA_NDk)
+
+### Client Website
+
+* Blazor Web Assembly
+    * [Learn Blazor by building fishcard | .NET fullstack dev - 001](https://youtu.be/bE0mNuyoLhk)
 
 ### Mobile / Xamarin
 
