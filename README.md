@@ -1,5 +1,6 @@
 ---
-title: Learn C# online by coding with Saar
+title: Learn C# online - Code with Saar
+description: Learn C# online by coding with Saar. Advance your coding skills by building real projects. Keep coding, keep improving!
 ---
 
 [![page-deployment](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment)
