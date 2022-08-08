@@ -1,7 +1,4 @@
----
-layout: null
-title: Blogging Like a Hacker
----
+# Learn C# online, code with Saar
 
 [![page-deployment](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment)
 
