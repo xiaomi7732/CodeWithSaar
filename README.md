@@ -1,10 +1,9 @@
 ---
 layout: page
-title: "Try out custom title"
+title: "Learn C# online, code with Saar"
+description: "Getting better by build projects! Keep coding, keep improving!"
 permalink: /
 ---
-
-# Learn C# online, code with Saar
 
 [![page-deployment](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment)
 
