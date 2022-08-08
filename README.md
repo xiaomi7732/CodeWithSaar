@@ -1,4 +1,7 @@
-# Learn C# online by coding with Saar
+---
+title: Learn C# online by coding with Saar
+---
+
 [![page-deployment](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment)
 
 I build .NET projects and I share real world project experience with you to help improving coding skills!
@@ -8,7 +11,7 @@ This is the primary codebase for my [YouTube channel <img src="./images/youtube-
 ## <img src="./images/tv-show.png" width="20" /> New videos
 
 <!-- BLOG-POST-LIST:START -->
-* [Learn Blazor by building fishcard | .NET fullstack dev - 001](https://youtu.be/bE0mNuyoLhk)
+* [Learn Blazor by building fishcard - .NET fullstack dev - 001](https://youtu.be/bE0mNuyoLhk)
 * [ASP.NET Core WebAPI CORS error fixed and explained](https://youtu.be/3eFQkchyF2A)
 * [How to use async await to load data in Xamarin Activity - CodeNameK - 19](https://youtu.be/0wywqtTvZqg)
 * [Easy & Secure: Add Refresh token in .NET (C#) WebAPI with JWT Authentication](https://youtu.be/TWBXiCS0RYM)
