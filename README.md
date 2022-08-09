@@ -144,7 +144,7 @@ Keep coding, keep improving:
 ### Client Website
 
 * Blazor Web Assembly
-    * [Learn Blazor by building fishcard | .NET fullstack dev - 001](https://youtu.be/bE0mNuyoLhk)
+    * [Learn Blazor by building fishcard {% raw %} | {% endraw %} .NET fullstack dev - 001](https://youtu.be/bE0mNuyoLhk)
 
 ### Mobile / Xamarin
 
