@@ -1,4 +1,7 @@
 ﻿@page "/"
+@page "/search"
+@layout MainLayout;
+@inject NavigationManager NavigationManager
 
 <div class="content">
     @if (!_hideLogo)
@@ -10,15 +13,18 @@
     <div>
         💡 What types of fish are safe to eat during pregnancy?
     </div>
-    <Search OnKeywordChanged="OnKeywordChanged" />
+    <Search SearchKeyword="@SearchKeyword" />
 </div>
 
 @code {
-    private bool _hideLogo = false;
-
-    private async Task OnKeywordChanged(string newKeyword)
+    protected override void OnParametersSet()
     {
-        _hideLogo = !string.IsNullOrEmpty(newKeyword);
-        await Task.Yield();
+        _hideLogo = !string.IsNullOrEmpty(SearchKeyword);
     }
+
+    [SupplyParameterFromQuery(Name = "q")]
+    [Parameter]
+    public string? SearchKeyword { get; set; }
+
+    private bool _hideLogo = false;
 }

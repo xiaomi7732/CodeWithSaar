@@ -10,7 +10,6 @@ internal class EnumStringConverter<T> : JsonConverter<T>
     public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         string? stringValue = reader.GetString();
-        Console.WriteLine("String value: {0}", stringValue);
         if (string.IsNullOrEmpty(stringValue))
         {
             throw new InvalidCastException("Can't deserialize enum value of empty.");

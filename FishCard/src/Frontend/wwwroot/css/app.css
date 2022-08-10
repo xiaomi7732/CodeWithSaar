@@ -29,6 +29,14 @@ h1:focus {
     outline: none;
 }
 
+a {
+    text-decoration: none;
+}
+
+a:hover{
+    text-decoration: underline;
+}
+
 a,
 .btn-link {
     color: #0071c1;
