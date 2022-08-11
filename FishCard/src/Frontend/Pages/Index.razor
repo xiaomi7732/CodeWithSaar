@@ -1,4 +1,5 @@
 ﻿@page "/"
+@page "/{searchKeywordByRoute?}"
 @page "/search"
 @layout MainLayout;
 @inject NavigationManager NavigationManager
@@ -11,20 +12,34 @@
         </div>
     }
     <div>
+        @SearchKeywordByRoute
+    </div>
+    <div>
         💡 What types of fish are safe to eat during pregnancy?
     </div>
     <Search SearchKeyword="@SearchKeyword" />
 </div>
 
 @code {
-    protected override void OnParametersSet()
-    {
-        _hideLogo = !string.IsNullOrEmpty(SearchKeyword);
-    }
+    private bool _hideLogo = false;
+
+    [Parameter]
+    public string? SearchKeywordByRoute { get; set; }
 
     [SupplyParameterFromQuery(Name = "q")]
     [Parameter]
     public string? SearchKeyword { get; set; }
 
-    private bool _hideLogo = false;
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(SearchKeywordByRoute) && string.IsNullOrEmpty(SearchKeyword))
+        {
+            SearchKeyword = SearchKeywordByRoute;
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        _hideLogo = !string.IsNullOrEmpty(SearchKeyword);
+    }
 }
