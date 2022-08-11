@@ -1,10 +1,3 @@
----
-layout: page
-title: "Learn C# online, code with Saar"
-description: "Get better by building projects! Keep coding, keep improving!"
-permalink: /
----
-
 # Learn C# online, code with Saar
 
 💪 Get better by building projects! Keep coding, keep improving!
