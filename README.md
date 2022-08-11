@@ -14,7 +14,7 @@ This is the primary codebase for my [YouTube channel <img src="./images/youtube-
 ## <img src="./images/tv-show.png" width="20" /> New videos
 
 <!-- BLOG-POST-LIST:START -->
-* [Learn Blazor by building fishcard <code>&#124;</code> .NET fullstack dev - 001](https://youtu.be/bE0mNuyoLhk)
+* [Learn Blazor by building fishcard &#124; .NET fullstack dev - 001](https://youtu.be/bE0mNuyoLhk)
 * [ASP.NET Core WebAPI CORS error fixed and explained](https://youtu.be/3eFQkchyF2A)
 * [How to use async await to load data in Xamarin Activity - CodeNameK - 19](https://youtu.be/0wywqtTvZqg)
 * [Easy & Secure: Add Refresh token in .NET (C#) WebAPI with JWT Authentication](https://youtu.be/TWBXiCS0RYM)
@@ -35,7 +35,7 @@ Keep coding, keep improving:
 
 ## <img src="./images/announcement.png" width="16" /> Announcements
 
-* 8/8/2022: [Blazor WASM site <code>&#124;</code> Fishcard](https://fishcard.codewithsaar.net) - Search what fish to eat what fish to eat while pregnant.
+* 8/8/2022: [Blazor WASM site &#124; Fishcard](https://fishcard.codewithsaar.net) - Search what fish to eat what fish to eat while pregnant.
 * 6/9/2022: Get container id by one line of code: [Repo](https://github.com/xiaomi7732/CGroupV2ContainerId), [NuGet](https://www.nuget.org/packages/CodeWithSaar.Extensions.ContainerId/)
 * 5/22/2022: Cosmos Sync CLI - easily sync/backup Azure CosmosDB containers
     * Repo: <https://github.com/xiaomi7732/CosmosSync>
@@ -144,7 +144,7 @@ Keep coding, keep improving:
 ### Client Website
 
 * Blazor Web Assembly
-    * [Learn Blazor by building fishcard <code>&#124;</code> .NET fullstack dev - 001](https://youtu.be/bE0mNuyoLhk)
+    * [Learn Blazor by building fishcard &#124; .NET fullstack dev - 001](https://youtu.be/bE0mNuyoLhk)
 
 ### Mobile / Xamarin
 
