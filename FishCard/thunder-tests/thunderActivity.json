@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "45cf3f9f-9e4a-4b1b-ba9a-ab91e3f75b60",
+    "colId": "history",
+    "containerId": "",
+    "name": "https://localhost:7280/fish",
+    "url": "https://localhost:7280/fish",
+    "method": "GET",
+    "sortNum": 0,
+    "created": "2022-08-13T17:03:01.380Z",
+    "modified": "2022-08-13T17:03:01.421Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  }
+]

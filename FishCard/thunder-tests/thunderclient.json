@@ -1,0 +1,29 @@
+[
+  {
+    "_id": "a84cb731-d4a7-4582-ad00-93505e997ed4",
+    "colId": "9094138a-1fc3-499a-ab79-d43f6c99ab95",
+    "containerId": "",
+    "name": "https://localhost:7280/fish",
+    "url": "https://localhost:7280/fish",
+    "method": "GET",
+    "sortNum": 10000,
+    "created": "2022-08-13T17:03:28.243Z",
+    "modified": "2022-08-13T17:04:19.361Z",
+    "headers": [],
+    "params": [],
+    "tests": [
+      {
+        "type": "res-code",
+        "custom": "",
+        "action": "equal",
+        "value": "200"
+      },
+      {
+        "type": "json-query",
+        "custom": "json.[0].name",
+        "action": "equal",
+        "value": "Bigeye Tuna"
+      }
+    ]
+  }
+]
