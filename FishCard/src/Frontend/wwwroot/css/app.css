@@ -33,7 +33,7 @@ a {
     text-decoration: none;
 }
 
-a:hover{
+a:hover {
     text-decoration: underline;
 }
 
@@ -91,4 +91,34 @@ a,
 
 .blazor-error-boundary::after {
     content: "An error has occurred."
+}
+
+.flash-screen
+{
+    display: flex;
+    justify-content: center;
+}
+
+.loading-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-left: 16px;
+    margin-right: 16px;;
+}
+
+
+.homelink
+{
+    display: flex;
+    justify-content: right;
+    font-size: 12px;
+    margin-bottom: 60px;
+    width: 100%;
+}
+
+
+.loading-text > img {
+    margin-bottom: 24px;
 }
