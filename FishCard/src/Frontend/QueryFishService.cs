@@ -1,23 +1,22 @@
 using System.Net.Http.Json;
-using System.Text.Json;
 using CodeWithSaar.FishCard.Models;
 
 namespace CodeWithSaar.FishCard;
 
 internal class QueryFishService
 {
-    private readonly HttpClient _httpClient;
+    private readonly BackendClient _backendClient;
     private FishItem[]? _allFish = null;
 
-    public QueryFishService(HttpClient httpClient)
+    public QueryFishService(BackendClient backendClient)
     {
-        _httpClient = httpClient ?? throw new System.ArgumentNullException(nameof(httpClient));
+        _backendClient = backendClient ?? throw new System.ArgumentNullException(nameof(backendClient));
     }
 
     /// <summary>
     /// Gets a list of fish items by keyword. The keyword needs to at least partially match the fish name. It is case insensitive.
     /// </summary>
-    public async Task<IEnumerable<FishItem>> GetFishesByAsync(string? keyword)
+    public async Task<IEnumerable<FishItem>> GetFishesByAsync(string? keyword, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(keyword))
         {
@@ -26,28 +25,24 @@ internal class QueryFishService
 
         keyword = keyword.Trim();
 
-        return (await GetAllFishIntoCacheAsync()).Where(f => f.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+        return (await GetAllFishIntoCacheAsync(cancellationToken)).Where(f => f.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <summary>
     /// Gets all the fish items.
     /// </summary>
-    public Task<IEnumerable<FishItem>> GetAllFishesAsync()
+    public Task<IEnumerable<FishItem>> GetAllFishesAsync(CancellationToken cancellationToken)
     {
-        return GetAllFishIntoCacheAsync();
+        return GetAllFishIntoCacheAsync(cancellationToken);
     }
 
-    private async Task<IEnumerable<FishItem>> GetAllFishIntoCacheAsync()
+    private async Task<IEnumerable<FishItem>> GetAllFishIntoCacheAsync(CancellationToken cancellationToken)
     {
         if (_allFish is null)
         {
-            _allFish = await _httpClient.GetFromJsonAsync<FishItem[]>("fishdata.json");
+            _allFish = (await _backendClient.GetAllFishAsync(cancellationToken)).ToArray();
         }
 
-        if (_allFish is null)
-        {
-            return Enumerable.Empty<FishItem>();
-        }
         return _allFish;
     }
 }

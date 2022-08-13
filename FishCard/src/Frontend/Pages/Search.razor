@@ -3,6 +3,7 @@
 @inject QueryFishService _queryFishService;
 @inject RecommendService _recommendationService;
 @inject NavigationManager _navigationManager;
+@implements IDisposable
 
 <div class="search-input-container">
     <div id="search-icon-holder">
@@ -52,6 +53,8 @@
 </datalist>
 
 @code {
+    private CancellationTokenSource? _cancellationTokenSource;
+
     [Parameter]
     public string? SearchKeyword { get; set; }
     private string[]? _allFishNames;
@@ -63,11 +66,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _allFishNames = (await _queryFishService.GetAllFishesAsync())
+        _cancellationTokenSource = new CancellationTokenSource();
+        _allFishNames = (await _queryFishService.GetAllFishesAsync(_cancellationTokenSource.Token))
         .Select(item => item.Name)
         .OrderBy(name => name, StringComparer.OrdinalIgnoreCase).ToArray();
     }
-    
+
     protected override async Task OnParametersSetAsync()
     {
 #if DEBUG
@@ -86,15 +90,10 @@ Console.WriteLine($"[{nameof(Search)}] {nameof(OnParametersSet)} invoked, {nameo
         }
         set
         {
-#if DEBUG
-            Console.WriteLine($"Setting keyword: {value}");
-#endif
-            // Making sure it doesn't dead loop by checking the value. If they are the same already, do not invoking navigation again.
+            // Making sure it doesn't dead loop by checking the value.
+            // If they are the same already, do not invoking navigation again.
             if (!string.Equals(_keywordText, value, StringComparison.Ordinal))
             {
-#if DEBUG
-                Console.WriteLine($"Setting new keyword: {value}");
-#endif
                 _keywordText = value;
                 NavigateToQueryFish(value);
             }
@@ -137,14 +136,21 @@ Console.WriteLine($"[{nameof(Search)}] {nameof(OnParametersSet)} invoked, {nameo
     private async Task QueryFishAsync(string? keyword)
     {
 #if DEBUG
-        Console.WriteLine($"Querying fish: {keyword}");
+Console.WriteLine($"Querying fish: {keyword}");
 #endif
 
-        _fishResult = (await _queryFishService.GetFishesByAsync(keyword))
-        .OrderBy(f => f.Name);
+        _fishResult = (await _queryFishService.GetFishesByAsync(
+        keyword,
+        cancellationToken: _cancellationTokenSource?.Token ?? default
+        )).OrderBy(f => f.Name);
 
 #if DEBUG
-        Console.WriteLine($"Queried fish: {keyword}");
+Console.WriteLine($"Queried fish: {keyword}");
 #endif
+    }
+
+    public void Dispose()
+    {
+        _cancellationTokenSource?.Dispose();
     }
 }

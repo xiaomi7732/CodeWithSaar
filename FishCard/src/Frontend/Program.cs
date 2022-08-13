@@ -11,5 +11,12 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 builder.Services.AddScoped<QueryFishService>();
 builder.Services.AddScoped<RecommendService>();
+builder.Services.AddScoped<BackendClient>(p =>
+{
+    HttpClient httpClient = new HttpClient();
+    httpClient.BaseAddress = new Uri("https://fishcard.azurewebsites.net/");
+
+    return new BackendClient(httpClient);
+});
 
 await builder.Build().RunAsync();
