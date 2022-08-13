@@ -3,11 +3,38 @@ name: Deploy Fishcard Backend to Azure
 on:
   workflow_dispatch:
 
+env:
+  AZURE_WEBAPP_NAME: fishcard
+  AZURE_WEBAPP_PACKAGE_PATH: '.'
+  DOTNET_VERSION: '6.0.x'
+  BRANCH_NAME: 'dev/saars/fishcard'
+  TARGET_PROJECT: 'FishCard/src/Backend/Backend.csproj'
+
 jobs:
-  test:
-    runs-on: ubuntu-18.04
+  build:
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Show environment v1
-        run: env | grep ^GITHUB
-      - name: Show ref v1
-        run: echo "===============> Version from $GITHUB_REF"
+      # Checkout the repo
+      - uses: actions/checkout@${{ env.BRANCH_NAME }}
+      
+      # Setup .NET Core SDK
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }} 
+      
+      # Run dotnet build and publish
+      - name: dotnet build and publish
+        run: |
+          dotnet restore '${{ env.TARGET_PROJECT }}'
+          dotnet build --configuration Release '${{ env.TARGET_PROJECT }}'
+          dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp' '${{ env.TARGET_PROJECT }}'
+          
+      # Deploy to Azure Web apps
+      - name: 'Run Azure webapp deploy action using publish profile credentials'
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.FISH_CARD_BE_AZURE_PUBLISH_PROFILE }}
+          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/myapp'
