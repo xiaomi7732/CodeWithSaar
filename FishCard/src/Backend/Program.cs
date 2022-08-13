@@ -9,6 +9,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddFishServices();
+builder.Services.AddCors(config => config.AddDefaultPolicy(policy =>
+{
+    policy.WithOrigins(new string[]{
+        "https://localhost:7015",  // Local debugging
+        "https://fishcard.codewithsaar.net", // Hosted on github
+    });
+}));
 
 var app = builder.Build();
 
@@ -20,6 +27,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthorization();
 
