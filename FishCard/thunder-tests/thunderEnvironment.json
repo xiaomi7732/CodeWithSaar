@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "_id": "2ac8249f-5542-4a8b-b013-af98b0c6fea5",
+    "name": "local",
+    "default": true,
+    "sortNum": 20000,
+    "created": "2022-08-13T17:49:03.317Z",
+    "modified": "2022-08-13T17:52:51.921Z",
+    "data": [
+      {
+        "name": "baseUri",
+        "value": "https://localhost:7280"
+      }
+    ]
+  },
+  {
+    "_id": "27e3717d-7f70-4662-9548-a8c6060e9f58",
+    "name": "deployed",
+    "default": false,
+    "sortNum": 30000,
+    "created": "2022-08-13T17:49:11.198Z",
+    "modified": "2022-08-13T17:52:34.572Z",
+    "data": [
+      {
+        "name": "baseUri",
+        "value": "https://fishcard.azurewebsites.net"
+      }
+    ]
+  }
+]
