@@ -12,6 +12,7 @@
     min-width: 180px;
     max-width: 500px;
     background-color: var(--control-surface);
+    animation: fadeIn 1s;
 }
 
 #search-icon-holder {
@@ -37,6 +38,7 @@
     flex-flow: row;
     align-content: center;
     margin-bottom: 36px;
+    animation: fadeIn 1s;
 }
 
 button {
@@ -71,6 +73,7 @@ button {
     align-items: baseline;
     margin-bottom: 48px;
     flex-wrap: wrap;
+    animation: fadeIn 1s;
 }
 
 .quick-access>div {
@@ -85,5 +88,15 @@ h3 {
     .fish-card {
         width: 100%;
         flex-grow: 1;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
     }
 }
