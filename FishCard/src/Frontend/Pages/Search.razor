@@ -35,7 +35,7 @@
 <div id="fish-card-container">
     @foreach (FishItem fish in _fishResult)
     {
-        <div class="fish-card">
+        <div class="fish-card" @key=fish.Name>
             <h3>@fish.Name</h3>
             <div>@GetRecommendation(fish)</div>
         </div>
