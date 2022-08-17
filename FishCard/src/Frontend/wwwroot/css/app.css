@@ -105,12 +105,12 @@ a,
 .homelink {
     display: flex;
     justify-content: right;
-    margin-bottom: 6rem;
     width: 100%;
 }
 
 .loading-container>img {
     padding-top: 1.1rem;
+    margin-top: 6rem;
     margin-bottom: 3rem;
 }
 
