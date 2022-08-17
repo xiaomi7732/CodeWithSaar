@@ -42,6 +42,8 @@
 button {
     margin-left: 4px;
     margin-right: 4px;
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 #fish-card-container {
@@ -68,6 +70,11 @@ button {
     justify-content: center;
     align-items: baseline;
     margin-bottom: 48px;
+    flex-wrap: wrap;
+}
+
+.quick-access>div {
+    white-space: nowrap;
 }
 
 h3 {

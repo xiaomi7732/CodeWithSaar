@@ -3,11 +3,14 @@
     --control-surface: white;
     --text-color: #333;
     --border-color: #999;
+    --accent-color: #1861ac;
+    --border-color-light: #eee;
 }
 
 html,
 body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: .875rem;
     background-color: var(--page-background);
     color: var(--text-color);
 }
@@ -39,7 +42,7 @@ a:hover {
 
 a,
 .btn-link {
-    color: #0071c1;
+    color: var(--accent-color);
 }
 
 .btn-primary {
@@ -93,51 +96,41 @@ a,
     content: "An error has occurred."
 }
 
-.flash-screen {
-    display: flex;
-    justify-content: center;
-}
-
-.loading-text {
+.loading-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
-    margin-left: 16px;
-    margin-right: 16px;
-    ;
 }
-
 
 .homelink {
     display: flex;
     justify-content: right;
-    font-size: 12px;
-    margin-bottom: 60px;
+    margin-bottom: 6rem;
     width: 100%;
 }
 
-.loading-text>img {
-    margin-bottom: 24px;
+.loading-container>img {
+    padding-top: 1.1rem;
+    margin-bottom: 3rem;
 }
 
 .loading-content{
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-top: 8px;
+    margin-top: 1rem;
 }
 
 .loader {
-    border: 2px solid #f3f3f3;
+    border: 2px solid var(--border-color-light);
     /* Light grey */
-    border-top: 2px solid #3498db;
+    border-top: 2px solid var(--accent-color);
     /* Blue */
     border-radius: 50%;
-    width: 14px;
-    height: 14px;
+    width: 0.875rem;
+    height: 0.875rem;
     animation: spin 2s linear infinite;
-    margin-right: 8px;
+    margin-right: 0.5rem;
 }
 
 @keyframes spin {

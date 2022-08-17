@@ -3,10 +3,3 @@
     display: flex;
     flex-direction: column;
 }
-
-.topBar {
-    display: flex;
-    justify-content: right;
-    font-size: 12px;
-    
-}

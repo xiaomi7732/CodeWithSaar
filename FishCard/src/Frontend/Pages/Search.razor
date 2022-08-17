@@ -26,10 +26,10 @@
     <div>
         Try dishes:
     </div>
-    <button @onclick=@(e=> NavigateToQueryFish("tuna"))>Tuna</button>
-    <button @onclick=@(e=> NavigateToQueryFish("salmon"))>Salmon</button>
-    <button @onclick=@(e=> NavigateToQueryFish("lobster"))>Lobster</button>
     <button @onclick=@(e=> NavigateToQueryFish("catfish"))>Catfish</button>
+    <button @onclick=@(e=> NavigateToQueryFish("lobster"))>Lobster</button>
+    <button @onclick=@(e=> NavigateToQueryFish("salmon"))>Salmon</button>
+    <button @onclick=@(e=> NavigateToQueryFish("tuna"))>Tuna</button>
 </div>
 
 <div id="fish-card-container">
@@ -151,6 +151,7 @@ Console.WriteLine($"Queried fish: {keyword}");
 
     public void Dispose()
     {
+        Console.WriteLine("Dispose");
         _cancellationTokenSource?.Dispose();
     }
 }
