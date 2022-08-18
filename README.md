@@ -2,7 +2,7 @@
 
 💪 Get better by building projects! Keep coding, keep improving!
 
-[![page-deployment](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment)
+[![](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/xiaomi7732/CodeWithSaar/actions/workflows/pages/pages-build-deployment)
 
 I build .NET projects and I share real world project experience with you to help improving coding skills!
 
@@ -32,7 +32,7 @@ Keep coding, keep improving:
 
 ## <img src="./images/announcement.png" width="16" /> Announcements
 
-* 8/8/2022: [Blazor WASM site &#124; Fishcard](https://fishcard.codewithsaar.net) - Search what fish to eat what fish to eat while pregnant.
+* 8/8/2022: [Blazor WASM site &#124; Fishcard](https://fishcard.codewithsaar.net) - Search what fish to eat while pregnant.
 * 6/9/2022: Get container id by one line of code: [Repo](https://github.com/xiaomi7732/CGroupV2ContainerId), [NuGet](https://www.nuget.org/packages/CodeWithSaar.Extensions.ContainerId/)
 * 5/22/2022: Cosmos Sync CLI - easily sync/backup Azure CosmosDB containers
     * Repo: <https://github.com/xiaomi7732/CosmosSync>
@@ -48,7 +48,7 @@ Keep coding, keep improving:
 
 ## <img src="./images/lifecycle.png" width="20" /> Projects
 
-* [Fishcard](https://fishcard.codewithsaar.net) - Search what fish to eat what fish to eat while pregnant - Blazor Web Assembly.
+* [Fishcard](https://fishcard.codewithsaar.net) - Search what fish to eat while pregnant - Blazor Web Assembly.
 * [ContainerId](https://github.com/xiaomi7732/CGroupV2ContainerId) - Get container id inside container by one line of code.
 * [Project Assets CLI](https://github.com/xiaomi7732/CodeWithSaar.Extensions.ProjectAssets) - Visualize NuGet package & project dependencies.
 * [CodeWithSaar.Extensions.Logging.File](https://github.com/xiaomi7732/CodeWithSaar.Extensions.Logging/blob/main/CodeWithSaar.Extensions.Logging.File/Readme.MD) - Enable file logging in ASP.NET Core applications by one line of code.
