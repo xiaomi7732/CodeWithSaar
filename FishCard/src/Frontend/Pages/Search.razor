@@ -119,18 +119,20 @@ Console.WriteLine($"[{nameof(Search)}] {nameof(OnParametersSet)} invoked, {nameo
 
     private void NavigateToQueryFish(string? keyword)
     {
-        UriBuilder builder = new UriBuilder(_navigationManager.Uri);
+        UriBuilder builder = new UriBuilder(_navigationManager.BaseUri);
+        string targetUri;
         if (!string.IsNullOrEmpty(keyword))
         {
-            NameValueCollection queryString = System.Web.HttpUtility.ParseQueryString(builder.Query);
-            queryString["q"] = keyword;
-            builder.Query = queryString.ToString();
+            targetUri = _navigationManager.GetUriWithQueryParameters(builder.Uri.AbsoluteUri, new Dictionary<string, object?>
+            {
+                ["q"] = keyword,
+            });
         }
         else
         {
-            builder.Query = null;
+            targetUri = builder.Uri.AbsoluteUri;
         }
-        _navigationManager.NavigateTo(builder.ToString(), forceLoad: false);
+        _navigationManager.NavigateTo(targetUri, forceLoad: false);
     }
 
     private async Task QueryFishAsync(string? keyword)
