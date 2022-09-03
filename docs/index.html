@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=.75">
+    <title>Learn C# online, code with Saar</title>
+    <meta name="description" content="Get better by building projects with me! Keep coding, keep improving!">
+    <link rel="canonical" href="https://www.codewithsaar.net/">
+
+    <meta property="og:title" content="Learn C# online, code with Saar">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:url" content="https://www.codewithsaar.net/">
+    <meta property="og:site_name" content="Learn C# online, code with Saar">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://pbs.twimg.com/profile_images/540766995730272257/suHx_tmV_400x400.png">
+    <!-- Twitter card -->
+    <meta name="twitter:card" content="summary">
+    <meta property="twitter:title" content="Learn C# online, code with Saar">
+    <meta name="twitter:site" content="@CodeWithSaar">
+    <meta name="twitter:creator" content="@SaarShen">
+    <meta name="twitter:image" content="https://pbs.twimg.com/profile_images/540766995730272257/suHx_tmV_400x400.png">
+    <meta name="twitter:image:src"
+        content="https://pbs.twimg.com/profile_images/540766995730272257/suHx_tmV_400x400.png">
+
+    <link rel="icon" href="./images/profile.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Javascript -->
+    <script src="./app.js" defer></script>
+</head>
+
+<body>
+    <div id="page-container">
+        <div id="main-container">
+            <div class="fake-header-gap"></div>
+            <div class="header-container">
+                <h1 class="header-text">
+                    Learn C# online, code with Saar
+                </h1>
+                <div id="nav-bar" class="nav-bar">
+                    <ul>
+                        <li class="active">
+                            <h2 onclick="navigateTo('/')">What's new</h2>
+                        </li>
+                        <li>
+                            <h2 onclick="navigateTo('/videos')">Video Index</h2>
+                        </li>
+                        <li>
+                            <h2 onclick="navigateTo('/projects')">My Projects</h2>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="main-content">
+                <!-- Page 1 What's New -->
+                <div id="page1" class="main-page-content active">
+                    <div class="youtube-page-description">
+                        💪 Learn C#, get better by building projects! Keep coding, keep improving!
+                    </div>
+                    <p>I build .NET projects and I share real world project experience with you to help improving
+                        coding skills!</p>
+
+                    <!-- Top 5 videos -->
+                    <div class="paragraph">
+                        <div class="paragraph-header">
+                            <img src="./images/icon-new-videos.svg" alt="New video icon" />
+                            <h3>New Videos</h3>
+                        </div>
+                        <ul>
+                            <li>
+                                <a href="https://youtu.be/4B87xqF1re0">Learn Blazor Routing and Navigation by building
+                                    fishcard | .NET fullstack dev - 002</a>
+                            </li>
+                            <li>
+                                <a href="https://youtu.be/bE0mNuyoLhk">Learn Blazor by building fishcard | .NET
+                                    fullstack dev - 001</a>
+                            </li>
+                            <li>
+                                <a href="https://youtu.be/3eFQkchyF2A">ASP.NET Core WebAPI CORS error fixed and
+                                    explained</a>
+                            </li>
+                            <li>
+                                <a href="https://youtu.be/0wywqtTvZqg">How to use async await to load data in Xamarin
+                                    Activity - CodeNameK - 19</a>
+                            </li>
+                            <li>
+                                <a href="https://youtu.be/TWBXiCS0RYM">Easy & Secure: Add Refresh token in .NET (C#)
+                                    WebAPI with JWT Authentication</a>
+                            </li>
+                        </ul>
+                        <div>
+                            Go to <a href="#" onclick="navigateTo('/videos')">the index</a> for the full list of videos!
+                        </div>
+                    </div>
+
+                    <!-- Announcements -->
+                    <div class="paragraph">
+                        <div class="paragraph-header">
+                            <img src="./images/icon-announcements.svg" alt="Announcements icon" />
+                            <h3>Announcements</h3>
+                        </div>
+                        <ul>
+                            <!-- Item template:
+                            <li>
+                                8/31/2022: Published new project:
+                                <a href="https://clock.codewithsaar.net" target="_blank" class="highlight-text">The clock</a>
+                                - HTML/JS PWA clock application
+                                | <a href="https://www.github.com/xiaomi7732/jsClock" target="_blank">Source Code</a>
+                            </li>
+                             -->
+                            <li>
+                                8/31/2022: Published new project:
+                                <a href="https://clock.codewithsaar.net" target="_blank" class="highlight-text">The
+                                    clock</a>
+                                - HTML/JS PWA clock application
+                                | <a href="https://www.github.com/xiaomi7732/jsClock" target="_blank">Source Code</a>
+                            </li>
+                            <li>
+                                8/8/2022: Published new project:
+                                <a href="https://fishcard.codewithsaar.net/" target="_blank"
+                                    class="highlight-text">Blazor WASM site | Fishcard</a>
+                                - Search what fish to eat while pregnant
+                                | <a href="https://github.com/xiaomi7732/CodeWithSaar/tree/dev/saars/fishcard/FishCard"
+                                    target="_blank">Source Code</a>
+                            </li>
+                            <li>
+                                6/9/2022: Published NuGet package:
+                                <a href="https://www.nuget.org/packages/CodeWithSaar.Extensions.ContainerId/"
+                                    target="_blank" class="highlight-text">CodeWithSaar.Extensions.ContainerId 0.0.2</a>
+                                - Get container id by one line of code.
+                                | <a href="https://github.com/xiaomi7732/CGroupV2ContainerId" target="_blank">Source
+                                    Code</a>
+                            </li>
+                            <li>
+                                5/22/2022:
+                                Published CLI tool:
+                                <a href="https://github.com/xiaomi7732/CosmosSync" target="_blank"
+                                    class="highlight-text">Cosmos Sync CLI</a>
+                                | <a href="https://github.com/xiaomi7732/CosmosSync" target="_blank">Source Code</a>
+                            </li>
+                            <li>
+                                5/10/2022: CLI tool:
+                                <a href="https://github.com/xiaomi7732/CodeWithSaar.Extensions.ProjectAssets"
+                                    target="_blank" class="highlight-text">NuGet dependencies</a>
+                                - visualize project / NuGet dependencies
+                            </li>
+                            <li>
+                                4/12/2022: Published a new NuGet package:
+                                <a href="https://www.nuget.org/packages/CodeWithSaar.Extensions.Logging.File"
+                                    target="_blank" class="highlight-text">CodeWithSaar.Extensions.Logging.File</a>
+                                - Writing logs to file by one line of code.
+                                | <a href="https://github.com/xiaomi7732/CodeWithSaar.Extensions.Logging"
+                                    target="_blank">Source Code</a>
+                            </li>
+                            <li>
+                                3/2/2022: Published new project:
+                                <a href="https://stack.codewithsaar.net/" target="_blank" class="highlight-text">Stack
+                                    Beauty</a>
+                                - Pretty print any stack trace and make stack reading easier.
+                                | <a href="https://github.com/xiaomi7732/StackBeauty" target="_blank">Source Code</a>
+                            </li>
+                            <li>
+                                1/30/2022: Published new version:
+                                <a href="https://www.codewithsaar.net/CodeNameK/" target="_blank"
+                                    class="highlight-text">NumberIt (CodeNameK)</a>
+                                - 1.0.0-beta2
+                            </li>
+                            <li>
+                                1/8/2022: Published new version:
+                                <a href="https://www.codewithsaar.net/CodeNameK/" target="_blank"
+                                    class="highlight-text">NumberIt (CodeNameK)</a>
+                                - 1.0.0-beta1
+                            </li>
+                            <li>
+                                12/31/2021: Published new website:
+                                <a href="https://www.codewithsaar.net/CodeNameK/" target="_blank"
+                                    class="highlight-text">NumberIt Release Page</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- Page 2: Video Index -->
+                <div id="page2" class="main-page-content">
+                    <div class="youtube-page-description">
+                        <img src="./images/icon-youtube.svg" />C# YouTube videos - organized ... a bit.
+                    </div>
+
+                    <!-- Getting Started -->
+                    <div class="paragraph">
+                        <div class="paragraph-header">
+                            <h3>Getting Started</h3>
+                        </div>
+                        <ul>
+                            <li><a href='https://youtu.be/O_Un6_2mhL0' target='_blank'>How to download .NET</a></li>
+                            <li><a href='https://youtu.be/yJ-buQg09Qc' target='_blank'>How to Build C# Projects</a></li>
+                            <li><a href='https://youtu.be/uQrs6ioZfzs' target='_blank'>C# project</a></li>
+                            <li><a href='https://youtu.be/pJETdpS5PR8' target='_blank'>Project reference</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Fundamentals -->
+                    <div class="paragraph">
+                        <div class="paragraph-header">
+                            <h3>Fundamentals</h3>
+                        </div>
+                        <ul>
+                            <li>C# Language Features
+                                <ul>
+                                    <li><a href='https://youtu.be/lO622PQuPBc' target='_blank'>Computed Properties</a>
+                                    </li>
+                                    <li><a href='https://youtu.be/RH4B_i-nq44' target='_blank'>Extension Method</a></li>
+                                    <li><a href='https://youtu.be/L5SN2-agGaY' target='_blank'>C# Delegate</a></li>
+                                </ul>
+                            </li>
+                            <li>ASP.NET Core
+                                <ul>
+                                    <li>
+                                        <a href='https://youtu.be/3eFQkchyF2A' target='_blank'>ASP.NET Core WebAPI CORS
+                                            error fixed and explained</a>
+                                    </li>
+                                    <li>
+                                        <a href='https://youtu.be/K9sBI9ZFxRA' target='_blank'>ASP.NET Core Pipeline</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li>High quality code
+                                <ul>
+                                    <li><a href='https://youtu.be/IjjHp8PWbn4' target='_blank'>Dispose unmanaged
+                                            resource correctly by IDisposable</a></li>
+                                    <li><a href='https://youtu.be/Ny8us1qb-E0' target='_blank'>Async avoid is evil</a>
+                                    </li>
+                                    <li><a href='https://youtu.be/XBBlicTQjyg' target='_blank'>Design code for
+                                            change</a></li>
+                                    <li><a href='https://youtu.be/qxdVHBO_qxc' target='_blank'>Static Methods are
+                                            BAD</a></li>
+                                    <li><a href='https://youtu.be/pyKKrO2-daY' target='_blank'>Avoid null - Empty<T></a>
+                                    </li>
+                                    <li><a href='https://youtu.be/Ny8us1qb-E0' target='_blank'>Why async void is evil?
+                                            How to use it safely when needed?</a></li>
+                                    <li><a href='https://youtu.be/5p8ZXdVP_Lo' target='_blank'>Bug Study: Async
+                                            Exception escaped the Exception Handler</a></li>
+                                </ul>
+                            </li>
+                            <li>Real project experience
+                                <ul>
+                                    <li>Feature implementation
+                                        <ul>
+                                            <li><a href='https://youtu.be/NljQx11YqNY' target='_blank'>Graph APIs: How
+                                                    to Use OAuth 2.0 to Access Microsoft GraphAPI/OneDrive</a></li>
+                                            <li><a href='https://youtu.be/xh0uu4z9-rE' target='_blank'>Graph APIs: Use
+                                                    Microsoft Graph .NET SDK with Azure.Identity</a></li>
+                                            <li><a href='https://youtu.be/yuoAWP3wn80' target='_blank'>Graph APIs:
+                                                    Upload large file w/ progress to OneDrive</a></li>
+                                            <li><a href='https://youtu.be/MpM5NIyq18I' target='_blank'>Deep Clone with
+                                                    Serializer</a></li>
+                                            <li><a href='https://youtu.be/5R3yXyKWk98' target='_blank'>Benchmark: Manual
+                                                    Serialization vs Json Serializer</a></li>
+                                        </ul>
+                                    </li>
+                                    <li>System design
+                                        <ul>
+                                            <li><a href='https://youtu.be/b9PRGqTKCWQ' target='_blank'>How to use C#
+                                                    Channel to implement better syncing experience</a></li>
+                                            <li><a href='https://youtu.be/TcHkM5332Ho' target='_blank'>User Options with
+                                                    IOptionsMonitor and JsonSerializer</a></li>
+                                            <li><a href='https://youtu.be/-w_b925PSfE' target='_blank'>Encoding Filename
+                                                    by Build an Encoder / Decoder</a></li>
+                                            <li><a href='https://youtu.be/g1wyDi254Yw' target='_blank'>Two way data
+                                                    synchronization challenge</a></li>
+                                            <li><a href='https://youtu.be/psYWy6KJTyg' target='_blank'>Immutable - an
+                                                    extraordinary strategy for two-way synchronization</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Advanced topics -->
+                    <div class="paragraph">
+                        <div class="paragraph-header">
+                            <h3>Advanced Topics</h3>
+                        </div>
+                        <ul>
+                            <li>Authentication / Authorization -
+                                <a href='https://www.youtube.com/playlist?list=PLxWo8vu0UTZ2wXMBepa6DUGepJJJoBiUf'
+                                    target="_blank">Playlist</a> |
+                                <a href='https://github.com/xiaomi7732/JWTAuthInWebApi' target="_blank">Code</a>
+                                <ul>
+                                    <li><a href='https://youtu.be/Ph8ddTRQ0eo' target='_blank'>JWT Authentication
+                                            Overview</a></li>
+                                    <li><a href='https://youtu.be/vMJZD3ls7Hc' target='_blank'>Role Based
+                                            Authorization</a>
+                                    </li>
+                                    <li><a href='https://youtu.be/NKNIOxcEOso' target='_blank'>Policy Based
+                                            Authorization</a></li>
+                                    <li><a href='https://youtu.be/TWBXiCS0RYM' target='_blank'>JWT with Refresh
+                                            Token</a>
+                                    </li>
+                                    <li><a href='https://youtu.be/tLgdbTqQp7Q' target='_blank'>End to End Example</a>
+                                    </li>
+                                    <li><a href='https://youtu.be/NljQx11YqNY' target='_blank'>GraphAPI Auth: How to Use
+                                            OAuth 2.0 to Access Microsoft GraphAPI/OneDrive</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul>
+                            <li>Logging <a
+                                    href='https://www.youtube.com/playlist?list=PLxWo8vu0UTZ0ili6v2ERQWLJWQlJDP3SH'
+                                    target="_blank">Playlist</a> |
+                                <a href='https://github.com/xiaomi7732/CodeWithSaar/tree/main/Funds/Logging'
+                                    target="_blank">Code</a>
+                                <ul>
+                                    <li><a href='https://youtu.be/gRdi7Z-T9JI' target='_blank'>.NET (C#) Logging with
+                                            ILogger</a></li>
+                                    <li><a href='https://youtu.be/NDm_VPwaDjI' target='_blank'>Benchmark: High
+                                            performance logging in .NET</a></li>
+                                    <li><a href='https://youtu.be/3RUpYR4dZM4' target='_blank'>How to implement custom
+                                            logging provider for file</a></li>
+                                    <li><a href='https://youtu.be/3Z3yemyikNc' target='_blank'>How to support user
+                                            configuration for a logging provider</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul>
+                            <li>Dependency Injection <a
+                                    href='https://www.youtube.com/playlist?list=PLxWo8vu0UTZ3gVT-AoDpyOoIS-XnbwS58'
+                                    target="_blank">Playlist</a> |
+                                <a href='https://github.com/xiaomi7732/CodeWithSaar/tree/main/DI'
+                                    target="_blank">Code</a>
+                                <ul>
+                                    <li><a href='https://youtu.be/YnBPjt2dBWk' target='_blank'>Learn DI by printing a
+                                            JSON dog</a></li>
+                                    <li><a href='https://youtu.be/cYV1JmWiTHQ' target='_blank'>DI in .NET Core & ASP.NET
+                                            Core</a></li>
+                                    <li><a href='https://youtu.be/MkORmRZrljo' target='_blank'>Service lifetime in DI
+                                            container of ASP.NET Core</a></li>
+                                    <li><a href='https://youtu.be/8z1oJSPabLw' target='_blank'>Three Anti-Patterns</a>
+                                    </li>
+                                    <li><a href='https://youtu.be/9Ocjb-NLGhw' target='_blank'>Factory Pattern in DI</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul>
+                            <li>Configuration / Options
+                                <ul>
+                                    <li><a href='https://youtu.be/fUSuD84Pr0U' target='_blank'>Options pattern</a></li>
+                                    <li><a href='https://youtu.be/CnPAhy6M00U' target='_blank'>Option in Depth</a></li>
+                                    <li><a href='https://youtu.be/LbPGciA_NDk' target='_blank'>C# Configuration
+                                            Providers</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Client WebSite -->
+                    <div class="paragraph">
+                        <div class="paragraph-header">
+                            <h3>Blazor Web Assembly(WASM)</h3>
+                        </div>
+                        <ul>
+                            <li><a href='https://youtu.be/bE0mNuyoLhk' target='_blank'>Learn Blazor by building
+                                    fishcard | .NET fullstack dev - 001</a></li>
+                            <li><a href='https://youtu.be/4B87xqF1re0' target='_blank'>Learn Blazor Routing and
+                                    Navigation by building fishcard | .NET fullstack dev - 002</a></li>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Mobile Xamarin -->
+                    <div class="paragraph">
+                        <div class="paragraph-header">
+                            <h3>Mobile / Xamarin</h3>
+                        </div>
+                        <ul>
+                            <li><a href='https://youtu.be/OzTwh1ZqFM4' target='_blank'>Xamarin Android Layout - what to
+                                    master or to avoid in 2022</a></li>
+                            <li><a href='https://youtu.be/olVAweQAxys' target='_blank'>Learn Coordinator Layout to build
+                                    a beautiful activity</a></li>
+                            <li><a href='https://youtu.be/PVTBRHSKB-U' target='_blank'>How to build a Custom Dialog in
+                                    Xamarin works with lifetime events</a></li>
+                            <li><a href='https://youtu.be/0wywqtTvZqg' target='_blank'>How to use async await to load
+                                    data in Xamarin Activity</a></li>
+                            <li><a href='https://youtu.be/7YJHBX1abfs' target='_blank'>Access File System</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div id="page3" class="main-page-content">
+                    <div class="youtube-page-description">
+                        ⚒️ Practice! Practice! Practice!
+                    </div>
+
+                    <!-- Fishcard -->
+                    <div class="project-container">
+                        <div class="project-preview-img">
+                            <a href="https://fishcard.codewithsaar.net" target="_blank">
+                                <img src="./images/project-preview-fishcard.png" />
+                            </a>
+                        </div>
+                        <div class="project-introduction">
+                            <div class="project-title">
+                                <h2>Fishcard</h2>
+                            </div>
+                            <div class="project-content">
+                                <div><span class="highlight-text">Website:</span> <a
+                                        href="https://fishcard.codewithsaar.net"
+                                        target="_blank">https://fishcard.codewithsaar.net</a></div>
+                                <div><span class="highlight-text">Source Code:</span> <a
+                                        href="https://github.com/xiaomi7732/CodeWithSaar/tree/dev/saars/fishcard/FishCard"
+                                        target="_blank">GitHub</a></div>
+                                <div><span class="highlight-text">Tech Highlight:</span> <span>Blazor WebAssembly</span>
+                                </div>
+                                <div class="highlight-text">Description</div>
+                                <div>Search for safe fish to buy and eat!</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Clock -->
+                    <div class="project-container">
+                        <div class="project-preview-img">
+                            <a href="https://clock.codewithsaar.net" target="_blank">
+                                <img src="./images/project-preview-clock.png" />
+                            </a>
+                        </div>
+                        <div class="project-introduction">
+                            <div class="project-title">
+                                <h2>Clock</h2>
+                            </div>
+                            <div class="project-content">
+                                <div><span class="highlight-text">Website:</span><a
+                                        href="https://clock.codewithsaar.net"
+                                        target="_blank">https://clock.codewithsaar.net</a></div>
+                                <div><span class="highlight-text">Source Code:</span><a
+                                        href="https://github.com/xiaomi7732/jsClock" target="_blank">GitHub</a></div>
+                                <div><span class="highlight-text">Tech Highlight:</span> <span>Javascript, css, PWA
+                                        (Progress Web Application)</span>
+                                </div>
+                                <div class="highlight-text">Description</div>
+                                <div>A PWA application that displays a clock with seconds on it. This is a project to
+                                    address the problem that the timer on Windows 11 Taskbar doesn't show seconds.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stack Beauty -->
+                    <div class="project-container">
+                        <div class="project-preview-img">
+                            <a href="https://stack.codewithsaar.net" target="_blank">
+                                <img src="./images/project-preview-stackbeauty.png" />
+                            </a>
+                        </div>
+                        <div class="project-introduction">
+                            <div class="project-title">
+                                <h2>Stack Beauty</h2>
+                            </div>
+                            <div class="project-content">
+                                <div><span class="highlight-text">Website:</span>
+                                    <a href="https://stack.codewithsaar.net"
+                                        target="_blank">https://stack.codewithsaar.net</a>
+                                </div>
+                                <div><span class="highlight-text">Source Code:</span>
+                                    <a href="https://github.com/xiaomi7732/StackBeauty" target="_blank">GitHub</a>
+                                </div>
+                                <div><span class="highlight-text">Tech Highlight:</span> <span>.NET WebAPI backend +
+                                        Javascript Frontend</span>
+                                </div>
+                                <div class="highlight-text">Description</div>
+                                <div>Pretty print any stack trace and make stack reading easier.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Number It -->
+                    <div class="project-container">
+                        <div class="project-preview-img">
+                            <a href="https://stack.codewithsaar.net" target="_blank">
+                                <img src="./images/project-preview-number-it.png" />
+                            </a>
+                        </div>
+                        <div class="project-introduction">
+                            <div class="project-title">
+                                <h2>NumberIt - CodeNameK</h2>
+                            </div>
+                            <div class="project-content">
+                                <div><span class="highlight-text">Website:</span> <a
+                                        href="https://github.com/xiaomi7732/CodeWithSaar/tree/main/CodeNameK"
+                                        target="_blank">GitHub</a></div>
+                                <div><span class="highlight-text">Tech Highlight:</span> <span>WPF, MVVM,
+                                        OneDrive</span>
+                                </div>
+                                <div class="highlight-text">Description</div>
+                                <div>Pretty print any stack trace and make stack reading easier.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Other projects -->
+                    <div class="paragraph">
+                        <div class="paragraph-header">
+                            <h3>Other projects</h3>
+                        </div>
+                        <ul>
+                            <li><a href='https://github.com/xiaomi7732/CodeWithSaar.Extensions.ProjectAssets'
+                                    target='_blank'>NuGet dependency visualizer</a></li>
+                            <li><a href='https://www.nuget.org/packages/CodeWithSaar.Extensions.Logging.File'
+                                    target='_blank'>File Logging Extension for ILogger</a></li>
+                            <li><a href='https://www.nuget.org/packages/CodeWithSaar.JWTAuthentication.WebAPI'
+                                    target='_blank'>JWT Auth for AspNetCore WebAPI</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="side-bar-container">
+            <div class="fake-header-gap"></div>
+            <div class="side-bar-content">
+                <div id="side-bar-header">
+                    <img src="./images/connect-with-me-icon-24.png" alt="connect with me icon" width="24px"
+                        height="24px" />
+                    <div>Connect with me</div>
+                </div>
+                <div id="profile-pic">
+                    <a href="https://www.youtube.com/codewithsaar" target="_blank">
+                        <img src="./images/profile.png" alt="Profile Photo" />
+                    </a>
+                </div>
+                <!-- Github -->
+                <div class="social-item">
+                    <img src="./images/social-github-icon.png">
+                    <div><a href="https://github.com/xiaomi7732/CodeWithSaar" target="_blank">CodeWithSaar</a></div>
+                </div>
+                <!-- Twitter -->
+                <div class="social-item">
+                    <img src="./images/social-twitter-icon.svg">
+                    <div><a href="https://twitter.com/SaarShen" target="_blank">@CodeWithSaar</a></div>
+                </div>
+                <!-- Discord -->
+                <div class="social-item">
+                    <img src="./images/social-discord-icon.svg">
+                    <div><a href="https://discord.gg/H8ZqDgczQb" target="_blank">CodeWithSaar</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
