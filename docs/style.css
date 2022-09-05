@@ -176,7 +176,6 @@ h3 {
 .main-content {
     overflow-y: auto;
     flex-grow: 1;
-    padding-left: var(--page-margin-left);
     padding-top: var(--section-gap);
     padding-bottom: var(--section-gap);
     background-color: var(--bg-color);
@@ -234,6 +233,8 @@ h3 {
     display: flex;
     flex-direction: column;
     animation: fadeIn 0.5s;
+    padding-left: var(--page-margin-left);
+    background-color: var(--bg-color);
 }
 
 /* Paragraph */
@@ -381,7 +382,7 @@ h3 {
         --page-margin-top: 40px;
         --header-block-height: 80px;
         --project-preview-title-height: 40px;
-        --page-corner-radius: 0px;
+        --page-corner-radius: 4px;
 
         --li-line-height: 20px;
         --social-fly-in-translate-x: 20%;
@@ -395,14 +396,36 @@ h3 {
         flex-direction: column;
         height: 100vh;
         align-self: stretch;
+        margin-top: var(--page-margin-left);
     }
+
+   .header-container {
+        flex-shrink: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 0;
+        margin-left: var(--page-margin-left);
+        margin-right: var(--page-margin-left);
+        box-shadow: 4px 4px 16px 4px var(--shadow-gray);
+        border-top-left-radius: var(--page-corner-radius);
+        border-top-right-radius: var(--page-corner-radius);
+    }
+    
+    .header-text {
+        margin-top: 0;
+        margin-left: 0;
+    }
+
+
 
     body {
         font-size: 12px;
     }
 
     h1 {
-        font-size: 24px;
+        font-size: 28px;
+        margin: 0;
     }
 
     h2 {
@@ -413,6 +436,13 @@ h3 {
         display: none;
     }
 
+    .main-content {
+        padding-left: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        background-color: transparent;
+    }
+
     #nav-bar {
         display: none;
     }
@@ -420,6 +450,10 @@ h3 {
     .main-page-content {
         display: flex;
         flex-flow: column;
+        background-color: var(--bg-color);
+        margin: var(--page-margin-left);
+        padding: 16px;
+        box-shadow: 4px 4px 16px 4px var(--shadow-gray);
     }
 
     .project-container {
