@@ -106,7 +106,7 @@ h1 {
 h2 {
     font-size: 20px;
     margin: 0;
-    font-weight: 400;
+    font-weight: 100;
 }
 
 h3 {
@@ -166,11 +166,15 @@ h3 {
 
 .nav-bar>ul>li.active {
     color: var(--font-color);
-    border-bottom-color: var(--accent);
-    animation: text-highlight 1s ease-out;
+    border-bottom-color: var(--font-color);
+    animation: nav-item-highlight 2s ease-out;
     animation-fill-mode: forwards;
     border-top-left-radius: var(--tab-corner-radius);
     border-top-right-radius: var(--tab-corner-radius);
+}
+
+.nav-bar>ul>li.active>h2 {
+    font-weight: 600;
 }
 
 .main-content {
@@ -353,15 +357,13 @@ h3 {
     }
 }
 
-@keyframes text-highlight {
+@keyframes nav-item-highlight {
     0% {
-        color: var(--font-color);
         border-bottom-color: var(--separator-color);
     }
 
     100% {
-        color: var(--accent);
-        border-bottom-color: var(--accent);
+        border-bottom-color: var(--font-color);
     }
 }
 
@@ -399,7 +401,7 @@ h3 {
         margin-top: var(--page-margin-left);
     }
 
-   .header-container {
+    .header-container {
         flex-shrink: 1;
         display: flex;
         justify-content: center;
@@ -411,7 +413,7 @@ h3 {
         border-top-left-radius: var(--page-corner-radius);
         border-top-right-radius: var(--page-corner-radius);
     }
-    
+
     .header-text {
         margin-top: 0;
         margin-left: 0;
