@@ -1,5 +1,4 @@
 ﻿@using System.Linq;
-@using System.Collections.Specialized
 @inject QueryFishService _queryFishService;
 @inject RecommendService _recommendationService;
 @inject NavigationManager _navigationManager;
@@ -13,7 +12,7 @@
             </path>
         </svg>
     </div>
-    <input id="keyword-input" @bind-value="KeywordText" placeholder="Search for a fish by name" autocomplete="no"
+    <input id="keyword-input" @bind="KeywordText" @bind:event="oninput" placeholder="Search for a fish by name" autocomplete="no"
         list="fishNames" />
 </div>
 
