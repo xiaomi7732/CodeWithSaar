@@ -1,3 +1,5 @@
+import ThemeControl from "./theme-control.js";
+
 const pages = [
     {
         "name": "page1",
@@ -18,11 +20,37 @@ const pages = [
 
 const activePageClass = 'main-page-content active';
 const hiddenPageClass = 'main-page-content';
+const themeToggleTagId = 'themeToggle';
+
+let themeControl;
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('doc is ready. Start the script!');
 
+    themeControl = new ThemeControl('./style.dark.css');
+    const isDarkMode = themeControl.initialize();
+    setupThemeButtonVisibility(isDarkMode);
+
     hideAllPages();
+
+    // Wire up navigation buttons
+    const navButtons = document.getElementsByClassName('navButton');
+    console.log(`Nav button length: ${navButtons.length}`);
+    for (var i = 0; i < navButtons.length; i++) {
+        navButtons[i].addEventListener('click', (me) => {
+            const page = +me.target.getAttribute('tag');
+            console.log(page);
+            const route = pages[page].path[0];
+            navigateTo(route);
+        });
+    }
+
+    // Wire up theme toggle
+    const themeToggleTag = document.getElementById(themeToggleTagId);
+    themeToggleTag.addEventListener('click', () => {
+        const isDarkMode = themeControl.toggleTheme();
+        setupThemeButtonVisibility(isDarkMode);
+    });
 
     let page = getPageRoute();
     goToPage(page.name);
@@ -125,4 +153,15 @@ function getPageRoute(path) {
     // Haven't returned yet?
     console.log(`Decided page name: ${page.name}`);
     return page;
+}
+
+function setupThemeButtonVisibility(isDarkMode) {
+    const themeToggleTag = document.getElementById(themeToggleTagId);
+    if (isDarkMode) {
+        themeToggleTag.children[0].style.display = "block";
+        themeToggleTag.children[1].style.display = "none";
+    } else {
+        themeToggleTag.children[0].style.display = "none";
+        themeToggleTag.children[1].style.display = "block";
+    }
 }

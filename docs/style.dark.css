@@ -1,0 +1,14 @@
+:root {
+    color-scheme: dark;
+    --page-bg-color: #3c3c3c;
+    --bg-color: #323232;
+    --bg-color-invert: #181818;
+    --font-color: #DDD;
+    --font-color-invert: #a9a9a9;
+    --separator-color: rgba(205, 205, 205, 0.8);
+    --accent: #68a7e3;
+    --accent-secondary: transparent;
+    --accent-invert: #FFB800;
+    --shadow-gray: #00000016;
+    --project-preview-card-bg: #222222;
+}

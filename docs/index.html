@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="en-US">
 
 <head>
     <meta charset="UTF-8">
@@ -24,9 +25,8 @@
 
     <link rel="icon" href="./images/profile.png" type="image/png">
     <link rel="stylesheet" href="style.css">
-
     <!-- Javascript -->
-    <script src="./app.js" defer></script>
+    <script src="./app.js" type="module"></script>
 </head>
 
 <!-- Google Analytics -->
@@ -46,19 +46,27 @@
         <div id="main-container">
             <div class="fake-header-gap"></div>
             <div class="header-container">
+                <div id="themeToggle">
+                    <span>
+                        ☀️
+                    </span>
+                    <span>
+                        🌛
+                    </span>
+                </div>
                 <h1 class="header-text">
                     Learn C# and .NET, Code with Saar
                 </h1>
                 <div id="nav-bar" class="nav-bar">
                     <ul>
                         <li class="active">
-                            <h2 onclick="navigateTo('/')">What's new</h2>
+                            <h2 class="navButton" tag="0">What's new</h2>
                         </li>
                         <li>
-                            <h2 onclick="navigateTo('/videos')">Video Index</h2>
+                            <h2 class="navButton" tag="1">Video Index</h2>
                         </li>
                         <li>
-                            <h2 onclick="navigateTo('/projects')">My Projects</h2>
+                            <h2 class="navButton" tag="2">My Projects</h2>
                         </li>
                     </ul>
                 </div>
@@ -124,11 +132,13 @@
                                 | <a href="https://www.github.com/xiaomi7732/jsClock" target="_blank">Source Code</a>
                             </li>
                              -->
-                             <li>
+                            <li>
                                 9/10/2022: Published new project:
-                                <a href="https://theme.codewithsaar.net" target="_blank" class="highlight-text">Learn how to implement Dark Mode using CSS + JS</a>
+                                <a href="https://theme.codewithsaar.net" target="_blank" class="highlight-text">Learn
+                                    how to implement Dark Mode using CSS + JS</a>
                                 - HTML/JS/CSS Switch between light/dark theme
-                                | <a href="https://www.github.com/xiaomi7732/jsDarkTheme" target="_blank">Source Code</a>
+                                | <a href="https://www.github.com/xiaomi7732/jsDarkTheme" target="_blank">Source
+                                    Code</a>
                             </li>
                             <li>
                                 8/31/2022: Published new project:
@@ -571,3 +581,5 @@
         </div>
     </div>
 </body>
+
+</html>

@@ -26,6 +26,7 @@
     --shadow-gray: #00000016;
     --project-preview-title-height: 48px;
     --project-preview-card-bg: white;
+    --header-text-margin-top: 26px;
 }
 
 body {
@@ -130,10 +131,18 @@ h3 {
 }
 
 .header-text {
-    margin-top: var(--page-margin-top);
+    margin-top: var(--header-text-margin-top);
     margin-left: var(--page-margin-left);
 }
 
+/* Theme toggle */
+#themeToggle {
+    cursor: pointer;
+    display: flex;
+    justify-content: right;
+    margin-right: var(--text-to-icon-gap);
+    margin-top: var(--text-to-icon-gap);
+}
 
 /* Navigation */
 .nav-bar {
@@ -406,20 +415,28 @@ h3 {
         display: flex;
         justify-content: center;
         align-items: center;
+        flex-flow: column;
         margin-top: 0;
         margin-left: var(--page-margin-left);
         margin-right: var(--page-margin-left);
         box-shadow: 4px 4px 16px 4px var(--shadow-gray);
         border-top-left-radius: var(--page-corner-radius);
         border-top-right-radius: var(--page-corner-radius);
+        /* Compensate the height of the theme toggle button */
+        padding-bottom: 16px;  
+    }
+
+    /* Theme toggle */
+    #themeToggle {
+        align-self: flex-end;
+        margin-right: var(--text-to-icon-gap);
+        margin-top: 0;
     }
 
     .header-text {
         margin-top: 0;
         margin-left: 0;
     }
-
-
 
     body {
         font-size: 12px;
@@ -501,7 +518,6 @@ h3 {
         align-self: stretch;
         flex-grow: 1;
         width: 100%;
-        color: var(--font-color-invert);
     }
 
     .side-bar-content {
