@@ -9,31 +9,22 @@ export default class ThemeControl {
     initialize = () => {
         this.isDarkMode = false;    // true: dark mode; false: light mode
         if (window.matchMedia) {
-            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                this.isDarkMode = true;
-            }
+            const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
+            this.isDarkMode = darkThemeMq.matches;
+
+            // Toggle theme upon theme change
+            darkThemeMq.addEventListener("change", e => {
+                this.toggleTheme(e.matches)
+            });
         }
 
-        if (this.isDarkMode) {
-            this.addDarkModeStyleSheet();
-        }
-
+        this.#setThemeTo(this.isDarkMode);
         return this.isDarkMode;
     }
 
-    toggleTheme = () => {
-        if (this.isDarkMode) {
-            this.removeDarkThemeStyleSheet();
-            this.isDarkMode = false;
-        }
-        else {
-            this.addDarkModeStyleSheet();
-            this.isDarkMode = true;
-        }
-        return this.isDarkMode;
-    }
+    toggleTheme = () => this.#setThemeTo(!this.isDarkMode);  // Flip the result;
 
-    addDarkModeStyleSheet = () => {
+    #addDarkModeStyleSheet = () => {
         // Already added.
         const darkThemeCssTag = document.getElementById(darkThemeCSSTagId);
 
@@ -53,11 +44,22 @@ export default class ThemeControl {
         head.append(style);
     };
 
-    removeDarkThemeStyleSheet() {
+    #removeDarkThemeStyleSheet() {
         const darkThemeCssTag = document.getElementById(darkThemeCSSTagId);
         if (!!darkThemeCssTag) {
             console.log('dark theme css exists');
             darkThemeCssTag.remove();
         }
+    }
+
+    #setThemeTo = (isDarkMode) => {
+        if (isDarkMode) {
+            this.#addDarkModeStyleSheet();
+        }
+        else {
+            this.#removeDarkThemeStyleSheet();
+        }
+        this.isDarkMode = isDarkMode;
+        return this.isDarkMode;
     }
 }

@@ -10,7 +10,7 @@
     --page-margin-top: 48px;
     --section-gap: 24px;
     --text-to-icon-gap: 8px;
-    --header-block-height: 160px;
+    --header-block-height: 180px;
     --icon-width: 24px;
     --icon-height: 24px;
     --social-icon-margin-left: 72px;
@@ -142,6 +142,15 @@ h3 {
     justify-content: right;
     margin-right: var(--text-to-icon-gap);
     margin-top: var(--text-to-icon-gap);
+}
+
+#themeToggle>span {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 /* Navigation */
@@ -423,7 +432,7 @@ h3 {
         border-top-left-radius: var(--page-corner-radius);
         border-top-right-radius: var(--page-corner-radius);
         /* Compensate the height of the theme toggle button */
-        padding-bottom: 16px;  
+        padding-bottom: 16px;
     }
 
     /* Theme toggle */
