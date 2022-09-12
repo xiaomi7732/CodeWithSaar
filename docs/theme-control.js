@@ -14,7 +14,7 @@ export default class ThemeControl {
 
             // Toggle theme upon theme change
             darkThemeMq.addEventListener("change", e => {
-                this.toggleTheme(e.matches)
+                this.#setThemeTo(e.matches)
             });
         }
 
