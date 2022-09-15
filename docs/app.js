@@ -27,6 +27,9 @@ let themeControl;
 document.addEventListener('DOMContentLoaded', () => {
     console.log('doc is ready. Start the script!');
 
+    // Expose navigateTo method for external calls
+    window.navigateTo = navigateTo;
+
     themeControl = new ThemeControl('./style.dark.css');
     const isDarkMode = themeControl.initialize();
     setupThemeButtonVisibility(isDarkMode);
