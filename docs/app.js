@@ -15,6 +15,11 @@ const pages = [
         "name": "page3",
         "index": 2,
         "path": ["/projects"]
+    },
+    {
+        "name": "page4",
+        "index": 3,
+        "path": ["/gists"]
     }
 ];
 
@@ -55,8 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setupThemeButtonVisibility(isDarkMode);
     });
 
-    let page = getPageRoute();
-    goToPage(page.name);
+    const page = getPageRoute();
+    navigateTo(page.path[0]);
 });
 
 window.onpopstate = (e => {
