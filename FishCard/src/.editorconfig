@@ -22,3 +22,9 @@ dotnet_naming_symbols.private_fields.applicable_accessibilities = private
 
 dotnet_naming_style.prefix_underscore.capitalization = camel_case
 dotnet_naming_style.prefix_underscore.required_prefix = _
+
+[*.{csproj}]
+indent_size = 2
+
+[*.{json,jsonc}]
+indent_size = 2
