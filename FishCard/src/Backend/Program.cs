@@ -18,7 +18,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddFishServices();
 builder.Services.TryAddFishcardAuthServices();
 
-builder.Services.AddTransient<IConfigureOptions<JwtBearerOptions>, ConfigureJWTBearerOptions>();
+builder.Services.ConfigureOptions<ConfigureJWTBearerOptions>();
 builder.Services.AddAuthentication(opt =>
 {
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
