@@ -25,5 +25,52 @@
         "value": "Bigeye Tuna"
       }
     ]
+  },
+  {
+    "_id": "17cc8a40-8767-454f-957b-19ee3bccdc80",
+    "colId": "9094138a-1fc3-499a-ab79-d43f6c99ab95",
+    "containerId": "",
+    "name": "GetAccessToken",
+    "url": "https://localhost:7280/token",
+    "method": "POST",
+    "sortNum": 20000,
+    "created": "2022-09-23T04:54:10.562Z",
+    "modified": "2022-09-23T04:54:10.562Z",
+    "headers": [
+      {
+        "name": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"userName\": \"admin\",\n  \"password\": \"password123!\"\n}",
+      "form": []
+    },
+    "tests": []
+  },
+  {
+    "_id": "a47fc44f-9d82-4115-aa04-b52df2c1066e",
+    "colId": "9094138a-1fc3-499a-ab79-d43f6c99ab95",
+    "containerId": "",
+    "name": "Test authentication/authorization",
+    "url": "https://localhost:7280/test",
+    "method": "GET",
+    "sortNum": 30000,
+    "created": "2022-09-23T06:02:09.234Z",
+    "modified": "2022-09-23T06:02:09.234Z",
+    "headers": [
+      {
+        "name": "Content-Type",
+        "value": "application/json"
+      }
+    ],
+    "params": [],
+    "auth": {
+      "type": "bearer",
+      "bearer": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTY2MzkxMzEwNiwiaXNzIjoiQ29kZVdpdGhTYWFyRGV2IiwiYXVkIjoiRmlzaGNhcmQifQ.NvdiEnRhX7lfWGKN8SLVYDfCY2THAwoI44hWI33KoAc"
+    },
+    "tests": []
   }
 ]
