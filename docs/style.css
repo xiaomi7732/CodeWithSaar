@@ -404,7 +404,7 @@ h3 {
         --project-preview-title-height: 40px;
         --page-corner-radius: 4px;
 
-        --li-line-height: 20px;
+        --li-line-height: 22px;
         --social-fly-in-translate-x: 20%;
         --social-animation-length: 0.5s;
         --tab-corner-radius: 4px;
@@ -449,6 +449,10 @@ h3 {
 
     body {
         font-size: 12px;
+    }
+
+    li {
+        margin-top: 10px;
     }
 
     h1 {
