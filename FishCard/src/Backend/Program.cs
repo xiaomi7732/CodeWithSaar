@@ -1,11 +1,9 @@
-using System.Security.Claims;
-using System.Text;
 using CodeWithSaar.FishCard;
 using CodeWithSaar.FishCard.Auth;
+using CodeWithSaar.FishCard.DataAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +15,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddFishServices();
 builder.Services.TryAddFishcardAuthServices();
+builder.Services.AddDbContext<UserManagerContext>((p, builder) =>
+{
+    UserManagerDBOption options = p.GetRequiredService<IOptions<UserManagerDBOption>>().Value;
+    builder.UseSqlite(options.ConnectionString);
+});
 
 builder.Services.ConfigureOptions<ConfigureJWTBearerOptions>();
 builder.Services.AddAuthentication(opt =>

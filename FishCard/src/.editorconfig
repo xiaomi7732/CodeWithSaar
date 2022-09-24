@@ -28,3 +28,6 @@ indent_size = 2
 
 [*.{json,jsonc}]
 indent_size = 2
+
+[*.{proj,csproj}]
+indent_size = 2
