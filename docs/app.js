@@ -26,6 +26,8 @@ const pages = [
 const activePageClass = 'main-page-content active';
 const hiddenPageClass = 'main-page-content';
 const themeToggleTagId = 'themeToggle';
+const lightThemeButtonId = 'sun';
+const darkThemeButtonId = 'moon';
 
 let themeControl;
 
@@ -164,12 +166,14 @@ function getPageRoute(path) {
 }
 
 function setupThemeButtonVisibility(isDarkMode) {
-    const themeToggleTag = document.getElementById(themeToggleTagId);
+    const lightButton = document.getElementById(lightThemeButtonId);
+    const darkButton = document.getElementById(darkThemeButtonId);
+
     if (isDarkMode) {
-        themeToggleTag.children[0].style.display = "block";
-        themeToggleTag.children[1].style.display = "none";
+        lightButton.style.display = "block";
+        darkButton.style.display = "none";
     } else {
-        themeToggleTag.children[0].style.display = "none";
-        themeToggleTag.children[1].style.display = "block";
+        lightButton.style.display = "none";
+        darkButton.style.display = "block";
     }
 }

@@ -142,10 +142,7 @@ h3 {
     justify-content: right;
     margin-right: var(--text-to-icon-gap);
     margin-top: var(--text-to-icon-gap);
-}
-
-#themeToggle>span {
-    -webkit-touch-callout: none;
+        -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
@@ -189,10 +186,6 @@ h3 {
     animation-fill-mode: forwards;
     border-top-left-radius: var(--tab-corner-radius);
     border-top-right-radius: var(--tab-corner-radius);
-}
-
-.nav-bar>ul>li.active>h2 {
-    font-weight: 600;
 }
 
 .main-content {
@@ -245,6 +238,11 @@ h3 {
 .social-item>div {
     margin-left: var(--text-to-icon-gap);
     justify-items: baseline;
+}
+
+.side-bar-footer{
+    margin-top: var(--page-margin-top);
+    margin-left: var(--page-margin-left);
 }
 
 .main-page-content {
@@ -381,7 +379,7 @@ h3 {
     }
 
     100% {
-        border-bottom-color: var(--font-color);
+        border-bottom-color: var(--accent);
     }
 }
 
