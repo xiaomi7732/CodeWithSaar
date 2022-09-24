@@ -1,23 +1,48 @@
+using CodeWithSaar.FishCard.DataAccess;
+using Microsoft.EntityFrameworkCore;
+using DbUser = CodeWithSaar.FishCard.Models.User;
 namespace CodeWithSaar.FishCard.Auth;
 
 public class UserService : IUserService
 {
-    const string hardcodedUserName = "admin";
-    const string hardcodedPassword = "password123!";
+    private readonly UserManagerContext _userDb;
 
-    public Task<IEnumerable<string>> GetRolesAsync(string userName, CancellationToken cancellationToken)
+    public UserService(UserManagerContext userDb)
     {
-        return Task.FromResult(new List<string>() { "Admin" }.AsEnumerable());
+        _userDb = userDb ?? throw new ArgumentNullException(nameof(userDb));
     }
 
-    public Task<bool> IsValidUserAsync(User user, CancellationToken cancellationToken)
+    public async Task<IEnumerable<string>> GetRolesAsync(string userName, CancellationToken cancellationToken)
     {
-        if (cancellationToken.IsCancellationRequested)
+        List<DbUser>? userQuery = await _userDb.Users.Include(user => user.Roles).Where(u => u.UserName == userName).ToListAsync(cancellationToken);
+
+        if (userQuery is null || !userQuery.Any())
         {
-            return Task.FromResult(false);
+            return Enumerable.Empty<string>();
         }
-        return Task.FromResult(string.Equals(user?.UserName, hardcodedUserName, StringComparison.OrdinalIgnoreCase)
-            && string.Equals(GetHashedPassword(user?.Password), hardcodedPassword, StringComparison.Ordinal));
+        return userQuery[0].Roles.Select(r => r.RoleId);
+    }
+
+    public async Task<bool> IsValidUserAsync(User user, CancellationToken cancellationToken)
+    {
+        List<DbUser> userQuery = await _userDb.Users.Where(u => u.UserName == user.UserName).ToListAsync(cancellationToken);
+        if (!userQuery.Any())
+        {
+            return false;
+        }
+
+        string? hashedPassword = GetHashedPassword(user.Password);
+        if (string.IsNullOrEmpty(hashedPassword))
+        {
+            return false;
+        }
+
+        if (!string.Equals(hashedPassword, userQuery[0].HashedPassword, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     private string? GetHashedPassword(string? clearTextPassword)

@@ -12,8 +12,8 @@ public static class AuthServiceRegister
             configure.GetSection(configurationSectionName).Bind(opt);
         });
 
-        services.TryAddSingleton<IUserService, UserService>();
-        services.TryAddSingleton<ITokenService, TokenService>();
+        services.TryAddScoped<IUserService, UserService>();
+        services.TryAddScoped<ITokenService, TokenService>();
 
         return services;
     }
