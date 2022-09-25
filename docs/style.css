@@ -219,14 +219,26 @@ h3 {
 
 /* Profile Photo */
 #profile-pic {
-    align-self: center;
+    display: flex;
+    justify-content: center;
     margin-top: 48px;
     margin-bottom: 80px;
     animation: fadeIn 2s;
 }
 
+
+#social-item-container
+{
+    display: flex;
+    flex-direction: row;
+}
+
+#social-item-container>.social-item-column
+{
+    flex-grow: 1;
+}
+
 .social-item {
-    margin-left: var(--social-icon-margin-left);
     display: flex;
     margin-bottom: var(--section-gap);
 
