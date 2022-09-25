@@ -65,8 +65,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Toggle theme prompt
     const toggleThemePrompt = 'toggleThemePrompt';
     document.getElementById(toggleThemePrompt).addEventListener('click', (e) => {
-        const newContent = 'Try: Ctrl + D to bookmark. What happens by clicking this 👍 => ';
-        document.getElementById(toggleThemePrompt).innerHTML = newContent;
+        const toggleThemePromptDiv = document.getElementById(toggleThemePrompt);
+        const original = toggleThemePromptDiv.innerHTML;
+        const newContent = original.replace("🤔", "👍");
+        toggleThemePromptDiv.innerHTML = newContent;
     });
 
     const page = getPageRoute();
