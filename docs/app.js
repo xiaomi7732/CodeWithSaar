@@ -62,6 +62,13 @@ document.addEventListener('DOMContentLoaded', () => {
         setupThemeButtonVisibility(isDarkMode);
     });
 
+    // Toggle theme prompt
+    const toggleThemePrompt = 'toggleThemePrompt';
+    document.getElementById(toggleThemePrompt).addEventListener('click', (e) => {
+        const newContent = 'Try: Ctrl + D to bookmark. What happens by clicking this 👍 => ';
+        document.getElementById(toggleThemePrompt).innerHTML = newContent;
+    });
+
     const page = getPageRoute();
     navigateTo(page.path[0]);
 });
