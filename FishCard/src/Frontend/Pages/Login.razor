@@ -3,14 +3,15 @@
 @inject IHttpClientFactory _httpClientFactory;
 
 <EditForm Model=@LoginCredential OnValidSubmit=LoginCommandAsync>
-    <DataAnnotationsValidator />
-    <ValidationSummary />
     <label for="input_user_name">Username:</label>
     <input id='input_user_name' @bind=LoginCredential.UserName />
     <label for="input_password">Passwrod:</label>
     <input id='input_password' type='password' @bind=LoginCredential.Password />
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
     <div>
-        <button id="submit" @onclick="LoginCommandAsync">Login</button>
+        <button id="submit">Login</button>
         <button id="clear">Clear</button>
     </div>
 </EditForm>
