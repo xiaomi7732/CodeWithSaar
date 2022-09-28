@@ -6,17 +6,22 @@ namespace CodeWithSaar.FishCard;
 
 internal class BackendClient
 {
-    private readonly HttpClient _httpClient;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public BackendClient(HttpClient backendCaller)
+    public BackendClient(IHttpClientFactory httpClientFactory)
     {
-        _httpClient = backendCaller;
+        _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
     }
 
     public async Task<IEnumerable<FishItem>> GetAllFishAsync(CancellationToken cancellationToken)
     {
         Uri getFishUri = new Uri("fish", UriKind.Relative);
-        FishItem[]? fishItems = await _httpClient.GetFromJsonAsync<FishItem[]>(getFishUri, cancellationToken).ConfigureAwait(false);
+
+        FishItem[]? fishItems = null;
+        using (HttpClient httpClient = _httpClientFactory.CreateClient(HttpClientName.Backend))
+        {
+            fishItems = await httpClient.GetFromJsonAsync<FishItem[]>(getFishUri, cancellationToken);
+        }
         return fishItems.NullAsEmpty();
     }
 }

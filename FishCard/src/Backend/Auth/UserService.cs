@@ -23,7 +23,7 @@ public class UserService : IUserService
         return userQuery[0].Roles.Select(r => r.RoleId);
     }
 
-    public async Task<bool> IsValidUserAsync(User user, CancellationToken cancellationToken)
+    public async Task<bool> IsValidUserAsync(LoginCredential user, CancellationToken cancellationToken)
     {
         List<DbUser> userQuery = await _userDb.Users.Where(u => u.UserName == user.UserName).ToListAsync(cancellationToken);
         if (!userQuery.Any())

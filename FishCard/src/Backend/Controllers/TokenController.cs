@@ -1,4 +1,5 @@
 using CodeWithSaar.FishCard.Auth;
+using CodeWithSaar.FishCard.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,14 +22,14 @@ public class TokenController : ControllerBase
 
     [Route("token")]
     [HttpPost]
-    public async Task<IActionResult> GetToken([FromBody] User login, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetToken([FromBody] LoginCredential login, CancellationToken cancellationToken)
     {
         if (await _userService.IsValidUserAsync(login, cancellationToken))
         {
             string accessToken = await _tokenService.GetAccessTokenAsync(login, cancellationToken);
-            return Ok(new
+            return Ok(new AuthenticationResult()
             {
-                token = accessToken,
+                Token = accessToken,
             });
         }
         return Forbid();

@@ -1,3 +1,6 @@
 {
-    "thunder-client.loadFromProject": true
+    "thunder-client.loadFromProject": true,
+    "cSpell.words": [
+        "Blazor"
+    ]
 }

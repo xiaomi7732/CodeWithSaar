@@ -35,7 +35,7 @@ builder.Services.AddCors(config => config.AddDefaultPolicy(policy =>
     policy.WithOrigins(new string[]{
         "https://localhost:7015",  // Local debugging
         "https://fishcard.codewithsaar.net", // Hosted on github
-    });
+    }).AllowAnyHeader();
 }));
 
 var app = builder.Build();

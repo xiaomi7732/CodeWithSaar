@@ -19,7 +19,7 @@ internal class TokenService : ITokenService
         _userService = userService ?? throw new ArgumentNullException(nameof(userService));
     }
 
-    public async Task<string> GetAccessTokenAsync(User validUser, CancellationToken cancellationToken)
+    public async Task<string> GetAccessTokenAsync(LoginCredential validUser, CancellationToken cancellationToken)
     {
         List<Claim> claims = new List<Claim>{
             new Claim(ClaimTypes.Name, validUser.UserName),
