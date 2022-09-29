@@ -1,6 +1,7 @@
 @page "/login"
 @using CodeWithSaar.FishCard.Auth
-@inject IHttpClientFactory _httpClientFactory;
+@inject IAuthenticationService _authenticationService
+
 
 <EditForm Model=@LoginCredential OnValidSubmit=LoginCommandAsync>
     <label for="input_user_name">Username:</label>
@@ -18,21 +19,13 @@
 
 @code {
     [Parameter]
-    [SupplyParameterFromQuery(Name = "navigateBackUrl")]
+    [SupplyParameterFromQuery(Name = "returnUrl")]
     public string NavigateBackUrl { get; set; } = default!;
 
     public LoginCredential LoginCredential { get; } = new LoginCredential();
 
     public async Task LoginCommandAsync()
     {
-        using (HttpClient httpClient = _httpClientFactory.CreateClient("backend"))
-        {
-            HttpResponseMessage responseMessage = await httpClient.PostAsJsonAsync<LoginCredential>(new Uri("/token",
-            UriKind.Relative), LoginCredential);
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                Console.WriteLine("Login succeeded!");
-            }
-        }
+        await _authenticationService.LoginAsync(LoginCredential, NavigateBackUrl, default);
     }
 }
