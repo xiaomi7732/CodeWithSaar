@@ -1,4 +1,5 @@
 import ThemeControl from "./theme-control.js";
+import Search from "./search.js";
 
 const pages = [
     {
@@ -70,6 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const newContent = original.replace("🤔", "👍");
         toggleThemePromptDiv.innerHTML = newContent;
     });
+
+    // Wire up search
+    const search = new Search('search_input');
 
     const page = getPageRoute();
     navigateTo(page.path[0]);

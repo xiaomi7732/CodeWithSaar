@@ -10,7 +10,7 @@
     --page-margin-top: 48px;
     --section-gap: 24px;
     --text-to-icon-gap: 8px;
-    --header-block-height: 180px;
+    --header-block-height: 205px;
     --icon-width: 24px;
     --icon-height: 24px;
     --social-icon-margin-left: 72px;
@@ -27,6 +27,8 @@
     --project-preview-title-height: 48px;
     --project-preview-card-bg: white;
     --header-text-margin-top: 26px;
+    --search-margin-right: 12px;
+    --search-margin-top: 4px;
 }
 
 body {
@@ -46,6 +48,10 @@ a {
 
 li {
     line-height: var(--li-line-height);
+}
+
+textarea:focus, input:focus{
+    outline: none;
 }
 
 a:hover {
@@ -138,6 +144,16 @@ h3 {
 .header-text {
     margin-top: var(--header-text-margin-top);
     margin-left: var(--page-margin-left);
+}
+
+#search{
+    display: flex;
+    justify-content: right;
+}
+
+#search_input{
+    margin-right: var(--search-margin-right);
+    margin-top: var(--search-margin-top);
 }
 
 /* Theme toggle */
@@ -439,7 +455,7 @@ h3 {
         flex-shrink: 1;
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: stretch;
         flex-flow: column;
         margin-top: 0;
         margin-left: var(--page-margin-left);
@@ -461,6 +477,7 @@ h3 {
     .header-text {
         margin-top: 12px;
         margin-left: 0;
+        align-self: center;
     }
 
     body {
