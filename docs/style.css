@@ -238,6 +238,16 @@ h3 {
     margin-left: var(--text-to-icon-gap);
 }
 
+/* YouTube Thumbnail */
+
+.yt-thumbnail {
+    width: 480px;
+    height: 270px;
+    object-fit: cover;
+    margin-left: var(--section-gap);
+    margin-top: var(--section-gap);
+}
+
 /* Profile Photo */
 #profile-pic {
     display: flex;
@@ -404,14 +414,14 @@ h3 {
     align-items: center;
 }
 
-.new-videos-icon{
+.new-videos-icon {
     width: 20px;
     height: 20px;
     margin-right: var(--text-to-icon-gap);
     background-image: url(./images/icon-new-videos.svg);
 }
 
-.announcements-icon{
+.announcements-icon {
     width: 16px;
     height: 16px;
     margin-right: var(--text-to-icon-gap);
@@ -644,5 +654,15 @@ h3 {
         display: flex;
         margin-bottom: var(--section-gap);
         align-self: center;
+    }
+
+    /* YouTube thumbnail */
+    .yt-thumbnail {
+        width: 240px;
+        height: 135px;
+        margin-right: 0;
+        object-fit: cover;
+        margin-left: var(--section-gap);
+        margin-top: var(--section-gap);
     }
 }
