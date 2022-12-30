@@ -225,8 +225,9 @@ h3 {
 /* Sidebar header */
 #side-bar-header {
     display: flex;
-    margin-top: var(--page-margin-top);
+    margin-top: var(--section-gap);
     margin-left: var(--page-margin-left);
+    margin-bottom: var(--section-gap);
 }
 
 #side-bar-header>img {
@@ -236,6 +237,12 @@ h3 {
 
 #side-bar-header>div {
     margin-left: var(--text-to-icon-gap);
+}
+
+/* My Twitter */
+.my-twitter {
+    margin: 24px;
+    text-align: center;
 }
 
 /* YouTube Thumbnail */
@@ -253,12 +260,11 @@ h3 {
     display: flex;
     justify-content: center;
     margin-top: 48px;
-    margin-bottom: 80px;
-    width: 128px;
+    margin-bottom: 16px;
     height: 128px;
     animation: fadeIn 2s;
+    display: none;
 }
-
 
 #social-item-container {
     display: flex;
@@ -647,6 +653,12 @@ h3 {
         flex-direction: column;
         align-self: stretch;
         border-top-right-radius: 0;
+    }
+
+    /* My Twitter */
+    .my-twitter {
+        margin: 16px 0px;
+        margin-top: 0px;
     }
 
     .social-item {
