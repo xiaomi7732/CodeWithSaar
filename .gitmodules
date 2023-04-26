@@ -1,0 +1,6 @@
+[submodule "Portfolio/PortfolioV2Gen"]
+	path = Portfolio/PortfolioV2Gen
+	url = git@github.com:xiaomi7732/PortfolioV2Gen.git
+[submodule "Portfolio/PortfolioV2"]
+	path = Portfolio/PortfolioV2
+	url = git@github.com:xiaomi7732/PortfolioV2.git
