@@ -305,6 +305,10 @@ h3 {
     background-image: url(./images/social-twitter-icon.svg);
 }
 
+.social-item-mastodon {
+    background-image: url(./images/social-mastodon-icon.svg);
+}
+
 .social-item-github {
     background-image: url(./images/social-github-icon.png);
 }
