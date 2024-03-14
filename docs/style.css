@@ -240,9 +240,9 @@ h3 {
 }
 
 /* My Twitter */
-.my-twitter {
+.my-social {
     margin: 24px;
-    text-align: center;
+    text-align: left;
 }
 
 /* YouTube Thumbnail */
@@ -317,6 +317,9 @@ h3 {
     background-image: url(./images/social-discord-icon.svg);
 }
 
+.social-item-bluesky {
+    background-image: url(./images/social-bluesky-icon.svg);
+}
 
 .social-item>img {
     width: var(--icon-width);
@@ -660,7 +663,7 @@ h3 {
     }
 
     /* My Twitter */
-    .my-twitter {
+    .my-social {
         margin: 16px 0px;
         margin-top: 0px;
     }
