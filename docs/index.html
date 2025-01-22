@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="./style.dark.css" id="dark-theme-css" />
     <!-- Javascript -->
     <script src="./app.js" type="module"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bsky-embed@0.0.6/dist/bsky-embed.es.js" async></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/bsky-embed@0.2.2/dist/bsky-embed.es.js" async></script>
 </head>
 
 <!-- Google Analytics -->
@@ -433,7 +433,9 @@
                 </div>
                 
                 <div class='my-social'>
-                    <bsky-embed username="codewithsaar.com" mode="dark" limit="3">
+                    <bsky-embed username="codewithsaar.com" mode="dark" limit="2" link-target="_blank"
+                        link-image="false"
+                        custom-styles=".w-full { width: 85%; }">
                     </bsky-embed>
                 </div>
 

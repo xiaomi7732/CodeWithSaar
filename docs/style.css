@@ -241,8 +241,12 @@ h3 {
 
 /* My Twitter */
 .my-social {
-    margin: 24px;
+    margin: 12px;
     text-align: left;
+    max-height: 450px;
+    max-width: 320px;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 /* YouTube Thumbnail */
