@@ -1,0 +1,21 @@
+[
+  {
+    "id": "https://bsky.app",
+    "displayName": "Blue Sky",
+    "iconUri": "https://web-cdn.bsky.app/static/favicon-32x32.png"
+  },
+  {
+    "id": "https://youtube.com",
+    "displayName": "You Tube",
+    "iconUri": "https://www.gstatic.com/youtube/img/branding/favicon/favicon_144x144_v2.png"
+  },
+  {
+    "id": "https://www.codewithsaar.com",
+    "displayName": "Code w/ Saar",
+    "iconUri": "https://codewithsaar.com/images/profile.png"
+  },
+  {
+    "id": "https://chatgpt.com",
+    "displayName": "ChatGPT"
+  }
+]
