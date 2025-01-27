@@ -10,12 +10,33 @@
     "iconUri": "https://www.gstatic.com/youtube/img/branding/favicon/favicon_144x144_v2.png"
   },
   {
+    "id": "https://chatgpt.com",
+    "displayName": "ChatGPT",
+    "iconUri": "https://openai.com/favicon.ico"
+  },
+  {
     "id": "https://www.codewithsaar.com",
     "displayName": "Code w/ Saar",
     "iconUri": "https://codewithsaar.com/images/profile.png"
   },
   {
-    "id": "https://chatgpt.com",
-    "displayName": "ChatGPT"
+    "id": "https://gmail.com",
+    "displayName": "Gmail",
+    "iconUri": "https://workspace.google.com/static/favicon.ico"
+  },
+  {
+    "id": "https://photos.google.com",
+    "displayName": "Google Photos",
+    "iconUri": "https://www.google.com/photos/static/2020/images/logo_photos_192px.png"
+  },
+  {
+    "id": "https://maps.google.com",
+    "displayName": "Google Maps",
+    "iconUri": "https://www.google.com/images/branding/product/ico/maps15_bnuw3a_32dp.ico"
+  },
+  {
+    "id": "https://x.com",
+    "displayName": "X",
+    "iconUri": "https://abs.twimg.com/favicons/twitter.3.ico"
   }
 ]
